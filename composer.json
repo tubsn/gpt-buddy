@@ -1,0 +1,12 @@
+{
+    "require": {
+        "flundr/core": "^2.0",
+        "orhanerday/open-ai": "^4.7",
+        "gioni06/gpt3-tokenizer": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+			"app\\": "app/"
+		}
+    }
+}

@@ -1,0 +1,26 @@
+# Deny direct access to *.tpl Files if 
+# templates are placed in Public folder
+<Files *.tpl>
+Require all denied
+</Files>
+
+RewriteEngine on
+#RewriteBase /
+
+RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirect Trailing Slashes If Not A Folder...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
+# Whitelist FilesTypes in Uploadfolder
+RewriteCond %{REQUEST_URI} ^/uploads
+RewriteCond %{REQUEST_URI} !\.(gif|jpg|jpe?g|svg|mp4|css|png|psd|eps|ai|indd|pdf|doc|docx|rtf|xls|xlsx|txt|csv)$ [NC]
+RewriteRule .* - [F]
+
+# Handle Front Controller...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
