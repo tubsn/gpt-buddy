@@ -11,6 +11,7 @@ main {margin:2em 4em;}
 @media only screen and (max-width: 960px) {main {margin:4%;}}
 
 button, .button {border-radius: 0.3em;}
+select {cursor:pointer;}
 form button[type="submit"]:hover, form button[type="submit"]:focus {background-color: var(--primary); outline:none;}
 form button:hover, form button:focus, .button:hover, .button:focus {background-color: var(--primary); outline:none;}
 h1 > a:hover, h2 > a:hover, h3 > a:hover {color: var(--primary);}
@@ -22,10 +23,10 @@ a:visited {color:inherit;}
 
 h3 a small {font-weight:normal; font-size:0.6em;}
 
-.history pre {
-white-space:break-spaces;
+.history pre {white-space:break-spaces;}
+.history {font-size: 0.8em; line-height: 120%;}
+table.fancy.history td, table.fancy.history th {padding: 0 20px}
 
-}
 
 .box pre {background: white; padding: 0.1em 0.5em; border-radius: 0.4em; white-space:normal; max-height: 176px; text-overflow: ellipsis; overflow: auto;} 
 
@@ -48,6 +49,11 @@ border-top:.5em solid #ddd; border-top-left-radius:0;border-top-right-radius:0;}
 .io-textarea {height:400px; border-radius: .2em;}
 .io-textarea:focus {outline: 2px solid var(--primary);}
 .io-textarea:disabled {background:#d2d2d2; color:#717171;}
+
+.io-output-div {background-color:white; height: 400px; border-radius: .2em;  overflow-y:auto;
+padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%; cursor: text; font-size:0.85em}
+
+.no-select {user-select: none;}
 
 .settings-textarea {min-height:300px;}
 
@@ -73,7 +79,7 @@ textarea:hover, textarea:focus {resize: vertical;}
 }
 
 /* Form Grids */
-.grid-2-col, .grid-2-wide, .grid-2-narrow, .grid-2-back-wide, .grid-3-col, .grid-3-front-wide, .grid-3-back-wide, .grid-4-col, .grid-5-col, .grid-5-wide, .grid-2-1, 
+.grid-2-col, .grid-2-wide, .grid-2-narrow, .grid-2-back-wide, .grid-3-col, .grid-3-front-wide, .grid-3-back-wide, .grid-4-col, .grid-4-back-wide, .grid-5-col, .grid-5-wide, .grid-2-1, 
 .grid-3-wide ,.grid-4-wide, .grid-4-2col, .grid-min {display:grid; grid-gap:1em; grid-row-gap:0em;}
 
 .grid-2-1 {grid-template-columns: 2fr 1fr;}
@@ -86,6 +92,7 @@ textarea:hover, textarea:focus {resize: vertical;}
 .grid-3-back-wide {grid-template-columns: 1fr 1fr 2fr;}
 .grid-3-wide {grid-template-columns: 2fr 1fr 1fr;}
 .grid-4-col {grid-template-columns: 1fr 1fr 1fr 1fr;}
+.grid-4-back-wide {grid-template-columns: 2fr 1fr 1fr 4fr;}
 .grid-4-2col {grid-template-columns: 2fr 2fr 1fr 1fr;}
 .grid-4-wide {grid-template-columns: 2fr 1fr 1fr 1fr;}
 .grid-5-col {grid-template-columns: 1fr 1fr 1fr 1fr 1fr;}
@@ -97,13 +104,13 @@ textarea:hover, textarea:focus {resize: vertical;}
 
 @media only screen and (max-width: 1100px) {
 .grid-2-col, .grid-2-narrow, .grid-2-wide, .grid-2-back-wide, .grid-3-col, .grid-3-front-wide, .grid-3-back-wide, .grid-4-col, .grid-2-1, 
-.grid-3-wide ,.grid-4-wide, .grid-4-2col, .grid-5-col, .grid-5-wide, .grid-min {
+.grid-3-wide ,.grid-4-wide, .grid-4-back-wide, .grid-4-2col, .grid-5-col, .grid-5-wide, .grid-min {
 	grid-template-columns: 1fr 1fr }
 }
 
 @media only screen and (max-width: 768px) {
 .grid-2-col, .grid-2-narrow, .grid-2-wide, .grid-2-back-wide, .grid-3-col, .grid-3-front-wide, .grid-3-back-wide, .grid-4-col, .grid-2-1, 
-.grid-3-wide ,.grid-4-wide, .grid-4-2col, .grid-5-col, .grid-5-wide, .grid-min {
+.grid-3-wide ,.grid-4-wide, .grid-4-2col, .grid-4-back-wide, .grid-5-col, .grid-5-wide, .grid-min {
 	grid-template-columns: 1fr }
 }
 

@@ -60,6 +60,7 @@ class Settings extends Controller {
 		$data['name'] = $_POST['name'];
 		$data['content'] = $_POST['content'];
 		$data['description'] = $_POST['description'];
+		$data['markdown'] = $_POST['markdown'];		
 		$this->Prompts->save(slugify($_POST['internalname']), $data);
 		$this->view->redirect('/settings');
 	}
@@ -69,6 +70,7 @@ class Settings extends Controller {
 		$data['content'] = $_POST['content'];
 		$data['inactive'] = $_POST['inactive'];
 		$data['description'] = $_POST['description'];
+		$data['markdown'] = $_POST['markdown'];
 		$data['hits'] = $_POST['hits'];
 		$this->Prompts->save(slugify($internalName), $data);
 		$this->view->redirect('/settings');

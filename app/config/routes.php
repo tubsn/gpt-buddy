@@ -1,14 +1,15 @@
 <?php
 
-$routes->get('/test', 'Chat@test');
-
 $routes->get('/', 'Chat@index');
-$routes->post('/ask', 'Chat@ask');
-$routes->post('/wipe', 'Chat@wipe');
-$routes->post('/history', 'Chat@history');
+
+$routes->post('/ask', 'API@ask');
+$routes->get('/ping', 'API@ping');
+
 
 $routes->get('/image', 'Image@index');
 $routes->post('/image', 'Image@index');
+
+$routes->get('/import/ticker/{id}', 'Import@ticker');
 
 $routes->get('/settings', 'Settings@index');
 $routes->get('/settings/new', 'Settings@new');
@@ -16,6 +17,8 @@ $routes->post('/settings/new', 'Settings@create');
 $routes->get('/settings/{internalName}', 'Settings@edit');
 $routes->post('/settings/{internalName}', 'Settings@save');
 $routes->get('/settings/{internalName}/delete', 'Settings@delete');
+
+$routes->get('/import/article/{id:\d+}', 'Import@index');
 
 
 // You can delete these if you don´t need Users in your App

@@ -2,9 +2,9 @@
 
 namespace app\models;
 use Orhanerday\OpenAi\OpenAi;
-use flundr\utility\Session;
 use app\models\Prompts;
 
+use League\CommonMark\CommonMarkConverter;
 use Gioni06\Gpt3Tokenizer\Gpt3TokenizerConfig;
 use Gioni06\Gpt3Tokenizer\Gpt3Tokenizer;
 
@@ -18,16 +18,22 @@ class ChatGPTApi
 	public $response;
 	public $tokens = 0;
 	public $messages = [];
+	public $markdownEnabled = false;
+
 
 	public function __construct() {
 		$this->prompts = new Prompts;
-		$this->load_history();
 	}
 
 	public function ask($question, $action = null) {
 
+		if (empty($question)) {
+			return ['answer' => 'Bitte stell eine Frage']; 
+		}
+
+		// Use presets only if history is empty
 		if (empty($this->messages)) {
-			$this->loadPreset($action); // Use presets only if history is empty
+			$this->loadPreset($action); 
 		}
 
 		$this->add($question);
@@ -43,13 +49,17 @@ class ChatGPTApi
 		$this->action = $action;
 
 		$userConfiguredPrompt = $this->prompts->get_and_track(urlencode($action));
+		
 		if ($userConfiguredPrompt) {
-			Session::set('chataction', $action);
+			$this->set_markdown($userConfiguredPrompt['markdown']);
 			$this->add($userConfiguredPrompt['content'], 'system');
 		}
 
 		// Default Actions
-		if ($action == 'general') {$this->add("Du bist ein KI-Assistent names AI-Buddy, Du arbeitest bei der Lausitzer Rundschau in Cottbus, einer deutschen Tageszeitung. Deine Aufgabe ist es den Redakteuren den Redaktionsalltag zu erleichtern", 'system');}
+		if ($action == 'general') {
+			$this->set_markdown(true);
+			$this->add("Du bist ein KI-Assistent names AI-Buddy, Du arbeitest bei der Lausitzer Rundschau in Cottbus, einer deutschen Tageszeitung. Deine Aufgabe ist es den Redakteuren den Redaktionsalltag zu erleichtern", 'system');
+		}
 
 		if ($action == 'spelling-only') {$this->add("Korrigiere ausschließlich die Rechtschreibung nach deutschem Duden. Gramatik beibehalten! Verändere keine Eigennamen!\n2. Gib mit eine Liste der Änderungen", 'system');}
 		if ($action == 'spelling-grammar') {$this->add("Korrigiere Rechtschreibung, Gramatik und Lesbarkeit nach deutschem Duden. Verändere keine Eigennamen!\nGib mit eine Liste der Änderungen", 'system');}
@@ -70,6 +80,10 @@ class ChatGPTApi
 		if ($action == 'shorten-l') {$this->add('Shorten the text to 300 Words, do not change the context!', 'system');}
 		if ($action == 'shorten-xl') {$this->add('Shorten the text to 500 Words, do not change the context!', 'system');}
 
+		if ($this->markdownEnabled) {
+			$this->add("Formatiere deine Antwort mit Markdown. Erzeuge klickbare Links", 'system');
+		}
+
 	}
 
 	private function add($message, $role = 'user') {
@@ -81,6 +95,10 @@ class ChatGPTApi
 	private function fetch() {
 
 		$maxTokens = 4096 - $this->count_tokens() - 50;
+		if ($maxTokens < 1) {
+			$this->response = 'Hallo, die Anfrage ist zu Lang bzw. beinhaltet zu viele Tokens! Maximal 4096';
+			return;
+		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 		$chat = $open_ai->chat([
@@ -120,17 +138,6 @@ class ChatGPTApi
 		die;
 	}
 
-
-	private function count_tokens_by_words() {
-
-		$content = array_column($this->messages, 'content');
-		$content = implode(" ", $content);
-		$content = strtolower(trim(preg_replace('/[^A-Za-z0-9\- ]/', ' ', $content)));
-		$wordList = explode(" ", $content);
-		return count($wordList);		
-
-	}
-
 	private function count_tokens() {
 
 		$content = array_column($this->messages, 'content');
@@ -145,21 +152,38 @@ class ChatGPTApi
 
 	}
 
-	private function load_history() {
-		$this->messages = Session::get('chathistory') ?? [];
+	// faster but just an Estimate (not in Use)
+	private function count_tokens_by_words() {
+		$content = array_column($this->messages, 'content');
+		$content = implode(" ", $content);
+		$content = strtolower(trim(preg_replace('/[^A-Za-z0-9\- ]/', ' ', $content)));
+		$wordList = explode(" ", $content);
+		return count($wordList);		
 	}
 
-	public function wipe_history() {
-		Session::unset('chathistory');
-		Session::unset('chataction');
+	public function set_history($json = null) {
+		if (is_null($json) || empty($json)) {return;}
+		$history = json_decode($json,1);
+		if ($history) {$this->messages = $history;}
+	}
+
+	public function set_markdown($value = false) {
+		$this->markdownEnabled = $value;
 	}
 
 	public function response() {
-		$this->add($this->response,'assistant');
-		Session::set('chathistory', $this->messages);
+
+		// Adds last Response to Messages/History
+		$this->add($this->response,'assistant'); 
+
+		if ($this->markdownEnabled) {
+			$converter = new CommonMarkConverter();
+			$this->response = $converter->convert($this->response)->getContent();
+		}
 
 		return [
 			'answer' => $this->response,
+			'markdown' => $this->markdownEnabled,
 			'history' => $this->messages,
 			'tokens' => $this->tokens,
 		];

@@ -3,10 +3,8 @@
 namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\Auth;
+use flundr\auth\JWTAuth;
 use flundr\utility\Session;
-
-use Gioni06\Gpt3Tokenizer\Gpt3TokenizerConfig;
-use Gioni06\Gpt3Tokenizer\Gpt3Tokenizer;
 
 class Chat extends Controller {
 
@@ -18,66 +16,29 @@ class Chat extends Controller {
 		$this->models('ChatGPTApi,Prompts,OpenAIImage');
 	}
 
-	public function test() {
-
-
-		$text = Session::get('chathistory');
-
-		$text = array_column($text, 'content');
-		$text = implode(" ", $text);
-
-		$config = new Gpt3TokenizerConfig();
-		$tokenizer = new Gpt3Tokenizer($config);
-		$numberOfTokens = $tokenizer->count($text);
-
-		echo $numberOfTokens;
-
-	}
-
 
 	public function index($category = null) {
 
 		if ($category == 'translate') {
-			$this->ChatGPTApi->wipe_history();
 			$this->view->title = 'Übersetzer';
 			$this->view->interface = 'translate';
 		}
 
 		if ($category == 'shorten') {
-			$this->ChatGPTApi->wipe_history();
 			$this->view->title = 'Textlängen Anpassesn';
 			$this->view->interface = 'shorten';
 		}
 
 		if ($category == 'spelling') {
-			$this->ChatGPTApi->wipe_history();
 			$this->view->title = 'Rechtschreibung Korrigieren';
 			$this->view->interface = 'spelling';
 		}
 
+		$jwt = new JWTAuth(); // Create a JWT Token for current User
+		$this->view->JWTtoken = $token = $jwt->create_token(Auth::get('id'), 'lr-digital.de', '+1 hour');
+
 		$this->view->prompts = $this->Prompts->list(1);
 		$this->view->render('chat');
-	}
-
-	public function ask() {
-
-		$question = $_POST['question'] ?? null;
-		$action = $_POST['action'] ?? null;
-
-		$response = $this->ChatGPTApi->ask($question, $action);
-		$this->view->json($response);
-
-	}
-
-	public function wipe() {
-		$this->ChatGPTApi->wipe_history();
-	}
-
-	public function history() {
-
-		$data['action'] = Session::get('chataction') ?? null;
-		$data['history'] = Session::get('chathistory') ?? null;
-		$this->view->json($data);
 	}
 
 	public function image() {
@@ -87,7 +48,6 @@ class Chat extends Controller {
 		$this->view->render('image',);
 
 	}
-
 
 
 }

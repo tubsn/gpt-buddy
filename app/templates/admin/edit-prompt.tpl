@@ -1,8 +1,7 @@
 <main>
 
-
-
 <h1>Prompt editieren: <?=ucfirst($internalName)?></h1>
+<p><b>Hinweis:</b> Prompts mit Formatierungen verbrauchen geringfügig mehr Tokens</p>
 
 <form class="form-container" method="post" action="">
 	<?php if (isset($prompt['hits'])): ?>
@@ -17,7 +16,7 @@
 		</fl-dialog>
 	</div>
 
-	<fieldset class="grid-3-back-wide">
+	<fieldset class="grid-4-back-wide">
 	<label>Aktionsname:
 		<input name="name" type="text" placeholder="sichtbarer Name" value="<?=$prompt['name'] ?? null?>">
 	</label>
@@ -29,6 +28,17 @@
 			<option value="1" selected>gesperrt</option>
 			<?php else: ?>
 			<option value="1">gesperrt</option>
+			<?php endif ?>
+		</select>
+	</label>
+
+	<label>Formatierung?:
+		<select name="markdown" >
+			<option value="0">keine Formatierung</option>
+			<?php if ($prompt['markdown']): ?>
+			<option value="1" selected>Formatierung aktiv</option>
+			<?php else: ?>
+			<option value="1">Formatierung aktiv</option>
 			<?php endif ?>
 		</select>
 	</label>

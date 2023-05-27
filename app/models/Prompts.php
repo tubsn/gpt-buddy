@@ -50,6 +50,8 @@ class Prompts
 		
 		$settings = file_get_contents($filename);
 		$settings = json_decode($settings, 1);
+
+		if (!isset($settings['markdown'])) {$settings['markdown'] = false;}
 		$settings['edited'] = filemtime($filename);
 
 		return $settings;

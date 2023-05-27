@@ -8,6 +8,10 @@
 	</select>
 	</label>
 
+	<label class="hide-mobile">Artikel importieren (Beta):
+		<input type="text" @input="importArticle" placeholder="ID oder URL eintragen">
+	</label>
+
 	<!--
 	<label v-if="action == 'shorten'">Anzahl zeichen:
 	<input type="number" v-model="options" placeholder="400">

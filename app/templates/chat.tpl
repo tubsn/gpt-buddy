@@ -1,12 +1,14 @@
-<main id="gptInterface">
+<main v-cloak id="gptInterface">
 
 <h1><?=APP_NAME?> | <?=$page['title']?></h1>
+
+<!--<p><span style="font-weight:bold; color:#b00;">Achtung:</span> Am System wird gerade gearbeitet.</p>-->
 
 <p v-if="description" v-html="'Hinweis: ' + description"></p>
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>
 
 
-<form method="post" @submit.prevent="ask" action="" class="form-container">
+<form method="post" @submit.prevent="ask" action="" ref="form" class="form-container" data-token="<?=$JWTtoken?>">
 
 <p v-if="error" class="error-message">{{error}}</p>
 
@@ -30,8 +32,10 @@
 	</section>
 
 	<section class="gpt-output">
-		<label>Ausgabe:
-		<textarea v-model="output" class="io-textarea" placeholder=""></textarea>	
+		<label v-if="markdown" class="no-select">Ausgabe:</label>
+		<div v-if="markdown" v-html="output" class="io-textarea io-output-div" placeholder=""></div>	
+		<label v-if="!markdown">Ausgabe:
+			<textarea v-model="output" class="io-textarea" placeholder=""></textarea>
 		</label>
 		<div class="fright small">
 			<span class="ml" v-if="loading">
@@ -53,6 +57,9 @@
 			<td><pre>{{entry.content}}</pre></td>
 		</tr>
 	</table>
+
+	<button class="button" type="button" @click="copyHistoryToClipboard">Historie in die Zwischenablage kopieren</button>
+
 </details>
 
 </main>

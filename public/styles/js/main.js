@@ -7,6 +7,7 @@ data() {
 		action: null,
 		description: null,
 		options: 400,
+		markdown: false,
 		input: '',
 		output: '',
 		history: '',
@@ -14,6 +15,7 @@ data() {
 		responseSeconds: 0,
 		tokens: 0,
 		errormessages: '',
+		jwt: null,
 	}
 },
 
@@ -30,22 +32,72 @@ computed: {
 
 },
 
+watch: {
+	history(content) {sessionStorage.history = JSON.stringify(content)},
+	action(value) {sessionStorage.action = value},
+	markdown(value) {sessionStorage.markdown = value},
+},
+
 mounted() {
-	this.getHistory()
+	this.jwtToken()
 	this.autofocus()
+	this.getHistory()
 	this.autoSelectBox()
 },
 
 methods: {
 
+	async bestServer() {
+
+		let servers = ['//chatapi.lr-digital.de','//chatapi2.lr-digital.de','//chatapi3.lr-digital.de']
+		let availableServer = false
+
+		for (let server of servers) {
+			
+			await this.checkResponseTime(server + '/ping', 120)
+			.then(responseTime => {
+				availableServer = server
+			})
+			.catch(error => {});	
+
+			if (availableServer) {break}
+		}
+
+		if (!availableServer) {return servers[0]}
+		return availableServer
+
+		/*
+		await this.checkResponseTime(this.apiurl + '/ping', 50)
+		.then(responseTime => {
+			console.log(`Die Seite hat in ${responseTime} ms geantwortet.`);
+		})
+		.catch(error => {
+			console.error(`Fehler beim Überprüfen der Seite: ${error.message}`);
+		});
+		*/
+
+	},
+
 	autofocus() {
-		if (this.$refs.autofocusElement) {this.$refs.autofocusElement.focus()}
+		if (!this.$refs.autofocusElement) {return}
+		Vue.nextTick(() => {this.$refs.autofocusElement.focus()})
+	},
+
+	jwtToken() {
+		let form = this.$refs.form
+		this.jwt = form.dataset.token
 	},
 
 	autoSelectBox() {
 		if (!this.$refs.selectElement) {return}
-		let element = this.$refs.selectElement
-		if (!element.value) {this.action = element.children[0].value}
+		let selectbox = this.$refs.selectElement
+
+		if (this.action != null) {
+			let options = [...selectbox].map(el => el.value);
+			if (options.includes(this.action)) {selectbox.value = this.action; return}
+		}		
+
+		this.action = selectbox.children[0].value			
 	},
 
 	resetMetaInfo() {
@@ -57,39 +109,78 @@ methods: {
 
 
 	setDescription() {
-
 		if (!this.$refs.selectElement) {return ''}
 		let selectbox = this.$refs.selectElement
 		this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')
-
 	},
 
-	async wipeHistory() {
-		let response = await fetch('/wipe', {method: "POST"})
+	wipeHistory() {
 		this.history = ''
 		this.output = ''
+		this.markdown = false
 	},
 
-	async getHistory() {
-		let response = await fetch('/history', {method: "POST"})
+	getHistory() {
+		if (sessionStorage.history) {
+			this.history = JSON.parse(sessionStorage.history)
+		}
+		this.action = sessionStorage.action
+		this.markdown = sessionStorage.markdown
+	},
+
+	copyHistoryToClipboard() {
+		let historyData = JSON.parse(JSON.stringify(this.history));
+		let history = '';
+		historyData.forEach(entry => {
+			history = history + `[${entry.role}] ${entry.content}\n\n`
+		}) 
+		navigator.clipboard.writeText(history);
+	},
+
+	async importArticle(event) {
+		let value = event.target.value || null;
+		if (!value) {this.input = ''; return}
+
+		let id = value.match(/-(\d{8}).html/);
+		if (id) {id = id[1]}
+		else {id = value}
+
+		let response = await fetch('/import/article/'+id)
+		if (!response.ok) {
+			this.input = 'URL ungültig oder Artikel nicht gefunden'
+			return
+		}
+
 		let json = await response.json()
-		this.history = json.history
-		if (json.action) {this.action = json.action}
+		.catch(error => {this.input = error; return})
+
+		this.input = json.content
+
 	},
 
 	async ask() {
 
+		this.loading = true
 		this.resetMetaInfo()
 		const start = Date.now()
+
+		let apiurl = await this.bestServer()
+		console.log('Asking on :' + apiurl)
 
 		let formData = new FormData()
 		formData.append('question', this.input)
 		formData.append('action', this.action)
+		formData.append('markdown', this.markdown)
+		formData.append('history', JSON.stringify(this.history))
+		formData.append('token', this.jwt)
 
-		this.loading = true
-
-		let response = await fetch('/ask', {method: "POST", body: formData})
-		if (!response.ok) {console.warn(`Network Error when querying API`);	return}
+		let response = await fetch(apiurl + '/ask', {method: "POST", body: formData})
+		if (!response.ok) {
+			this.errormessages = 'Fehler beim Zugriff auf die API'
+			this.loading = false
+			this.responseSeconds = this.elapsedTime(start)
+			return
+		}
 
 		let json = await response.json()
 		.catch(error => {
@@ -104,15 +195,36 @@ methods: {
 		if (!json.answer) {this.output = JSON.stringify(json)}
 		else {
 			this.output = json.answer
-			this.history = json.history
-			this.tokens = json.tokens
+			this.tokens = json.tokens || 0
+			this.markdown = json.markdown
+			if (json.history) {this.history = json.history}
 		}
 		
 		this.loading = false
 		this.responseSeconds = this.elapsedTime(start)
 		this.autofocus()
-
 	},
+
+
+	async checkResponseTime(url, timeout) {
+		let startTime = Date.now();
+
+		return new Promise((resolve, reject) => {
+		let timer = setTimeout(() => {
+			reject(new Error('Timeout'))
+		}, timeout)
+
+		fetch(url)
+			.then(response => {
+				clearTimeout(timer)
+				resolve(Date.now() - startTime)
+			}).catch(error => {
+				clearTimeout(timer)
+				reject(error)
+			});
+		});
+	},
+
 },
 
 

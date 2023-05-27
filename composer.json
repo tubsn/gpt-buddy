@@ -2,7 +2,8 @@
     "require": {
         "flundr/core": "^2.0",
         "orhanerday/open-ai": "^4.7",
-        "gioni06/gpt3-tokenizer": "^1.2"
+        "gioni06/gpt3-tokenizer": "^1.2",
+        "league/commonmark": "^2.4"
     },
     "autoload": {
         "psr-4": {
