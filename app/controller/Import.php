@@ -10,12 +10,12 @@ class Import extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
-		$this->models('Scrape,LR_RSS_Adapter,LiveTickerAdapter');
+		$this->models('Scrape,RSS_Adapter,LiveTickerAdapter');
 	}
 
-	public function index($id) {
+	public function article($portal, $id) {
 
-		$data = $this->LR_RSS_Adapter->get_by_id($id);
+		$data = $this->RSS_Adapter->get_by_id($portal, $id);
 
 		if (is_null($data)) {
 			$this->view->json(['content' => 'keine Artikeldaten gefunden']);
@@ -36,11 +36,6 @@ class Import extends Controller {
 		$data['content'] = $content;
 
 		$this->view->json($data);
-
-		/*
-		$data = $this->Scrape->by_class('https://www.lr-online.de/lausitz/cottbus/einbruch-in-cottbus-tresor-bei-der-parkeisenbahn-aufgeschnitten-_-wie-hoch-der-schaden-ist-70610337.html', 'articleDetail');
-		dd(strip_tags($data));
-		*/
 
 	}
 

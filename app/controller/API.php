@@ -3,38 +3,26 @@
 namespace app\controller;
 use flundr\mvc\Controller;
 //use flundr\auth\Auth;
-use flundr\auth\JWTAuth;
 
 class API extends Controller {
 
 	public function __construct() {
 		$this->view('DefaultLayout');
-		$this->models('ChatGPTApi,Prompts,OpenAIImage');
+		$this->models('ChatGPT,Conversations,Prompts,OpenAIImage');
+		header('Access-Control-Allow-Origin: *');		
 	}
 
-	public function ask() {
+	public function stream($id) {
+		$maxElapsedSeconds = 10;
+		$conversationMeta = $this->Conversations->get_meta($id);
+		if (!$conversationMeta) {throw new \Exception("Conversation not Found", 400);}
+		if (time() - $conversationMeta['edited'] > $maxElapsedSeconds) {throw new \Exception("Conversation Timeout Error", 400);}
 
-		header('Access-Control-Allow-Origin: *');
-		$jwt = new JWTAuth(); // Create a JWT Token for current User
-		$user = $jwt->authenticate($_POST['token'],'lr-digital.de');
-
-		$question = $_POST['question'] ?? null;
-		$action = $_POST['action'] ?? null;
-
-		$markdown = $_POST['markdown'] ?? false;
-		$this->ChatGPTApi->set_markdown($markdown);
-
-		$history = $_POST['history'] ?? null;
-		$this->ChatGPTApi->set_history($history);
-
-		$response = $this->ChatGPTApi->ask($question, $action);
-		$this->view->json($response);
-
+		header('Content-type: text/event-stream');
+		header('Cache-Control: no-cache');
+		$response = $this->ChatGPT->stream($id);
 	}
 
-	public function ping() {
-		header('Access-Control-Allow-Origin: *');
-		echo 'pong';
-	}
+	public function ping() {echo 'pong';}
 
 }

@@ -1,27 +1,35 @@
 <?php
 
+// Pages
 $routes->get('/', 'Chat@index');
+$routes->get('/faq', 'Chat@faq');
 
-$routes->post('/ask', 'API@ask');
+// API
+$routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
+$routes->get('/stream/{id}', 'API@stream');
 
+// Conversations
+$routes->get('/conversation/{id}', 'Chat@show_conversation');
+$routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
+$routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
+$routes->get('/conversations', 'Chat@conversation_list');
 
+// Image Generator
 $routes->get('/image', 'Image@index');
 $routes->post('/image', 'Image@index');
 
+// Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');
+$routes->get('/import/article/{portal}/{id:\d+}', 'Import@article');
 
+// Settings / Prompts
 $routes->get('/settings', 'Settings@index');
 $routes->get('/settings/new', 'Settings@new');
 $routes->post('/settings/new', 'Settings@create');
 $routes->get('/settings/{internalName}', 'Settings@edit');
 $routes->post('/settings/{internalName}', 'Settings@save');
 $routes->get('/settings/{internalName}/delete', 'Settings@delete');
-
-$routes->get('/import/article/{id:\d+}', 'Import@index');
-
-
-// You can delete these if you don´t need Users in your App
 
 // Authentication Routes
 $routes->get('/login', 'Authentication@login');

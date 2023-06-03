@@ -1,3 +1,3 @@
 <?php
 
-define('APP_NAME', 'AI-Buddy');
+define('APP_NAME', 'Ai-Buddy');

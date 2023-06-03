@@ -8,11 +8,11 @@
 			</ul>-->
 		</li>
 
-		<li><a href="/">Assistent</a></li>
-		<li><a href="/spelling">Rechtschreibung</a></li>
-		<li><a href="/shorten">Textlängen</a></li>
-		<li><a href="/translate">Übersetzer</a></li>
-		<li><a href="/image">Bildgenerator</a></li>
+		<li class="hide-mobile"><a href="/">Assistent</a></li>
+		<li class="hide-mobile"><a href="/spelling">Rechtschreibung</a></li>
+		<li class="hide-mobile"><a href="/shorten">Textlängen</a></li>
+		<li class="hide-mobile"><a href="/translate">Übersetzer</a></li>
+		<li class="hide-mobile"><a href="/image">Bildgenerator</a></li>
 		<!--<li class="hide-mobile"><a href="/image">Bildertest</a></li>-->
 
 	</ul>
@@ -26,6 +26,8 @@
 			</form>
 		</li>
 		-->
+		<li  class="hide-mobile"><a href="/faq">Hinweise zum Umgang mit KI</a></li>
+
 		<?php if (auth_rights('chatgpt')): ?>
 		<li><a href="/settings">Konfiguration</a></li>
 		<?php endif; ?>

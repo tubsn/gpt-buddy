@@ -6,7 +6,7 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 
 <script src="/styles/flundr/components/fl-dialog.js"></script>
 
-<main class="auth-layout">
+<main class="auth-layout user-table">
 
 	<h1><?=$page['title'] ?? 'User-Profiles'?></h1>
 

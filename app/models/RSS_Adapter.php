@@ -2,14 +2,17 @@
 
 namespace app\models;
 
-class LR_RSS_Adapter
+class RSS_Adapter
 {
 
-	function __construct() {
-		$this->portalURL = 'https://www.lr-online.de';
-	}
+	public $portalURL = 'https://www.lr-online.de';
 
-	public function get_by_id($articleID) {
+	function __construct() {}
+
+	public function get_by_id($portal = 'LR', $articleID = null) {
+
+		if ($portal == 'MOZ') {$this->portalURL = 'https://www.moz.de';}
+		if ($portal == 'SWP') {$this->portalURL = 'https://www.swp.de';}
 
 		$url = $this->portalURL . '/' . $articleID . '?_XML=RSS';
 		$curlData = $this->curl_with_redirect($url);

@@ -8,9 +8,14 @@
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>
 
 
-<form method="post" @submit.prevent="ask" action="" ref="form" class="form-container" data-token="<?=$JWTtoken?>">
+<form method="post" @submit.prevent="ask" action="" ref="form" class="form-container">
 
 <p v-if="error" class="error-message">{{error}}</p>
+
+
+<div v-if="loading" class="fright generating hide-mobile">
+<small>Generierung abbrechen mit <b>[ESC]</b>.</small>
+</div>
 
 <?php if ($interface): ?>
 <div class="ui-header">
@@ -19,8 +24,6 @@
 </div>
 <?php endif ?>
 
-
-
 <div class="grid-2-col">
 
 	<section class="user-input">
@@ -28,13 +31,14 @@
 		<textarea v-model="input" ref="autofocusElement" class="io-textarea" :disabled="loading" placeholder="Text oder Frage eingeben"></textarea>
 		</label>
 		<button class="hide-mobile" type="submit" @click.prevent="ask" :disabled="loading">Absenden</button>
-		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chat Historie löschen</button>
+		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chatverlauf löschen</button>
 	</section>
 
 	<section class="gpt-output">
-		<label v-if="markdown" class="no-select">Ausgabe:</label>
-		<div v-if="markdown" v-html="output" class="io-textarea io-output-div" placeholder=""></div>	
-		<label v-if="!markdown">Ausgabe:
+		<div class="copy-button no-select" @click="copyOutputToClipboard">Inhalt kopieren</div>
+		<label v-if="markdown == true" class="no-select">Ausgabe:</label>
+		<div v-if="markdown == true" v-html="output" class="io-textarea io-output-div" placeholder=""></div>
+		<label v-else>Ausgabe:
 			<textarea v-model="output" class="io-textarea" placeholder=""></textarea>
 		</label>
 		<div class="fright small">
@@ -58,7 +62,8 @@
 		</tr>
 	</table>
 
-	<button class="button" type="button" @click="copyHistoryToClipboard">Historie in die Zwischenablage kopieren</button>
+	<button class="button" type="button" @click="copyHistoryToClipboard">in Zwischenablage kopieren</button>
+	&ensp;<a class="button light" target="_blank" :href="'/conversation/' + conversationID">Chatverlauf teilen</a>
 
 </details>
 
