@@ -7,13 +7,17 @@ data() {
 		action: null,
 		description: null, // Helptext in UI
 		markdown: false,
+		gpt4: false,
+		gpt4forced: false,
 		input: '',
 		output: '',
 		history: '', // Conversion History
+		historyExpanded: true,
 		conversationID: null,
 		loading: false,
 		responseSeconds: 0,
 		tokens: 0,
+		chars: 0,
 		errormessages: '',
 		loadbalancer: true,
 		stopWatchStartTime: null,
@@ -35,6 +39,8 @@ computed: {
 
 watch: {
 	history(content) {sessionStorage.history = JSON.stringify(content)},
+	historyExpanded(value) {localStorage.historyExpanded = value;},
+	gpt4(value) {localStorage.gpt4 = value;},
 	conversationID(value) {sessionStorage.conversationID = value},
 	action(value) {sessionStorage.action = value},
 	markdown(value) {sessionStorage.markdown = value},
@@ -43,7 +49,9 @@ watch: {
 mounted() {
 	this.autofocus()
 	this.getHistory()
+	this.getUserSettings()
 	this.autoSelectBox()
+	this.setPromptSettings()
 },
 
 methods: {
@@ -67,7 +75,7 @@ methods: {
 			if (options.includes(this.action)) {selectbox.value = this.action; return}
 		}		
 
-		this.action = selectbox.children[0].value			
+		this.action = selectbox.children[0].value || 'general'
 	},
 
 	resetMetaInfo() {
@@ -88,10 +96,26 @@ methods: {
 		return (Date.now() - this.stopWatchStartTime) / 1000
 	},
 
-	setDescription() {
+	setPromptSettings() {
 		if (!this.$refs.selectElement) {return ''}
+
 		let selectbox = this.$refs.selectElement
-		this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')
+		let advancedMode = false
+		if (selectbox.options[selectbox.selectedIndex]) {
+			this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')
+			advancedMode = selectbox.options[selectbox.selectedIndex].getAttribute('data-advanced') || advancedMode
+		}
+		
+		// Swaps back to 3.5 if the prompt doesnet force gpt4
+		if (this.gpt4forced) {
+			this.gpt4 = false
+			this.gpt4forced = false
+		}
+
+		if (advancedMode) {
+			this.gpt4 = true
+			this.gpt4forced = true
+		}
 	},
 
 	wipeHistory() {
@@ -105,6 +129,16 @@ methods: {
 		this.conversationID = sessionStorage.conversationID
 		this.action = sessionStorage.action
 		this.fetchConversation()
+	},
+
+	getUserSettings() {
+
+		if (localStorage.historyExpanded == 'true') {this.historyExpanded = true}
+		else {this.historyExpanded = false}
+
+		if (localStorage.gpt4 == 'true') {this.gpt4 = true}
+		else {this.gpt4 = false}
+
 	},
 
 	async fetchConversation() {
@@ -127,7 +161,8 @@ methods: {
 	},
 
 	copyOutputToClipboard() {
-		let text = document.querySelector('.gpt-output .io-textarea').innerText
+		let element = document.querySelector('.gpt-output .io-textarea')
+		let text = element.innerText || element.value
 		navigator.clipboard.writeText(text);
 	},
 
@@ -190,16 +225,19 @@ methods: {
 
 	},
 
-	async ask() {
+	async ask(event) {
 
 		this.loading = true
 		this.resetMetaInfo()
 		this.startClock()
+		let element = event.target
 
 		let formData = new FormData()
 		formData.append('question', this.input)
 		formData.append('action', this.action)
 		formData.append('conversationID', this.conversationID)
+
+		if (element.dataset.directId) {formData.append('directPromptID', element.dataset.directId)}
 
 		let response = await fetch('/ask', {method: "POST", body: formData})
 		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
@@ -219,6 +257,8 @@ methods: {
 			this.stream(this.conversationID)
 		}
 
+		this.chars = this.output.length
+
 	},
 
 
@@ -226,11 +266,14 @@ methods: {
 		this.output = ''
 		this.startClock()
 		this.markdown = false
-		
-		let apiurl = await this.bestServer()
-		console.log('Asking on :' + apiurl)		
 
-		let eventSource = new EventSource(apiurl + '/stream/' + conversionID);
+		let apiurl = await this.bestServer()
+		//console.log('Asking on :' + apiurl)
+
+		let gpt4path = ''
+		if (this.gpt4) {gpt4path = 'force4/'}
+
+		let eventSource = new EventSource(apiurl + '/stream/' + gpt4path + conversionID);
 
 		eventSource.addEventListener('message', (event) => {
 			this.output += JSON.parse(event.data)
@@ -261,6 +304,9 @@ methods: {
 		this.markdown = true		
 		marked.use({breaks: true, mangle:false, headerIds: false,});
 		this.output = marked.parse(this.output);
+		this.chars = this.output.length
+
+		Vue.nextTick(() => {hljs.highlightAll();})
 
 		this.loading = false
 		this.stopClock()
@@ -281,3 +327,30 @@ methods: {
 },
 
 }).mount('#gptInterface')
+
+
+// Darkmode
+function toggleDarkmode() {
+
+	let cssLink = document.querySelector('#dark-mode-css-link')
+	
+	if (cssLink) {
+		cssLink.remove()
+		document.cookie = 'darkmode = 0; path=/; expires=Fri, 31 Dec 1970 23:59:59 GMT'
+		return
+	}
+
+	let link = document.createElement('link')
+	link.id = 'dark-mode-css-link'
+	link.rel = 'stylesheet'
+	link.type = 'text/css'
+	link.href = '/styles/css/darkmode.css'
+	document.getElementsByTagName("head")[0].appendChild(link)
+	document.cookie = 'darkmode = 1;path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT'
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+	let colorModeIcon = document.querySelector('.color-mode')
+	if (colorModeIcon) {colorModeIcon.addEventListener('click', event => {toggleDarkmode()})}
+});
+

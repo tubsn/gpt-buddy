@@ -21,6 +21,11 @@
 	<script type="text/javascript" src="<?=$framework?>"></script>
 <?php endforeach ?>
 <?php endif ?>
+
+<?php if (isset($_COOKIE['darkmode']) && $_COOKIE['darkmode']): ?>
+	<link id="dark-mode-css-link" rel="stylesheet" type="text/css" media="all" href="/styles/css/darkmode.css" />
+<?php endif ?>
+
 </head>
 <body>
 

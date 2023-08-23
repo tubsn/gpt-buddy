@@ -3,17 +3,19 @@
 // Pages
 $routes->get('/', 'Chat@index');
 $routes->get('/faq', 'Chat@faq');
+$routes->get('/changelog', 'Chat@changelog');
+$routes->get('/engines', 'Chat@engines');
 
 // API
 $routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
 $routes->get('/stream/{id}', 'API@stream');
+$routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
 
 // Conversations
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
-$routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');
@@ -27,9 +29,14 @@ $routes->get('/import/article/{portal}/{id:\d+}', 'Import@article');
 $routes->get('/settings', 'Settings@index');
 $routes->get('/settings/new', 'Settings@new');
 $routes->post('/settings/new', 'Settings@create');
-$routes->get('/settings/{internalName}', 'Settings@edit');
-$routes->post('/settings/{internalName}', 'Settings@save');
-$routes->get('/settings/{internalName}/delete', 'Settings@delete');
+$routes->get('/settings/{id:\d+}', 'Settings@edit');
+$routes->post('/settings/{id:\d+}', 'Settings@save');
+$routes->get('/settings/{id:\d+}/delete', 'Settings@delete');
+
+// Stats
+$routes->get('/stats', 'Stats@index');
+$routes->get('/stats/month', 'Stats@monthly_stats');
+$routes->get('/stats/import', 'Stats@import_and_summarize');
 
 // Authentication Routes
 $routes->get('/login', 'Authentication@login');
@@ -51,4 +58,4 @@ $routes->get('/admin/{id:\d+}', 'Usermanagement@show');
 $routes->get('/admin/{id:\d+}/delete/{token}', 'Usermanagement@delete');
 $routes->post('/admin/{id:\d+}', 'Usermanagement@update');
 
-$routes->get('/{category}', 'Chat@index');
+$routes->get('/{category}', 'Chat@category');

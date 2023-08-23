@@ -130,12 +130,12 @@ let ChartOptions<?=$id?> = {
 		categories: <?=$dimension?>,
 		<?php if (isset($tickamount)): ?>tickAmount: <?=$tickamount?>,<?php endif; ?>
 		labels: {
-			//rotate: 0,
+			rotate: -90,
 			style: {
 				<?php if (isset($xfont)): ?>
 				fontSize: '<?=$xfont?>',
 				<?php else: ?>
-				fontSize: '16px',
+				fontSize: '12px',
 				<?php endif; ?>
 				fontFamily: 'fira sans, sans-serif',
 				fontWeight: 400,

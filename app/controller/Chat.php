@@ -4,6 +4,7 @@ namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\Auth;
 use flundr\auth\JWTAuth;
+use flundr\cache\RequestCache;
 use flundr\utility\Session;
 
 class Chat extends Controller {
@@ -11,33 +12,39 @@ class Chat extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
-		$this->view->interface = 'default';
 		$this->view->title = 'ChatGPT Assistent';
 		$this->models('ChatGPT,Conversations,Prompts,OpenAIImage');
 	}
 
-	public function index($category = null) {
+	public function index() {
+		$this->view->referer('/');
 
-		$possibleCateogries = ['translate', 'shorten', 'spelling'];
-		if ($category && !in_array($category, $possibleCateogries)) {throw new \Exception("Page not Found", 404);}
+		$categorySettings = CATEGORIES[strtolower(PORTAL)];
+		$categorySettings['directActions'] = ['53|Einfach Plaudern...'];
+		$this->view->category = $categorySettings;
 
-		if ($category == 'translate') {
-			$this->view->title = 'Übersetzer';
-			$this->view->interface = 'translate';
-		}
+		$generalPrompts = $this->Prompts->category('alle');		
+		$portalPrompts = $this->Prompts->category(strtolower(PORTAL));
 
-		if ($category == 'shorten') {
-			$this->view->title = 'Textlängen Anpassesn';
-			$this->view->interface = 'shorten';
-		}
+		$this->view->prompts = array_merge($generalPrompts, $portalPrompts);
 
-		if ($category == 'spelling') {
-			$this->view->title = 'Rechtschreibung Korrigieren';
-			$this->view->interface = 'spelling';
-		}
-
-		$this->view->prompts = $this->Prompts->list(1); // true hides Inactive Prompts
+		$this->view->title = 'ChatGPT Assistent';
 		$this->view->render('chat');
+	}
+
+	public function category($category) {
+		
+		$this->view->referer('/' . $category);
+
+		$category = strtolower($category);
+		if (!in_array($category, array_keys(CATEGORIES))) {throw new \Exception("Page not Found", 404);}
+
+		$this->view->category = CATEGORIES[$category];
+		$this->view->title = CATEGORIES[$category]['title'] ?? 'ChatGPT Assistent';
+		
+		$this->view->prompts = $this->Prompts->category($category);
+		$this->view->render('chat');
+
 	}
 
 	public function faq() {
@@ -45,11 +52,35 @@ class Chat extends Controller {
 		$this->view->render('faq');
 	}
 
+	public function changelog() {
+		$this->view->funfact = $this->fun_fact();		
+		$this->view->title = 'Changelog';
+		$this->view->render('changelog');
+	}
+
+	public function engines() {
+		$engines = $this->ChatGPT->list_engines();
+		dd($engines);
+	}
+
+	public function fun_fact() {
+		$cache = new RequestCache('funfact', 60*60);
+		$funfact = $cache->get();
+		if (empty($funfact)) {
+			$date = date('d.F');
+			$question = 'Mach lustigen Witz zum heutigen Tag ('.$date.'). Maximal 30 Wörter. Orientiere dich am Humor von Dave Chappelle. Themenbereich Naturwissenschaft';
+			$funfact = $this->ChatGPT->direct($question);
+			$cache->save($funfact);
+		}
+
+		return $funfact;
+	}
+
 	public function ask() {
 		$question = $_POST['question'] ?? null;
 		$options['promptID'] = $_POST['action'] ?? null;
+		$options['directPromptID'] = $_POST['directPromptID'] ?? null;
 		$options['conversationID'] = $_POST['conversationID'] ?? null;
-
 		$response = $this->ChatGPT->ask($question, $options);
 		$this->view->json($response); // contains ConversionID
 	}
@@ -75,14 +106,14 @@ class Chat extends Controller {
 	}
 
 	public function show_conversation($id) {
-		$conversation = $this->Conversations->get($id);
+		$conversation = $this->Conversations->get_with_markdown($id);
 		if (empty($conversation)) {throw new \Exception("Conversation not Found", 404);}
 
 		$meta = $this->Conversations->get_meta($id);
 
 		$this->view->templates['header'] = null;
 
-		$this->view->title = 'Chat vom ' . date('d.m.Y H:i', $meta['edited']) . 'Uhr';
+		$this->view->title = 'Chat vom ' . date('d.m.Y H:i', $meta['edited']) . '&thinsp;Uhr';
 		$this->view->conversation = $conversation;
 		$this->view->render('conversation');
 	}

@@ -12,7 +12,10 @@ class API extends Controller {
 		header('Access-Control-Allow-Origin: *');		
 	}
 
-	public function stream($id) {
+	public function stream($id, $force4 = false) {
+
+		if ($force4) {$this->ChatGPT->forceGPT4 = true;}
+
 		$maxElapsedSeconds = 10;
 		$conversationMeta = $this->Conversations->get_meta($id);
 		if (!$conversationMeta) {throw new \Exception("Conversation not Found", 400);}
@@ -21,6 +24,10 @@ class API extends Controller {
 		header('Content-type: text/event-stream');
 		header('Cache-Control: no-cache');
 		$response = $this->ChatGPT->stream($id);
+	}
+
+	public function stream_force_gpt4($id) {
+		$this->stream($id, true);
 	}
 
 	public function ping() {echo 'pong';}

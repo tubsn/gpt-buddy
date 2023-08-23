@@ -43,7 +43,7 @@ class LiveTickerAdapter
 			return strip_tags($item);
 		}, $content);
 
-		$content = array_slice($content, 0, 50);
+		//$content = array_slice($content, 0, 50);
 
 		$content = array_reverse($content);
 		array_unshift($content, $infotext);

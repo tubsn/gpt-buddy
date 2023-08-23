@@ -15,7 +15,7 @@ class Import extends Controller {
 
 	public function article($portal, $id) {
 
-		$data = $this->RSS_Adapter->get_by_id($portal, $id);
+		$data = $this->RSS_Adapter->get_by_id($id);
 
 		if (is_null($data)) {
 			$this->view->json(['content' => 'keine Artikeldaten gefunden']);

@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 // Pathing
 define('ROOT', dirname(__DIR__,2) . DIRECTORY_SEPARATOR);
 define('APP', ROOT . 'app' . DIRECTORY_SEPARATOR);
-define('ENV_PATH', ROOT . '.env');
 define('CONFIGPATH', APP . 'config' . DIRECTORY_SEPARATOR);
 define('ROUTEFILE', CONFIGPATH . 'routes.php');
 define('TEMPLATES', APP . 'templates' . DIRECTORY_SEPARATOR);
@@ -19,6 +18,17 @@ define('PAGEURL', (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[H
 define('CONTROLLER_NAMESPACE', '\app\controller\\');
 define('MODEL_NAMESPACE', '\app\models\\');
 define('VIEW_NAMESPACE', '\app\views\\');
+
+define('ENV_PATH', ROOT . '.env');
+
+$subdomain = explode('.', $_SERVER['HTTP_HOST'])[0] ?? 'LR';
+switch ($subdomain) {
+	case 'chat-moz': define('PORTAL', 'MOZ'); break;
+	case 'chat-swp': define('PORTAL', 'SWP'); break;
+	case 'chat-kse': define('PORTAL', 'KSE'); break;
+	case 'chat-test': define('PORTAL', 'TEST'); break;	
+	default: define('PORTAL', 'LR'); break;
+}
 
 // Load Environment Config
 include_once ENV_PATH;

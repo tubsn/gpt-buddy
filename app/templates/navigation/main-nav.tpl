@@ -2,40 +2,47 @@
 
 <nav class="main-nav">
 	<ul>
-		<li class="app-logo-li"><a href="/"><?=APP_NAME?></a>
-			<!--<ul class="dropdown" aria-label="submenu">
-				<li><a target="_blank" href="https://chat.openai.com/">ChatGPT Aufrufen</a></li>
-			</ul>-->
+		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a>
+		<!--
+			<ul class="dropdown" aria-label="submenu">
+				<li><a href="/changelog">Neuigkeiten</a></li>
+				<li><a href="/stats">Statistiken</a></li>
+				<li><a href="/faq">KI Hinweise</a></li>				
+			</ul>
+		-->
 		</li>
 
-		<li class="hide-mobile"><a href="/">Assistent</a></li>
-		<li class="hide-mobile"><a href="/spelling">Rechtschreibung</a></li>
-		<li class="hide-mobile"><a href="/shorten">Textlängen</a></li>
-		<li class="hide-mobile"><a href="/translate">Übersetzer</a></li>
+		<?php if (PORTAL == 'SWP'): ?>
+		<?php include(tpl('navigation/nav-swp'));?>
+		
+		<?php else: ?>
+		<?php include(tpl('navigation/nav-lr'));?>
+		<?php endif ?>
+
+		<?php if (logged_in()): ?>
+		<!--<li class="hide-mobile"><a href="/user">Meine Prompts</a></li>-->
+		<?php endif ?>
+
 		<li class="hide-mobile"><a href="/image">Bildgenerator</a></li>
-		<!--<li class="hide-mobile"><a href="/image">Bildertest</a></li>-->
 
 	</ul>
 
 	<ul>
-		<!--
-		<li>
-			<form class="searchbox" method="get" action="/search">
-				<input type="text" name="q" placeholder="Suchen..." value="<?=$query ?? ''?>">
-				<button type="submit"></button>
-			</form>
+
+		<li class="color-mode" title="Light-/Darkmode">
+			<span id="dark-mode">☾</span> 
+			<span style="opacity:0.4">/</span>
+			<span id="light-mode">☼</span> 
+			&ensp;
 		</li>
-		-->
-		<li  class="hide-mobile"><a href="/faq">Hinweise zum Umgang mit KI</a></li>
+
+		<li class="hide-mobile"><a href="/faq">KI-Leitfaden</a></li>
 
 		<?php if (auth_rights('chatgpt')): ?>
 		<li><a href="/settings">Konfiguration</a></li>
 		<?php endif; ?>
 
-		<?php if (auth('level') == 'Admin'): ?>
-		<li><a href="/admin" title="Einstellungen">Admin</a>
-		</li>
-		<?php endif; ?>
+
 
 
 		<li class="login-icon">
@@ -48,6 +55,17 @@
 					C14.956,12.283,10.958,11.166,10.954,11.163"/>
 				</svg>
 			</a>
+
+			<?php if (auth('level') == 'Admin'): ?>
+			<ul class="dropdown rightmenu" aria-label="submenu">
+				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a>
+				<?php if (auth('id') == 7): ?>
+				<li><a href="https://chatapi3.lr-digital.de/stats/import">Import Stats</a></li>				
+				<?php endif ?>
+				</li>
+			</ul>
+			<?php endif; ?>			
+
 		</li>
 
 	</ul>

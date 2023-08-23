@@ -15,7 +15,7 @@
 		<?php endforeach ?>
 	</table>
 
-	<table class="fancy" style="font-size:1em">
+	<table class="fancy conversation-list" style="font-size:1em">
 		<tr>
 			<th>Day</th>
 			<th>Time</th>

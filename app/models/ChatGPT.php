@@ -17,8 +17,17 @@ class ChatGPT
 	private $prompts;
 	private $conversations;
 
+	public $models = [
+		'default' => 'gpt-3.5-turbo',
+		'16k' => 'gpt-3.5-turbo-16k',
+		'gpt4' => 'gpt-4',
+	];
+
+	public $forceGPT4 = false;
+
 	public $conversationID;
 	public $promptID;
+	public $directPromptID;
 	public $error;
 	
 	public $conversation = []; // Message History
@@ -48,6 +57,7 @@ class ChatGPT
 
 	private function config($options = null) {
 		if (!$options) {return;}
+		if ($options['directPromptID']) {$this->directPromptID = $options['directPromptID']; return;}
 		if ($options['conversationID'] && !empty($options['conversationID'])) {$this->conversationID = $options['conversationID'];}
 		if ($options['promptID']) {$this->promptID = $options['promptID'];}
 	}
@@ -55,14 +65,20 @@ class ChatGPT
 
 	private function fetch($question) {
 
+		if ($this->directPromptID) {
+			$prompt = $this->prompts->get_and_track($this->directPromptID);
+			if ($prompt) {$question = $prompt['content'];}
+		}
+
 		if (empty($question)) {$this->error = 'Keine Frage übermittelt'; return;}
+
 		if ($this->conversationID) {
 			$this->conversation = $this->conversations->get($this->conversationID) ?? [];
 			if (empty($this->conversation)) {$this->conversationID = null;}
 		}
 
 		if (!$this->conversationID && $this->promptID) {
-			$prompt = $this->prompts->get_and_track(urlencode($this->promptID)); // URL Encode noch ins Model!
+			$prompt = $this->prompts->get_and_track($this->promptID);
 			if ($prompt) {$this->add($prompt['content'], 'system');}
 			if (isset($prompt['markdown']) && $prompt['markdown']) {
 				$this->add('Nutze ab jetzt Markdown für Formatierungen vorallem Überschriften und Fettungen!', 'system');
@@ -87,24 +103,85 @@ class ChatGPT
 		$this->conversationID = $this->conversations->save($this->conversation);
 	}
 
+	public function list_engines() {
+
+		$open_ai = new OpenAi(CHATGPTKEY);
+		return $open_ai->engines();
+
+	}
+
+	// Direct GPT Question with Static Response as Json
+	public function direct($question, $restrictTokens = false) {
+
+		$this->add($question);
+		$model = $this->models['default'];
+
+		$conversationTokens = $this->count_tokens($this->conversation);
+		$maxTokens = 4096 - $conversationTokens - 50;
+
+		if ($conversationTokens > 3700) {
+			$model = $this->models['16k'];
+			$maxTokens = 16384 - $conversationTokens - 50;
+		}
+
+		if ($this->forceGPT4) {
+			$model = $this->models['gpt4'];
+			$maxTokens = 8096 - $conversationTokens - 50;
+		}
+
+		if ($maxTokens < 1) {
+			$this->error_to_stream('Die Anfrage beinhaltet zu viele Tokens! (8096 mit GPT4 bzw. 16384 mit GPT3.5). Löschen sie gegebenenfalls ihre Historie.');
+		}
+
+		$open_ai = new OpenAi(CHATGPTKEY);
+		$chat = $open_ai->chat([
+			'model' => $model,
+			'messages' => $this->conversation,
+			'temperature' => 0.7,
+			'max_tokens' => $maxTokens,
+			'frequency_penalty' => 0,
+			'presence_penalty' => 0,
+		]);
+
+		$chat = json_decode($chat); // response is in Json
+		if (isset($chat->error->message)) {throw new \Exception("Direct GPT-API Error: " . $chat->error->message, 400);}
+		return $chat->choices[0]->message->content;
+
+	}
+
+
+
+	// Streamed GPT Response
 	public function stream($id) {
 
 		$this->conversationID = $id;
+		$model = $this->models['default'];
 
 		$conversation = $this->conversations->get($id);
 		$this->conversation = $conversation;
 
-		$maxTokens = 4096 - $this->count_tokens($conversation) - 50;
-		
+		$conversationTokens = $this->count_tokens($conversation);
+		$maxTokens = 4096 - $conversationTokens - 50;
+
+		if ($conversationTokens > 3700) {
+			$model = $this->models['16k'];
+			$maxTokens = 16384 - $conversationTokens - 50;
+		}
+
+		if ($this->forceGPT4) {
+			$model = $this->models['gpt4'];
+			$maxTokens = 8096 - $conversationTokens - 50;
+		}
+
 		if ($maxTokens < 1) {
-			$this->error_to_stream('Anfrage beinhaltet zu viele Tokens! Maximal 4096');
+			$this->error_to_stream('Die Anfrage beinhaltet zu viele Tokens! (8096 mit GPT4 bzw. 16384 mit GPT3.5). Löschen sie gegebenenfalls ihre Historie.');
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 		$options = [
-			'model' => 'gpt-3.5-turbo',
+			'model' => $model,
 			'messages' => $conversation,
-			'temperature' => 1.0,
+			'temperature' => 0.7,
 			'max_tokens' => $maxTokens,
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
@@ -113,7 +190,7 @@ class ChatGPT
 
 		$open_ai->chat($options, function ($curl_info, $data) {
 			//Log::write($data);
-			if ($this->handle_GPT_Api_errors($data)) {return 0;}
+			if ($this->handle_GPT_Stream_Api_errors($data)) {return 0;}
 			$this->handle_stream_set($data);
 			return strlen($data);
 		});
@@ -124,7 +201,7 @@ class ChatGPT
 
 	}
 
-	private function handle_GPT_Api_errors($raw) {
+	private function handle_GPT_Stream_Api_errors($raw) {
 		$json = json_decode($raw);
 		if (!isset($json->error->message)) {return false;}
 

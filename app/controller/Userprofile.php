@@ -3,19 +3,13 @@
 namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\Auth;
-use \app\models\AphexChart;
 
-class Settings extends Controller {
+class Userprofile extends Controller {
 
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 
-		if (!Auth::has_right('chatgpt')) {
-			throw new \Exception("Sie haben keine Berechtigung diese Seite aufzurufen", 403);
-		}
-
 		$this->view('DefaultLayout');
-		$this->view->title = 'Settings';
 		$this->models('Prompts');
 	}
 
@@ -28,44 +22,7 @@ class Settings extends Controller {
 
 		$this->view->categories = $categories;
 
-		/*
-		if ($prompts) {
-			$prompts = array_map(function($prompt) {
-				if (!isset($prompt['hits'])) {$prompt['hits'] = 0;}
-				$prompt['title'] = substr($prompt['title'],0,33);
-			return $prompt;
-			}, $prompts);
-
-			// Votes
-			$chart = new AphexChart();
-			$chart->metric = array_column($prompts,'hits');
-			$chart->dimension = array_column($prompts,'title');
-			$chart->color = '#1d5e55';
-			$chart->height = 400;
-			$chart->xfont = '12px';
-			$chart->legend = 'top';
-			$chart->name = 'Prompt Nutzung';
-			$chart->template = 'charts/default_bar_chart';
-
-			$this->view->usageChart = $chart->create();
-		}
-		*/
-
-		$stats = $this->Prompts->most_hits();
-		$chart = new AphexChart();
-		$chart->metric = array_column($stats,'hits');
-		$chart->dimension = array_column($stats,'title');
-		$chart->color = '#1d5e55';
-		$chart->height = 400;
-		$chart->xfont = '12px';
-		$chart->legend = 'top';
-		$chart->name = 'Prompt Nutzung';
-		$chart->template = 'charts/default_bar_chart';
-
-		$this->view->usageChart = $chart->create();
-
-
-		$this->view->referer('/settings');
+			$this->view->referer('/settings');
 		$this->view->render('admin/settings');
 	}
 
@@ -83,7 +40,6 @@ class Settings extends Controller {
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');		
 		$this->view->categories = $categories;
-		$this->view->selectedCategory = $_GET['category'] ?? null;
 		$this->view->render('admin/new-prompt');
 	}
 

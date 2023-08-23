@@ -42,7 +42,7 @@ let ChartOptions<?=$id?> = {
           }
         },
         xaxis: {
-          categories: <?=$dimension?>
+          categories: <?=$dimension?>,
 			<?php if (isset($prefix)): ?>
 			formatter: function (value) {
 				return '<?=$prefix?>' + value;
@@ -53,6 +53,19 @@ let ChartOptions<?=$id?> = {
 				return value + '<?=$suffix?>';
 			},
 			<?php endif; ?>
+
+      labels: {
+        style: {
+          <?php if (isset($xfont)): ?>
+          fontSize: '<?=$xfont?>',
+          <?php else: ?>
+          fontSize: '10px',
+          <?php endif; ?>
+          fontFamily: 'fira sans, sans-serif',
+          fontWeight: 200,
+        },
+      },
+
         },
         yaxis: {
           tickAmount: 7,

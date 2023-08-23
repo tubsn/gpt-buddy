@@ -10,18 +10,19 @@ class DefaultLayout extends htmlView {
 
 	public $title = APP_NAME;
 	public $description = 'ChatGPT - Redaktions Tools';
-	public $css = ['/styles/flundr/css/defaults.css', '/styles/css/main.css'];
+	public $css = ['/styles/flundr/css/defaults.css', '/styles/css/main.css', '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css'];
 	public $fonts = 'https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,600|Fira+Sans+Condensed:400,600';
 	public $js = '/styles/js/main.js';
 	public $framework = [
 		'https://unpkg.com/vue@3/dist/vue.global.prod.js',
 		'/styles/flundr/components/fl-dialog.js',
-		'/styles/js/marked.min.js'
+		'/styles/js/marked.min.js',
+		'//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js',
 	];
 	public $meta = [
 		'author' => 'flundr',
 		'robots' => 'index, follow',
-		'favicon' => '/styles/flundr/img/flundr-logo.svg',
+		'favicon' => '/styles/img/ai-buddy-favicon.svg',
 	];
 
 	// You can add some "default" Variables to the Template
@@ -41,7 +42,7 @@ class DefaultLayout extends htmlView {
 		'tinyhead' => 'layout/html-doc-header',
 		'header' => 'navigation/main-nav',
 		'main' => null,
-		'footer' => null,
+		'footer' => 'navigation/footer',
 		'tinyfoot' => 'layout/html-doc-footer',
 	];
 

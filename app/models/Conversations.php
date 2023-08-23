@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+use League\CommonMark\CommonMarkConverter;
 
 class Conversations
 {
@@ -18,6 +19,24 @@ class Conversations
 		if (!file_exists($filename)) {return null;}
 			$data = file_get_contents($filename);
 		return $this->decode_and_validate($data);
+	}
+
+	public function get_with_markdown($id) {
+
+		$conversation = $this->get($id);
+
+		$converter = new CommonMarkConverter();
+		foreach ($conversation as $key => $message) {
+			$conversation[$key]['content'] = $converter->convert($message['content']);
+		}
+		
+		return $conversation;
+
+	}
+
+	public function get_excerpt($id) {
+		$conversation = $this->get($id);
+		return $conversation;
 	}
 
 	public function get_meta($id) {
@@ -42,25 +61,6 @@ class Conversations
 		usort($conversations, function($a, $b) {
 			return $b['edited'] <=> $a['edited'];
 		});
-		
-		//dd($conversations);
-
-
-		// usort( $files, function( $a, $b ) { return filemtime($this->path . $b) - filemtime($this->path . $a); } );
-
-
-		/*
-		$conversations = [];
-		foreach ($files as $filename) {
-			$conversations[$filename] = $this->get($filename);
-		}
-		*/
-
-		/*
-		uasort($settings, function($a, $b) {
-			return $a['name'] <=> $b['name'];
-		});
-		*/
 
 		return $conversations;
 
@@ -102,7 +102,8 @@ class Conversations
 		$data = array_filter($data, function($set) {
 			if (empty($set['content'])) {return false;}
 			return $set;
-		});	
+		});
+
 		return $data;
 	}
 
