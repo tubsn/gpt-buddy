@@ -9,7 +9,7 @@
 		<li><a href="/pr">PR-Service</a></li>	
 		<li><a href="/horoskope">Horoskope</a></li>
 		<li><a href="/planbar">Planbar</a></li>
-		<li><a href="/coding">Coding</a></li>
+		<li><a href="/coding">Webentwicklung</a></li>
 	</ul>
 </li>
 
@@ -17,6 +17,7 @@
 	<ul class="dropdown" aria-label="submenu">
 		<li><a href="/sport">Sportredaktion</a></li>				
 		<li><a href="/social">Social Media</a></li>				
+		<li><a href="/tests">Tests</a></li>
 	</ul>
 </li>
 

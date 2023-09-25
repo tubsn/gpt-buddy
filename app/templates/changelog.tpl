@@ -14,6 +14,12 @@
 <h1>Ai-Buddy Changelog und Roadmap</h1>
 <hr>
 
+<h3>14. September 2023 - Datei - Upload</h3>
+<p>Über den Button Datei hinzufügen lassen sich jetzt Dateien importieren um beispielsweise PDF-Pressemitteilungen schneller einfügen zu können. Aktuell werden PDF, HTML und Textdateien erkannt.</p>
+
+<h3>06. September 2023 - Direktlink für Prompts</h3>
+<p>Es lassen sich jetzt gezielt Prompts über einen Direktlink "anspringen", sodass man Kollegen per Link dort hin verweisen kann. Dazu aktualisiert sich der Link in der Browseradresszeile  automatisch wenn man einen Prompt auswählt.</p>
+
 <h3>26. Juli 2023 - GPT-4 Verfügbar</h3>
 <p>Seit heute steht für unseren OpenAI Account die Nutzung von GPT-4 zur Verfügung. Das Modell bietet verbesserte Verarbeitungskapazitäten und generell besseres Verständnis für komplexere Aufgaben.</p>
 <p>Das GPT-4 Modell lässt sich individuell per Checkbox an- und abschalten. Als Standard ist weiterhin GPT-3.5-Turbo hinterlegt.</p>

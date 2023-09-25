@@ -75,8 +75,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <div class="chartbox">
+<?=$usageChartgrouped?>
+</div>
+
+
+<div class="chartbox">
 <?=$usageChart?>
 </div>
+
 
 
 </main>

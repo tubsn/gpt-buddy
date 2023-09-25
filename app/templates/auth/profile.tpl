@@ -50,7 +50,7 @@
 	</details>
 	<?php endif; ?>
 
-	<a class="button" href="/profile/edit/">Benutzer bearbeiten</a>
+	<a class="button" href="/profile/edit">Benutzer bearbeiten</a>
 	&ensp;<a class="button light" href="/logout">Benutzer ausloggen</a>
 
 </main>

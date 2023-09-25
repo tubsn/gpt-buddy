@@ -10,7 +10,7 @@ class Import extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
-		$this->models('Scrape,RSS_Adapter,LiveTickerAdapter');
+		$this->models('Scrape,RSS_Adapter,LiveTickerAdapter,FileReader');
 	}
 
 	public function article($portal, $id) {
@@ -44,5 +44,13 @@ class Import extends Controller {
 		$this->view->json($ticker);
 	}
 
+	public function pdf() {
+		$this->view->render('upload');
+	}
+
+	public function file_upload() {
+		$output = $this->FileReader->import($_FILES['file']);
+		echo $output;
+	}
 
 }

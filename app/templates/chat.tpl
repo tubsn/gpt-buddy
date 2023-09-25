@@ -1,16 +1,16 @@
 <main v-cloak id="gptInterface">
 
+<?php if (PORTAL == 'LR' || PORTAL == 'MOZ'): ?>
 <!--
 <div class="fun-fact hide-mobile">
-<b>Buddy-News:</b> ...
+<b>Buddy-News:</b>
+- für GPT4 stehen uns zur Zeit 3 Anfragen/Minute zur Verfügung. Erscheint eine Fehlermeldung, dass zuviele Anfragen gestartet wurden am besten GPT4 deaktivieren und erneut versuchen.<br>
+<b>Der AI Buddy sucht einen Namen</b> - <a href="/name">Hier mitmachen</a>
 </div>
 -->
+<?php endif ?>
 
 <h1><?=APP_NAME?> | <?=$page['title']?></h1>
-
-<!--
-<p><span style="font-weight:bold; color:#b00;">Testweise wurde das neue GPT-4 Modell aktiviert. Antworten dauern heute etwas länger.</span></p>
--->
 
 <p v-if="description" v-html="'Hinweis: ' + description"></p>
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>
@@ -21,7 +21,7 @@
 
 <div class="ui-header">
 	<div class="options">
-		<label>Anfrage Typ:	
+		<label>Prompt auswählen:	
 		<?php if (auth_rights('chatgpt')): ?><a v-if="!isNaN(action)" :href="'/settings/'+action">(Prompt editieren)</a><?php endif ?>
 
 		<select v-model="action" ref="selectElement" name="action" @change="wipeHistory(); setPromptSettings();">
@@ -39,11 +39,10 @@
 		</label>
 
 		<?php if ($category['articleImport'] ?? false): ?>
-		<label class="hide-mobile">Artikel importieren:
-			<input type="text" @input="importArticle" placeholder="ID oder URL eintragen">
+		<label class="hide-mobile">Importieren:
+			<input type="text" @input="importArticle" placeholder="Artikel URL eintragen">
 		</label>
-		<?php endif ?>	
-
+		<?php endif ?>
 	</div>
 
 
@@ -54,7 +53,7 @@
 	<label>direkt Aktionen:</label>
 	<div class="button-group small mtsmall">
 	<?php foreach ($directPrompts as $prompt): ?>
-		<button class="light" @click.prevent="ask" data-direct-id="<?=$prompt['id']?>"><?=$prompt['title']?></button> 
+		<button type="button" class="light" @click.prevent="ask" data-direct-id="<?=$prompt['id']?>"><?=$prompt['title']?></button> 
 	<?php endforeach ?>
 	</div>
 	<?php endif ?>
@@ -75,15 +74,18 @@
 <div class="grid-2-col">
 
 	<section class="user-input">
+		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()">Datei einfügen (Word,PDF,Excel,Text)</div>
+		<input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
+
 		<label>Eingabe:
 		<textarea v-model="input" ref="autofocusElement" class="io-textarea" :disabled="loading" placeholder="Text oder Frage eingeben - Anweisungen werden im Verlauf gespeichert und müssen nicht mehrmals übergeben werden"></textarea>
 		</label>
 		<button type="submit" @click.prevent="ask" :disabled="loading">Absenden</button>
-		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Neuer Chat <small>(Verlauf löschen)</small></button>
+		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory(),wipeInput()" :disabled="loading">Neuer Chat <small>(Verlauf löschen)</small></button>
 	</section>
 
 	<section class="gpt-output">
-		<div v-if="output" class="copy-button no-select" @click="copyOutputToClipboard">Text kopieren</div>
+		<div class="copy-button no-select" @click="copyOutputToClipboard">Text kopieren</div>
 		<label v-if="markdown == true" class="no-select">Ausgabe:</label>
 		<div v-if="markdown == true" v-html="output" class="io-textarea io-output-div" placeholder=""></div>
 		<label v-else>Ausgabe:

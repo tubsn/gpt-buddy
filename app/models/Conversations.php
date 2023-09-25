@@ -86,6 +86,13 @@ class Conversations
 		unlink($filename);
 	}
 
+	public function delete_all_conversations() {
+		$files = glob($this->path . '*');
+		foreach ($files as $file) {
+			if (is_file($file)) {unlink($file);}
+		}
+	}
+
 	public function remove_last_entry($id) {
 		$data = $this->get($id);
 		array_pop($data);

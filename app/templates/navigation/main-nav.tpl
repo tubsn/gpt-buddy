@@ -2,19 +2,10 @@
 
 <nav class="main-nav">
 	<ul>
-		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a>
-		<!--
-			<ul class="dropdown" aria-label="submenu">
-				<li><a href="/changelog">Neuigkeiten</a></li>
-				<li><a href="/stats">Statistiken</a></li>
-				<li><a href="/faq">KI Hinweise</a></li>				
-			</ul>
-		-->
-		</li>
+		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a></li>
 
 		<?php if (PORTAL == 'SWP'): ?>
 		<?php include(tpl('navigation/nav-swp'));?>
-		
 		<?php else: ?>
 		<?php include(tpl('navigation/nav-lr'));?>
 		<?php endif ?>
@@ -30,6 +21,7 @@
 	<ul>
 
 		<li class="color-mode" title="Light-/Darkmode">
+			&ensp;
 			<span id="dark-mode">☾</span> 
 			<span style="opacity:0.4">/</span>
 			<span id="light-mode">☼</span> 
@@ -41,7 +33,6 @@
 		<?php if (auth_rights('chatgpt')): ?>
 		<li><a href="/settings">Konfiguration</a></li>
 		<?php endif; ?>
-
 
 
 
@@ -58,11 +49,8 @@
 
 			<?php if (auth('level') == 'Admin'): ?>
 			<ul class="dropdown rightmenu" aria-label="submenu">
-				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a>
-				<?php if (auth('id') == 7): ?>
-				<li><a href="https://chatapi3.lr-digital.de/stats/import">Import Stats</a></li>				
-				<?php endif ?>
-				</li>
+				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a></li>
+				<li><a href="/stats/import">Import Stats</a></li>				
 			</ul>
 			<?php endif; ?>			
 

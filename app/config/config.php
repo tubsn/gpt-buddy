@@ -20,7 +20,8 @@ define('CATEGORIES', [
 	'kse'			=> ['title' => 'Kundenservice und Event'],
 	'pr'			=> ['title' => 'PR-Service'],
 	'social'		=> ['title' => 'Social Media', 'articleImport' => true],
-	'coding'		=> ['title' => 'Webentwicklung', 'promptless' => true],
+	'coding'		=> ['title' => 'Webentwicklung', 'hideDefault' => true],
+	'tests'			=> ['title' => 'Testprompts', 'promptless' => true, 'articleImport' => true],
 
 	'translate'		=> ['title' => 'Übersetzer', 'hideDefault' => true],
 	'shorten'		=> ['title' => 'Textlängen Anpasssen', 'hideDefault' => true],

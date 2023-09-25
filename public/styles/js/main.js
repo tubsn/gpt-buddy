@@ -19,8 +19,9 @@ data() {
 		tokens: 0,
 		chars: 0,
 		errormessages: '',
-		loadbalancer: true,
 		stopWatchStartTime: null,
+		loadbalancer: false, // Activate if using multiple Api Keys or PHP instances
+		availableServers: ['//chatapi1.lr-digital.de','//chatapi2.lr-digital.de','//chatapi3.lr-digital.de'],
 	}
 },
 
@@ -52,6 +53,7 @@ mounted() {
 	this.getUserSettings()
 	this.autoSelectBox()
 	this.setPromptSettings()
+	this.preselectActionByHash()
 },
 
 methods: {
@@ -77,6 +79,50 @@ methods: {
 
 		this.action = selectbox.children[0].value || 'general'
 	},
+
+	preselectActionByHash() {
+
+		if (!this.$refs.selectElement) {return}
+		let selectbox = this.$refs.selectElement
+		
+		Vue.nextTick(() => {
+			if (location.hash) {
+				let hash = decodeURI(location.hash.substr(1))
+				let options = [...selectbox].map(el => el.value);
+				if (options.includes(hash)) {selectbox.value = hash}
+			}
+		})
+
+	},
+
+
+	uploadFile(event) {
+		let file = event.target.files[0]
+
+		this.loading = true
+
+		console.log(this.loading)
+
+		let formData = new FormData();
+		formData.append('file', file);
+
+		fetch('/import/file', {
+			method: 'POST',
+			body: formData
+		})
+
+		.then(response => response.text())
+		.then(data => {
+			this.input = data
+			this.loading = false
+		})
+		.catch(error => {
+			console.error(error)
+			this.loading = false
+		});
+
+	},
+
 
 	resetMetaInfo() {
 		this.responseSeconds = 0
@@ -104,6 +150,10 @@ methods: {
 		if (selectbox.options[selectbox.selectedIndex]) {
 			this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')
 			advancedMode = selectbox.options[selectbox.selectedIndex].getAttribute('data-advanced') || advancedMode
+			if (selectbox.value != 'default') {
+				window.location.hash = selectbox.value;	
+			}
+			
 		}
 		
 		// Swaps back to 3.5 if the prompt doesnet force gpt4
@@ -112,11 +162,16 @@ methods: {
 			this.gpt4forced = false
 		}
 
-		if (advancedMode) {
+		if (advancedMode == true) {
 			this.gpt4 = true
 			this.gpt4forced = true
 		}
+
+
+
 	},
+
+	wipeInput() {this.input = ''},
 
 	wipeHistory() {
 		this.history = ''
@@ -169,7 +224,7 @@ methods: {
 
 	async bestServer() {
 		if (!this.loadbalancer) {return ''}
-		let servers = ['//chatapi1.lr-digital.de','//chatapi2.lr-digital.de','//chatapi3.lr-digital.de']
+		let servers = this.availableServers
 		let availableServer = false
 
 		for (let server of servers) {
@@ -204,6 +259,8 @@ methods: {
 
 
 	async importArticle(event) {
+
+		this.loading = true
 		let value = event.target.value || null;
 		if (!value) {this.input = ''; return}
 
@@ -220,8 +277,8 @@ methods: {
 
 		let json = await response.json()
 		.catch(error => {this.input = error; return})
-
 		this.input = json.content
+		this.loading = false
 
 	},
 
@@ -301,6 +358,8 @@ methods: {
 	stopStream(stream) {
 		stream.close()
 
+		//if (this.isOutputUrl() == true) {window.open(this.output, '_blank')}
+
 		this.markdown = true		
 		marked.use({breaks: true, mangle:false, headerIds: false,});
 		this.output = marked.parse(this.output);
@@ -311,6 +370,11 @@ methods: {
 		this.loading = false
 		this.stopClock()
 		this.autofocus()
+	},
+
+	isOutputUrl() {
+		try { return Boolean(new URL(this.output)) }
+		catch(e){ return false }
 	},
 
 	async removeLastHistoryEntry() {

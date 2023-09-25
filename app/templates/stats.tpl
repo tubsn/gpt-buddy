@@ -23,18 +23,17 @@
 <b>Unterhaltung:</b> Plaudern, Witze erzählen oder Zeit vertreiben.<br>
 </p>
 
-<figure class="chartbox">
-<?=$monthlyChart?>
-</figure>
-
 
 </div>
 
 </figure>
 
 
-<figure class="chartbox">
+<figure class="chartbox grid-2-1">
+
 <?=$dailyChart?>
+<?=$monthlyChart?>
+
 </figure>
 
 

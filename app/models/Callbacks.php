@@ -19,6 +19,10 @@ class Callbacks
 			return $this->wyld_marketingplan($prompt);
 		}
 
+		if ($callback == 'article-scores') {
+			return $this->compare_article_scores($prompt);
+		}
+
 		if ($callback == 'current-date') {return $this->current_date($prompt);}
 		if ($callback == 'current-time') {return $this->current_time($prompt);}
 
@@ -28,6 +32,17 @@ class Callbacks
 	private function wyld_marketingplan($prompt) {
 
 		$rssData = $this->curl('https://wyld.lr-digital.de/api/booked');
+		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
+
+		return $prompt;
+
+	}
+
+	private function compare_article_scores($prompt) {
+
+		if (PORTAL == 'MOZ') {$rssData = $this->curl('https://reports-moz.lr-digital.de/export/articles/score');}
+		if (PORTAL == 'SWP') {$rssData = $this->curl('https://reports-swp.lr-digital.de/export/articles/score');}
+		else {$rssData = $this->curl('https://reports.lr-digital.de/export/articles/score');}
 		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
 
 		return $prompt;

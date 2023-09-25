@@ -78,6 +78,14 @@ class Prompts extends Model
 		return $output;
 	}
 
+	public function most_hits_by_type() {
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("SELECT sum(hits) as hits, category FROM $table WHERE hits >= 10 GROUP BY category ORDER BY hits DESC");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchall();
+		return $output;
+	}
+
 
 	public function apply_callback($prompt) {
 		if (!isset($prompt['callback'])) {return $prompt;}

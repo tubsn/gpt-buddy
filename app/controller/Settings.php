@@ -64,6 +64,24 @@ class Settings extends Controller {
 
 		$this->view->usageChart = $chart->create();
 
+		$statsgrouped = $this->Prompts->most_hits_by_type();
+
+		$statsgrouped = array_map(function($item) {
+			$item['category'] = ucfirst($item['category']);
+			return $item;
+		}, $statsgrouped);
+
+		$chartgrouped = new AphexChart();
+		$chartgrouped->metric = array_column($statsgrouped,'hits');
+		$chartgrouped->dimension = array_column($statsgrouped,'category');
+		$chartgrouped->color = '#1d5e55';
+		$chartgrouped->height = 400;
+		$chartgrouped->xfont = '12px';
+		$chartgrouped->legend = 'top';
+		$chartgrouped->name = 'Kategorie Nutzung';
+		$chartgrouped->template = 'charts/default_bar_chart';
+
+		$this->view->usageChartgrouped = $chartgrouped->create();
 
 		$this->view->referer('/settings');
 		$this->view->render('admin/settings');

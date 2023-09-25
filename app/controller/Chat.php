@@ -52,6 +52,11 @@ class Chat extends Controller {
 		$this->view->render('faq');
 	}
 
+	public function faq_swp() {
+		$this->view->title = 'Hinweise zum Umgang mit KI';
+		$this->view->render('faq-swp');
+	}
+
 	public function changelog() {
 		$this->view->funfact = $this->fun_fact();		
 		$this->view->title = 'Changelog';

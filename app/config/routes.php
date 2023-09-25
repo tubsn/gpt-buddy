@@ -3,8 +3,14 @@
 // Pages
 $routes->get('/', 'Chat@index');
 $routes->get('/faq', 'Chat@faq');
+$routes->get('/faq-swp', 'Chat@faq_swp');
 $routes->get('/changelog', 'Chat@changelog');
 $routes->get('/engines', 'Chat@engines');
+
+// Namenswahl
+$routes->get('/name', 'Stats@form_name');
+$routes->get('/name/liste', 'Stats@list_name');
+$routes->post('/name', 'Stats@save_name');
 
 // API
 $routes->post('/ask', 'Chat@ask');
@@ -16,6 +22,7 @@ $routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
+$routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');
@@ -24,6 +31,8 @@ $routes->post('/image', 'Image@index');
 // Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');
 $routes->get('/import/article/{portal}/{id:\d+}', 'Import@article');
+$routes->get('/import/pdf', 'Import@pdf');
+$routes->post('/import/file', 'Import@file_upload');
 
 // Settings / Prompts
 $routes->get('/settings', 'Settings@index');
@@ -35,7 +44,10 @@ $routes->get('/settings/{id:\d+}/delete', 'Settings@delete');
 
 // Stats
 $routes->get('/stats', 'Stats@index');
-$routes->get('/stats/month', 'Stats@monthly_stats');
+$routes->get('/stats/hour', 'Stats@hourly_stats');
+$routes->get('/stats/day', 'Stats@daily_stats');
+$routes->get('/stats/week', 'Stats@weekly_stats');
+$routes->get('/stats/weekday', 'Stats@weekday_stats');
 $routes->get('/stats/import', 'Stats@import_and_summarize');
 
 // Authentication Routes

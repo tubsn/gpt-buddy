@@ -8,3 +8,5 @@
 .env
 .env*
 composer.lock
+install.php
+License

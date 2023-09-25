@@ -42,15 +42,18 @@ class Stats extends Model
 
 	}
 
-	public function conversations_by_day() {
+	public function conversations_by_day($days = 30) {
+
+		$days = intval($days);
 
 		$table = $this->db->table;
 		$SQLstatement = $this->db->connection->prepare("
 			SELECT DATE_FORMAT(date, '%Y-%m-%d') as day, count(*) as 'usage'
 			FROM $table 
+			WHERE date > CURDATE() - INTERVAL :days DAY
 			GROUP BY day ORDER BY day ASC
 			");
-		$SQLstatement->execute();
+		$SQLstatement->execute([':days' => $days]);
 		$output = $SQLstatement->fetchall(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
 		return $output;
 	}
@@ -63,6 +66,48 @@ class Stats extends Model
 			FROM $table 
 			WHERE date >= '2023-06-01'
 			GROUP BY month ORDER BY month ASC
+			");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchall(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
+		return $output;
+	}
+
+	public function conversations_by_week() {
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT DATE_FORMAT(date, '%Y-%v') as week, count(*) as 'usage'
+			FROM $table 
+			WHERE date >= '2023-06-01'
+			GROUP BY week ORDER BY week ASC
+			");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchall(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
+		return $output;
+	}
+
+	public function conversations_by_weekday() {
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT DAYOFWEEK(date) as weekday, count(*) as 'usage'
+			FROM $table 
+			WHERE date >= '2023-06-01'
+			GROUP BY weekday ORDER BY weekday ASC
+			");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchall(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
+		return $output;
+	}
+
+	public function conversations_by_hour() {
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT DATE_FORMAT(date, '%H') as hour, count(*) as 'usage'
+			FROM $table 
+			WHERE date >= '2023-06-01'
+			GROUP BY hour ORDER BY hour ASC
 			");
 		$SQLstatement->execute();
 		$output = $SQLstatement->fetchall(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
@@ -141,6 +186,7 @@ class Stats extends Model
 
 		$conversationDB = new Conversations();
 		$conversation = $conversationDB->get_excerpt($conversationID);
+		if (!is_array($conversation)) {return;}
 
 		$output['id'] = $conversationID;
 		$output['conversation'] = [];
@@ -166,6 +212,7 @@ class Stats extends Model
 
 
 	private function put_conversation_length_to_db($conversation, $id) {
+		if (!is_array($conversation)) {return;}
 		$length = count($conversation);
 		$this->update(['length' => $length],$id);
 	}

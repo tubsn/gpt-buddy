@@ -53,6 +53,8 @@ form button.light:active, .button.light:active {background-color: var(--primary)
 
 button:disabled {background-color:#525762}
 
+.file-button {background: #2b3442; color: #d4d4d9;}
+
 .icon-delete {opacity:0.7}
 
 .secondary-highlight {background-color: #000}
