@@ -74,7 +74,7 @@
 <div class="grid-2-col">
 
 	<section class="user-input">
-		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()">Datei einfügen (Word,PDF,Excel,Text)</div>
+		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()">Datei einfügen (Mp3,Word,PDF,Excel)</div>
 		<input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 
 		<label>Eingabe:

@@ -14,6 +14,10 @@
 <h1>Ai-Buddy Changelog und Roadmap</h1>
 <hr>
 
+<h3>18. Oktober 2023 - Audio Transkribierung</h3>
+<p>Über den Datei Upload ist es jetzt möglich Audiodatein z.B. im Mp3 Format hochzuladen. Die Daten werden über die OpenAI Whisper Schnittstelle ausgelesen, in lesbaren Text umgewandelt und in das Eingabefeld geschrieben. Die Texte können somit sofort durch weiteren Prompts bearbeitet werden</p>
+
+
 <h3>14. September 2023 - Datei - Upload</h3>
 <p>Über den Button Datei hinzufügen lassen sich jetzt Dateien importieren um beispielsweise PDF-Pressemitteilungen schneller einfügen zu können. Aktuell werden PDF, HTML und Textdateien erkannt.</p>
 
@@ -63,26 +67,6 @@ Dadurch ist sichergestellt, dass parallel mehrere Nutzeranfragen gleichzeitig ve
 
 <h3>xx. April 2023 - Start</h3>
 <p>Projekt ins Leben gerufen</p>
-
-<hr>
-
-<h1>Prompt-Ideen / Roadmap</h1>
-
-<pre style="white-space: pre-line; max-height:400px">
-Prompts auf der Startseite auswählbar machen (z.B. nach Usergruppe oder Favoriten)
-Prompt ausprobieren funktion beim Prompt bearbeiten Fenster
-Prompt Best Practice Infos zum erstellen von Prompts einbauen
-
-Newsletterzusammenfassung mit ChatGPT
-after prompts für Mehrstufige bearbeitung nach dem absenden ("Prüfe deine Ausgabe nochmals auf Fehler")
-
-Menupunkt meine Prompts mit erstellten Prompts zu der UserID
-
-Conversationen beim Teilen sichern
-
-Ich möchte einen Useraccount - Beantragen Funktion mail an Admin...
-
-</pre>
 
 </section>
 

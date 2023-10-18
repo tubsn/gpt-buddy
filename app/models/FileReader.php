@@ -3,6 +3,7 @@
 namespace app\models;
 use \Smalot\PdfParser\Parser;
 use \Smalot\PdfParser\Config;
+use \app\models\OpenAIWhisper;
 
 class FileReader
 {
@@ -13,7 +14,7 @@ class FileReader
 
 	public function import($file) {
 
-		if ($file['size'] > 1024 * 1024 * 5) {return 'Achtung: Datei zu groß';}
+		if ($file['size'] > 1024 * 1024 * 10) {return 'Achtung: Datei zu groß';}
 
 		//dd($file['type']);
 
@@ -21,6 +22,7 @@ class FileReader
 		$type = $this->detect_type($file);
 
 		if ($type == 'pdf') {return $this->pdf($filepath);}
+		if ($type == 'audio') {return $this->audio($file);}
 		if ($type == 'word') {return $this->docx($filepath);}
 		if ($type == 'excel') {return $this->excel($filepath);}
 		if ($type == 'text') {return $this->default($filepath);}
@@ -29,6 +31,9 @@ class FileReader
 
 	}
 
+
+
+
 	public function detect_type($file) {
 		switch ($file['type']) {
 			case 'text/plain': case 'text/html': case 'text/csv': return 'text'; break;
@@ -36,10 +41,11 @@ class FileReader
 			case 'application/msword': return 'word'; break;
 			case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': return 'word'; break;
 			case 'application/vnd.openxmlformats-officedocument.presentationml.presentation': return 'powerpoint'; break;
+			case 'audio/mpeg': return 'audio'; break;
+			case 'audio/mp4': return 'audio'; break;
 			case 'application/postscript': return 'eps'; break;
 			case 'application/x-zip-compressed': return 'zip'; break;
 			case 'application/zip': return 'zip'; break;
-			case 'audio/mpeg': return 'audio'; break;
 			case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': case 'application/vnd.ms-excel': return 'excel'; break;
 			case "image/jpeg": case "image/gif": case "image/png": case "image/webp": return 'image'; break;
 		}
@@ -91,6 +97,19 @@ class FileReader
 		}
 	}
 
+
+	private function audio($file) {
+
+		$tmp_file = $_FILES['file']['tmp_name'];
+		$file_name = basename($_FILES['file']['name']);
+		$c_file = curl_file_create($tmp_file, $_FILES['file']['type'], $file_name);
+
+		$tts = new OpenAIWhisper();
+		$output = $tts->transcribe($c_file);
+
+		return $output;
+
+	}
 
 
 
