@@ -113,8 +113,12 @@ methods: {
 			if (location.hash) {
 				let hash = decodeURI(location.hash.substr(1))
 				let options = [...selectbox].map(el => el.value);
-				if (options.includes(hash)) {selectbox.value = hash}
+				if (options.includes(hash)) {
+					this.action = hash
+					selectbox.value = hash
+				}
 			}
+
 		})
 
 	},
