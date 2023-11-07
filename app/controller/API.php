@@ -26,6 +26,17 @@ class API extends Controller {
 		$response = $this->ChatGPT->stream($id);
 	}
 
+	public function generate_image() {
+		$prompt = $_POST['question'];
+		$options['resolution'] = $_POST['resolution'] ?? null;
+		$options['quality'] = $_POST['quality'] ?? null;
+		$options['style'] = $_POST['style'] ?? null;
+		
+		$output = $this->OpenAIImage->fetch($prompt, $options);
+		$this->view->json($output);
+	}
+
+
 	public function stream_force_gpt4($id) {
 		$this->stream($id, true);
 	}
