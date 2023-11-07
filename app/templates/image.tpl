@@ -74,4 +74,10 @@ Bitte sparsam mit dem Bildgenerator umgehen.<br>Die Generierung kostet zwischen 
 <?php endforeach ?>
 </figure>
 <?php endif ?>
+
+
+<div class="text-center" style="margin:3em 0;">
+<a class="button" href="/image/archive">Alle generierten Bilder anzeigen</a>
+</div>
+
 </main>

@@ -28,4 +28,18 @@ class Image extends Controller {
 		$this->view->render('image');
 	}
 
+	public function archive() {
+
+		$path = PUBLICFOLDER . 'generated/';
+		if (file_exists($path)) {
+			$files = scandir($path, SCANDIR_SORT_DESCENDING);
+			$files = array_diff($files, array('.', '..'));
+		} else {$files = [];}
+
+		$this->view->lastimages = $files;
+		$this->view->title = 'Image Assistent';
+		$this->view->render('image');
+
+	}
+
 }
