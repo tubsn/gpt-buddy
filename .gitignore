@@ -3,6 +3,7 @@
 /vendor
 /config/prompts
 /public/storage
+/public/generated
 /public/uploads
 /public/assets
 .env

@@ -75,10 +75,17 @@ class Stats extends Controller {
 
 		$type = $this->Stats->conversations_by_type();
 
+		$whiteListesTypes['Empfehlungen'] = $type['Empfehlungen'];
+		$whiteListesTypes['Kreativität'] = $type['Kreativität'];
+		$whiteListesTypes['Problemlösungen'] = $type['Problemlösungen'];
+		$whiteListesTypes['Sprachliche Unterstützung'] = $type['Sprachliche Unterstützung'];
+		$whiteListesTypes['Unterhaltung'] = $type['Unterhaltung'];
+		//$whiteListesTypes['Wissensaufbau'] = $type['Wissensaufbau'];
+
 		// Anfragen nach Rubrik
 		$chart = new AphexChart();
-		$chart->metric = array_values($type);
-		$chart->dimension = array_keys($type);
+		$chart->metric = array_values($whiteListesTypes);
+		$chart->dimension = array_keys($whiteListesTypes);
 		$chart->color = '#1d5e55';
 		//$chart->height = 800;
 		$chart->xfont = '14px';
@@ -86,7 +93,7 @@ class Stats extends Controller {
 		$chart->name = 'Rubrik';
 		$chart->template = 'charts/default_pie_chart';
 
-		$this->view->type = $type;		
+		$this->view->type = $whiteListesTypes;		
 		$this->view->typeChart = $chart->create();
 
 		$this->view->usage = $this->Stats->count();	

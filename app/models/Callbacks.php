@@ -23,6 +23,11 @@ class Callbacks
 			return $this->compare_article_scores($prompt);
 		}
 
+		if ($callback == 'audience-haeuslebauer') {
+			return $this->audience_haeusle_bauer($prompt);
+		}
+
+
 		if ($callback == 'current-date') {return $this->current_date($prompt);}
 		if ($callback == 'current-time') {return $this->current_time($prompt);}
 
@@ -37,6 +42,19 @@ class Callbacks
 		return $prompt;
 
 	}
+
+	private function audience_haeusle_bauer($prompt) {
+
+		if (PORTAL == 'MOZ') {$rssData = $this->curl('https://reports-moz.lr-digital.de/export/articles/audience/Häuslebauer');}
+		if (PORTAL == 'SWP') {$rssData = $this->curl('https://reports-swp.lr-digital.de/export/articles/audience/Häuslebauer');}
+
+		else {$rssData = $this->curl('https://reports.lr-digital.de/export/articles/audience/H%C3%A4uslebauer');}
+		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
+
+		return $prompt;
+
+	}
+
 
 	private function compare_article_scores($prompt) {
 

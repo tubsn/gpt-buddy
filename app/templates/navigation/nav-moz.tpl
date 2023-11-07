@@ -8,7 +8,7 @@
 		<li><a href="/lesermarkt">Lesermarkt</a></li>	
 		<li><a href="/anzeigen">Anzeigen</a></li>	
 		<li><a href="/horoskope">Horoskope</a></li>
-		<li><a href="/planbar">Planbar</a></li>
+		<li><a href="/videoteam">Videoteam</a></li>
 		<li><a href="/coding">Webentwicklung</a></li>
 	</ul>
 </li>

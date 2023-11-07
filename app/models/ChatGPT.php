@@ -21,6 +21,7 @@ class ChatGPT
 		'default' => 'gpt-3.5-turbo',
 		'16k' => 'gpt-3.5-turbo-16k',
 		'gpt4' => 'gpt-4',
+		'gpt4turbo' => 'gpt-4-1106-preview',
 	];
 
 	public $forceGPT4 = false;
@@ -125,8 +126,8 @@ class ChatGPT
 		}
 
 		if ($this->forceGPT4) {
-			$model = $this->models['gpt4'];
-			$maxTokens = 8096 - $conversationTokens - 50;
+			$model = $this->models['gpt4turbo'];
+			$maxTokens = 4096;
 		}
 
 		if ($maxTokens < 1) {
@@ -169,8 +170,8 @@ class ChatGPT
 		}
 
 		if ($this->forceGPT4) {
-			$model = $this->models['gpt4'];
-			$maxTokens = 8096 - $conversationTokens - 50;
+			$model = $this->models['gpt4turbo'];
+			$maxTokens = 4096;
 		}
 
 		if ($maxTokens < 1) {

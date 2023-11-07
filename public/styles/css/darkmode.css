@@ -78,8 +78,8 @@ hr {border-color: white;}
 .loadIndicator > div {background-color: var(--primary-lighter)}
 .loadIndicator {background:none;}
 
-.generated-images {background:#1e252f;}
-.generated-images img {border-color: #111824;}
+.generated-image, .image-history {background:#1e252f;}
+.generated-image img {border-color: #111824;}
 
 .chartbox {background-color: #b7b7b7; color: black; padding: 0 1em; border-radius: 1em; margin-bottom: 2em;}
 

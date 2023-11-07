@@ -14,7 +14,7 @@ class FileReader
 
 	public function import($file) {
 
-		if ($file['size'] > 1024 * 1024 * 10) {return 'Achtung: Datei zu groß';}
+		if ($file['size'] > 1024 * 1024 * 25) {return 'Achtung: Datei zu groß';}
 
 		//dd($file['type']);
 
@@ -32,8 +32,6 @@ class FileReader
 	}
 
 
-
-
 	public function detect_type($file) {
 		switch ($file['type']) {
 			case 'text/plain': case 'text/html': case 'text/csv': return 'text'; break;
@@ -43,6 +41,7 @@ class FileReader
 			case 'application/vnd.openxmlformats-officedocument.presentationml.presentation': return 'powerpoint'; break;
 			case 'audio/mpeg': return 'audio'; break;
 			case 'audio/mp4': return 'audio'; break;
+			case 'audio/x-m4a': return 'audio'; break;
 			case 'application/postscript': return 'eps'; break;
 			case 'application/x-zip-compressed': return 'zip'; break;
 			case 'application/zip': return 'zip'; break;

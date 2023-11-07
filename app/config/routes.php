@@ -22,11 +22,10 @@ $routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
-$routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');
-$routes->post('/image', 'Image@index');
+$routes->post('/image/generate', 'Image@generate');
 
 // Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');

@@ -47,6 +47,20 @@ Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Fo
 		<label>Prompt Inhalte:
 			<textarea class="settings-textarea" name="content" placeholder="z.B. Korrigiere meine Rechtschreibung nach Duden mit ostfriesischem Dialekt"><?=$prompt['content'] ?? null?></textarea>
 		</label>
+		<?php if ($prompt['history']): ?>
+		<details>
+			<summary>Prompt Historie anzeigen</summary>
+			<?php foreach ($prompt['history'] as $index => $old): ?>
+			<div class="box" style="position:relative; background-color: white;">
+				<small style="font-size:0.7em;position:absolute; right:0; top:-2.2em">vom <?=$old['edited']?> Uhr</small>
+				<code><?=$old['content']?></code>
+
+			</div>
+			<hr>
+			<?php endforeach ?>
+		</details>
+		<?php endif ?>
+
 	</fieldset>
 
 	<fieldset class="grid-5-back-wide">

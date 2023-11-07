@@ -1,23 +1,26 @@
-<main v-cloak id="gptInterface">
+<main v-cloak id="gptInterface" data-portal="<?=PORTAL?>">
 
-<?php if (PORTAL == 'LR' || PORTAL == 'MOZ'): ?>
-<!--
 <div class="fun-fact hide-mobile">
-<b>Buddy-News:</b>
-- für GPT4 stehen uns zur Zeit 3 Anfragen/Minute zur Verfügung. Erscheint eine Fehlermeldung, dass zuviele Anfragen gestartet wurden am besten GPT4 deaktivieren und erneut versuchen.<br>
-<b>Der AI Buddy sucht einen Namen</b> - <a href="/name">Hier mitmachen</a>
+
+<b>ChatGPT4-Turbo und Dall-E3 stehen zur Verfügung!</b><br>Das neue Model bietet schnellere Antwortzeiten und eine Datenbasis bis April 2023</b>
+
 </div>
--->
-<?php endif ?>
+
+
+
 
 <h1><?=APP_NAME?> | <?=$page['title']?></h1>
+
+<!--
+<p><span style="font-weight:bold; color:#b00;">Testweise wurde das neue GPT-4 Modell aktiviert. Antworten dauern heute etwas länger.</span></p>
+-->
 
 <p v-if="description" v-html="'Hinweis: ' + description"></p>
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>
 
 <form method="post" @submit.prevent="ask" action="" ref="form" class="form-container" :class="{'advanced-model' : gpt4}">
 
-<p v-if="error" class="error-message" v-html="error"></p>
+<p v-if="error" v-cloak class="error-message" v-html="error"></p>
 
 <div class="ui-header">
 	<div class="options">
@@ -61,9 +64,9 @@
 
 	<div class="meta-options hide-mobile">
 		<div class="force-gpt4">
-			<label><input v-model="gpt4" type="checkbox"> GPT-4 aktivieren
+			<label><input v-model="gpt4" type="checkbox"> GPT-4-Turbo aktivieren
 			</label>
-			<p v-if="gpt4">Antworten genauer, <br/>Wartezeit länger.</p>
+			<p v-if="gpt4">Antworten genauer, <br/>Kosten höher.</p>
 		</div>
 	</div>
 
@@ -81,7 +84,8 @@
 		<textarea v-model="input" ref="autofocusElement" class="io-textarea" :disabled="loading" placeholder="Text oder Frage eingeben - Anweisungen werden im Verlauf gespeichert und müssen nicht mehrmals übergeben werden"></textarea>
 		</label>
 		<button type="submit" @click.prevent="ask" :disabled="loading">Absenden</button>
-		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory(),wipeInput()" :disabled="loading">Neuer Chat <small>(Verlauf löschen)</small></button>
+		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chatverlauf löschen</small></button>
+		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeInput()" :disabled="loading">Eingabe löschen</button>
 	</section>
 
 	<section class="gpt-output">

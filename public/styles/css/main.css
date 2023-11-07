@@ -97,9 +97,6 @@ background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:ob
 
 .promptlist .inactive {background-color:#dfdfdf}
 
-.generated-images {border-radius: 1em; box-sizing: border-box; background: #efefef; padding: 1em;}
-.generated-images img {width:100%; border: 1em solid white; box-sizing: border-box; border-radius: .5em;}
-
 .category-list {list-style-type: none; column-count: 4; background-color: var(--grey); padding:1em; border-radius:0.5em}
 .category-list li {margin:0; padding:0;}
 
@@ -119,6 +116,8 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 .io-output-div.line-break {white-space:pre-line;}
 .gpt-output, .user-input {position:relative;}
 
+.io-textarea ol li, .io-textarea ul li {margin-bottom:0.4em;}
+
 
 /* File / Copy Button */
 .copy-button, .file-button {position: absolute; right:0em; top:-1em; opacity:0; transition: opacity 0.2s;
@@ -129,6 +128,29 @@ font-size: 0.7em; background-color: #1d5e55; border-radius: 0.3em; padding: .1em
 .copy-button:active, .file-button:active {background-color:var(--primary-darker); color:white;}
 .copy-button:hover, .file-button:hover {background-color:var(--primary-lighter); color:white}
 .copy-button:active, .file-button:active {background-color:var(--primary);}
+
+
+/* Image Generator */
+.image-generator {display:grid; grid-gap:2em; grid-row-gap:0em; grid-template-columns: 1fr 6fr 2fr; margin-bottom:0;}
+.image-generator-input {height:108px; margin-bottom:0.5em;}
+
+.image-options {display:grid; grid-template-columns: 1fr 1fr; grid-gap:1em; grid-row-gap:0em;}
+
+.generated-image {border-radius: 1em; box-sizing: border-box; background: #efefef; padding: 1em; margin-bottom:1em; text-align:center;}
+.generated-image img {width:100%; border: 1em solid white; box-sizing: border-box; border-radius: .5em;}
+
+.generated-image img {max-width:1792px}
+.generated-image.vertical img {max-width:1024px}
+
+.image-history {border-radius: 1em; box-sizing: border-box; background: #efefef; padding: 1em; margin-bottom:1em;}
+
+.image-history {column-count: 4; column-gap: 1em;}
+.image-history img {margin-bottom:1em;}
+
+@media only screen and (max-width: 768px) {
+	.image-generator {grid-template-columns: 1fr}
+	.image-history {column-count: 1;}
+}
 
 
 /* Form Container */

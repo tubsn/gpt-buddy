@@ -14,9 +14,20 @@
 <h1>Ai-Buddy Changelog und Roadmap</h1>
 <hr>
 
+<h3>07. November 2023 - Überarbeitung der Dall-E Schnittstelle</h3>
+<p>Der Bildgenerator wurde überarbeitet. Als Model läuft künftig Dall-E3 was höhere Auflösung, Hoch- und Querformate und weitaus bessere Ergebnisse liefert.</p>
+
+<h3>06. November 2023 - GPT-4-Turbo Verfügbar</h3>
+<p>Das generative Model GPT-4-Turbo ermöglicht schnellere Antwortzeiten bei gleichzeitig mehr Verarbeitungspower für eingegebene Texte. Das neue Model kann eingangsseitig bis zu 128.000 Tokens verarbeiten. Außerdem wurde der Trainingsdatensatz bis zu einem Wissenstand im April 2023 erweitert.</p>
+
+<h3>27. Oktober 2023 - Eingabetext beibehalten und löschen</h3>
+<p>Der Eingabetext wird jetzt beim Wechsel in einen neuen Menupunkt beibehalten. Zusätzlich gibt es einen neuen Button um Eingabetext gezielt löschen zu können.</p>
+
+<h3>19. Oktober 2023 - Prompt Historie</h3>
+<p>Beim Bearbeiten eines Prompts werden ab jetzt immer die letzten 10 Versionen zwischengespeichert, so kann ein Prompt bei Bedarf wiederhergestellt werden.</p>
+
 <h3>18. Oktober 2023 - Audio Transkribierung</h3>
 <p>Über den Datei Upload ist es jetzt möglich Audiodatein z.B. im Mp3 Format hochzuladen. Die Daten werden über die OpenAI Whisper Schnittstelle ausgelesen, in lesbaren Text umgewandelt und in das Eingabefeld geschrieben. Die Texte können somit sofort durch weiteren Prompts bearbeitet werden</p>
-
 
 <h3>14. September 2023 - Datei - Upload</h3>
 <p>Über den Button Datei hinzufügen lassen sich jetzt Dateien importieren um beispielsweise PDF-Pressemitteilungen schneller einfügen zu können. Aktuell werden PDF, HTML und Textdateien erkannt.</p>

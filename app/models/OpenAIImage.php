@@ -7,26 +7,30 @@ use flundr\utility\Session;
 class OpenAIImage 
 {
 
-	private $api;
-	private $prompts;
-
-	public $action;
-	public $response;
-	public $messages = [];
-	public $fileCounter = 0;
-
 	public function __construct() {}
 
-	public function fetch($prompt) {
+	public function fetch($prompt, $options = null) {
+
+		$resolution = '1792x1024';
+		$quality = 'standard';
+		$style = 'vivid';
+
+		if ($options) {
+			if (isset($options['resolution'])) {$resolution = $options['resolution'] ?? $resolution;}
+			if (isset($options['quality'])) {$quality = $options['quality'] ?? $quality;}
+			if (isset($options['style'])) {$style = $options['style'] ?? $style;}
+		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
-		Session::set('imagehistory', $prompt);
 
 		$complete = $open_ai->image([
-			"prompt" => "$prompt",
-			"n" => 3,
-			"size" => "512x512",
-			"response_format" => "b64_json",
+			'model' => 'dall-e-3',
+			'prompt' => $prompt,
+			'n' => 1, // Number of Images
+			'quality' => $quality,
+			'style' => $style,
+			'size' => $resolution,
+			'response_format' => 'b64_json',
 		]);
 
 		$out = json_decode($complete,1);
@@ -35,29 +39,24 @@ class OpenAIImage
 			throw new \Exception($out['error']['message'], 400);
 		}
 
-		//return $out['data'][0]['url'];
-
-		foreach ($out['data'] as $set) {
-			$this->save_file($set['b64_json']);
-		}
+		$path = $this->save_file($out['data'][0]['b64_json']);
+		return $path;
 
 	}
 
 
 	private function save_file($base64SJson) {
 		$imagedata = base64_decode($base64SJson);
-		$file = PUBLICFOLDER . 'generated-image-' . $this->fileCounter . '.jpg';
+
+		$filename = uniqid() . '.webp';
+		$path = PUBLICFOLDER . 'generated/';
+
+		if (!file_exists($path)) {mkdir($path, 0777, true);}
+
+		$file = $path . $filename;
 		file_put_contents($file,$imagedata);
-		$this->fileCounter++;
-
-	}
-
-	public function history() {
-		return Session::get('imagehistory') ?? null;
-	}
-
-	public function wipe_history() {
-		Session::unset('imagehistory');
+		
+		return 'generated/' . $filename;
 	}
 
 }

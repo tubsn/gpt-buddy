@@ -7,6 +7,7 @@ data() {
 		action: null,
 		description: null, // Helptext in UI
 		markdown: false,
+		portal: null,
 		gpt4: false,
 		gpt4forced: false,
 		input: '',
@@ -14,6 +15,9 @@ data() {
 		history: '', // Conversion History
 		historyExpanded: true,
 		conversationID: null,
+		resolution: '1792x1024',
+		quality: 'standard',
+		style: 'vivid',
 		loading: false,
 		responseSeconds: 0,
 		tokens: 0,
@@ -40,23 +44,43 @@ computed: {
 
 watch: {
 	history(content) {sessionStorage.history = JSON.stringify(content)},
+	input(content) {sessionStorage.input = content},
 	historyExpanded(value) {localStorage.historyExpanded = value;},
 	gpt4(value) {localStorage.gpt4 = value;},
+	resolution(value) {localStorage.resolution = value;},
+	quality(value) {localStorage.quality = value;},
+	style(value) {localStorage.style = value;},
 	conversationID(value) {sessionStorage.conversationID = value},
 	action(value) {sessionStorage.action = value},
 	markdown(value) {sessionStorage.markdown = value},
 },
 
 mounted() {
+	this.portalConfig()
 	this.autofocus()
-	this.getHistory()
 	this.getUserSettings()
 	this.autoSelectBox()
+	this.getHistory()
 	this.setPromptSettings()
 	this.preselectActionByHash()
 },
 
 methods: {
+
+	getPortal() {return this.$el.parentElement.dataset.portal},
+
+	portalConfig() {
+		this.portal = this.getPortal()
+
+		if (this.portal == 'MOZ') {
+			this.availableServers = ['//chatapi-moz-1.lr-digital.de','//chatapi-moz-2.lr-digital.de','//chatapi-moz-3.lr-digital.de']
+		}
+		
+		if (this.portal == 'SWP') {
+			this.availableServers = ['//chatapi-swp-1.lr-digital.de','//chatapi-swp-2.lr-digital.de','//chatapi-swp-3.lr-digital.de']
+		}
+
+	},
 
 	autofocus() {
 		if (!this.$refs.autofocusElement) {return}
@@ -100,8 +124,6 @@ methods: {
 		let file = event.target.files[0]
 
 		this.loading = true
-
-		console.log(this.loading)
 
 		let formData = new FormData();
 		formData.append('file', file);
@@ -147,13 +169,16 @@ methods: {
 
 		let selectbox = this.$refs.selectElement
 		let advancedMode = false
+
+		this.description = selectbox.options[0].getAttribute('data-description')
+		advancedMode = selectbox.options[0].getAttribute('data-advanced') || advancedMode
+
 		if (selectbox.options[selectbox.selectedIndex]) {
 			this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')
 			advancedMode = selectbox.options[selectbox.selectedIndex].getAttribute('data-advanced') || advancedMode
 			if (selectbox.value != 'default') {
 				window.location.hash = selectbox.value;	
 			}
-			
 		}
 		
 		// Swaps back to 3.5 if the prompt doesnet force gpt4
@@ -166,8 +191,12 @@ methods: {
 			this.gpt4 = true
 			this.gpt4forced = true
 		}
-
-
+	
+		if (sessionStorage.action != 'undefined') {
+			if (sessionStorage.action != this.action) {
+					this.wipeHistory() 
+			}
+		}
 
 	},
 
@@ -181,9 +210,11 @@ methods: {
 	},
 
 	getHistory() {
-		this.conversationID = sessionStorage.conversationID
-		this.action = sessionStorage.action
-		this.fetchConversation()
+		if (sessionStorage.input) {this.input = sessionStorage.input}
+		if (this.action == sessionStorage.action) {
+			this.conversationID = sessionStorage.conversationID
+			this.fetchConversation()
+		}
 	},
 
 	getUserSettings() {
@@ -193,6 +224,10 @@ methods: {
 
 		if (localStorage.gpt4 == 'true') {this.gpt4 = true}
 		else {this.gpt4 = false}
+
+		if (localStorage.resolution) {this.resolution = localStorage.resolution}
+		if (localStorage.quality) {this.quality = localStorage.quality}
+		if (localStorage.style) {this.style = localStorage.style}
 
 	},
 
@@ -325,7 +360,6 @@ methods: {
 		this.markdown = false
 
 		let apiurl = await this.bestServer()
-		//console.log('Asking on :' + apiurl)
 
 		let gpt4path = ''
 		if (this.gpt4) {gpt4path = 'force4/'}
@@ -352,6 +386,40 @@ methods: {
 				this.removeLastHistoryEntry()
 			}
 		});
+
+	},
+
+	async generateImage() {
+
+		this.loading = true
+		this.resetMetaInfo()
+		this.startClock()
+
+		let apiurl = await this.bestServer()
+
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") {this.loading = false}
+		});
+
+		let formData = new FormData()
+		formData.append('question', this.input)
+		formData.append('resolution', this.resolution)
+		formData.append('quality', this.quality)
+
+		let response = await fetch(apiurl + '/image/generate', {method: "POST", body: formData})
+		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
+
+		// Own PHP Errors
+		response = await response.text()
+		let json // no Idea why but it has to be defined first
+		try {json = JSON.parse(response);}
+		catch (error) {this.showError('PHP Error: ' + response); return}
+	
+		// PHP Api Handling Errors
+		if (json.error) {this.showError(json.error); return}
+
+		this.output = json
+		this.loading = false
 
 	},
 

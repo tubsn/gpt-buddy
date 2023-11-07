@@ -21,35 +21,10 @@ class Settings extends Controller {
 
 	public function index() {
 
-		//$categories = $prompts = $this->Prompts->categories();
-
 		$prompts = $this->Prompts->list_all();
 		$categories = array_group_by('category', $prompts);
 
 		$this->view->categories = $categories;
-
-		/*
-		if ($prompts) {
-			$prompts = array_map(function($prompt) {
-				if (!isset($prompt['hits'])) {$prompt['hits'] = 0;}
-				$prompt['title'] = substr($prompt['title'],0,33);
-			return $prompt;
-			}, $prompts);
-
-			// Votes
-			$chart = new AphexChart();
-			$chart->metric = array_column($prompts,'hits');
-			$chart->dimension = array_column($prompts,'title');
-			$chart->color = '#1d5e55';
-			$chart->height = 400;
-			$chart->xfont = '12px';
-			$chart->legend = 'top';
-			$chart->name = 'Prompt Nutzung';
-			$chart->template = 'charts/default_bar_chart';
-
-			$this->view->usageChart = $chart->create();
-		}
-		*/
 
 		$stats = $this->Prompts->most_hits();
 		$chart = new AphexChart();
@@ -88,7 +63,20 @@ class Settings extends Controller {
 	}
 
 	public function edit($id) {
-		$this->view->prompt = $this->Prompts->get($id);
+		$prompt = $this->Prompts->get($id);
+
+		if (isset($prompt['history'])) {
+			$prompt['history'] = json_decode($prompt['history'],1);
+			$prompt['history'] = array_reverse($prompt['history']);
+
+			/*
+			if (count($prompt['history'])>1) {
+				array_shift($prompt['history']);
+			}
+			*/
+
+		}
+		$this->view->prompt = $prompt;
 		if (!$this->view->prompt) {throw new \Exception("Prompt not Found", 404);}
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');
@@ -112,7 +100,7 @@ class Settings extends Controller {
 	}
 
 	public function save($id) {
-		$this->Prompts->update($_POST, $id);
+		$this->Prompts->update_with_history($_POST, $id);
 		$this->view->back();
 		//$this->view->redirect('/settings');
 	}

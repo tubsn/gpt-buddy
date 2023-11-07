@@ -2,11 +2,25 @@
 
 <nav class="main-nav">
 	<ul>
-		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a></li>
+		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a>
+		<!--
+			<ul class="dropdown" aria-label="submenu">
+				<li><a href="/changelog">Neuigkeiten</a></li>
+				<li><a href="/stats">Statistiken</a></li>
+				<li><a href="/faq">KI Hinweise</a></li>				
+			</ul>
+		-->
+		</li>
 
 		<?php if (PORTAL == 'SWP'): ?>
 		<?php include(tpl('navigation/nav-swp'));?>
-		<?php else: ?>
+		<?php endif ?>
+
+		<?php if (PORTAL == 'MOZ'): ?>
+		<?php include(tpl('navigation/nav-moz'));?>
+		<?php endif ?>
+
+		<?php if (PORTAL == 'LR'): ?>
 		<?php include(tpl('navigation/nav-lr'));?>
 		<?php endif ?>
 
@@ -21,18 +35,22 @@
 	<ul>
 
 		<li class="color-mode" title="Light-/Darkmode">
-			&ensp;
 			<span id="dark-mode">☾</span> 
 			<span style="opacity:0.4">/</span>
 			<span id="light-mode">☼</span> 
 			&ensp;
 		</li>
 
+		<?php if (PORTAL == 'SWP'): ?>
+		<li class="hide-mobile"><a href="/faq-swp">KI-Leitfaden</a></li>
+		<?php else: ?>
 		<li class="hide-mobile"><a href="/faq">KI-Leitfaden</a></li>
+		<?php endif ?>
 
 		<?php if (auth_rights('chatgpt')): ?>
 		<li><a href="/settings">Konfiguration</a></li>
 		<?php endif; ?>
+
 
 
 
@@ -49,8 +67,9 @@
 
 			<?php if (auth('level') == 'Admin'): ?>
 			<ul class="dropdown rightmenu" aria-label="submenu">
-				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a></li>
+				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a>
 				<li><a href="/stats/import">Import Stats</a></li>				
+				</li>
 			</ul>
 			<?php endif; ?>			
 

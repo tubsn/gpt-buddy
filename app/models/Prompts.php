@@ -86,8 +86,40 @@ class Prompts extends Model
 		return $output;
 	}
 
+	public function update_with_history($new, $id) {
+
+		$old = $this->get($id,['content','history']);
+		if (!$old || $new['content'] == $old['content']) {return $this->update($new, $id);}
+
+		$newHistory['content'] = $old['content'];
+		$newHistory['edited'] = date("Y-m-d H:i");
+		$newHistory['editor'] = auth('id') ?? null;
+
+		// No further Processing needed on first Entry
+		if (empty($old['history'])) {
+			$new['history'] = [$newHistory];
+			return $this->update($new, $id);
+		}
+
+		$history = json_decode($old['history'],1);
+		
+		// History should have a maximum of 10 entries
+		if (count($history) >= 11) {$history = array_slice($history, -10);}
+
+		array_push($history, $newHistory);
+		$new['history'] = $history;
+
+		return $this->update($new, $id);
+
+	}
+
 
 	public function apply_callback($prompt) {
+
+		if (isset($prompt['format']) && $prompt['format']) {
+			$prompt['content'] = $prompt['content'] . "\nVerwende Markdown falls du Formatierungen im Text platzierst.";
+		}
+
 		if (!isset($prompt['callback'])) {return $prompt;}
 		$callbacks = new Callbacks();
 		return $callbacks->run($prompt['callback'], $prompt);
