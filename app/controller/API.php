@@ -32,8 +32,13 @@ class API extends Controller {
 		$options['quality'] = $_POST['quality'] ?? null;
 		$options['style'] = $_POST['style'] ?? null;
 		
-		$output = $this->OpenAIImage->fetch($prompt, $options);
-		$this->view->json($output);
+		try {
+			$output = $this->OpenAIImage->fetch($prompt, $options);
+			$this->view->json($output);
+		} catch (\Exception $e) {
+			$this->view->json(['error' => 'GPT-Error: ' . $e->getMessage()]);
+		}
+
 	}
 
 
