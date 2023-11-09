@@ -225,30 +225,12 @@ class ChatGPT
 		exit;
 	}
 
+
 	private function handle_stream_set($raw) {
 
-		if (mb_substr($raw, 0, 4) == 'data') {$raw = substr($raw,6);} // Cut of "data:" overhead
-
-		if (str_contains($raw, 'data:')) {
-			$arr = explode('data:', $raw);
-			
-			foreach ($arr as $set) {
-				if (str_contains($set, '{"role":"assistant"}')) {continue;}
-				if (mb_substr($set, 0, 4) == 'data') {$set = substr($set,6);}
-				$this->flush_content($set);
-			}
-
-			return;
-		}
-
-		$this->flush_content($raw);
-		
-	}
-
-	private function flush_content($raw) {
+		// Stop when Stream sends DONE
 		ignore_user_abort(false);
-		$raw = trim($raw);
-		if ($raw == '[DONE]') {
+		if (str_contains($raw, 'data: [DONE]')) {
 			echo "event: stop\n";
 			echo "data: stopped\n\n";
 			echo str_pad('',4096)."\n";
@@ -257,21 +239,31 @@ class ChatGPT
 			return;
 		}
 
-		$response = json_decode($raw, 1);
-		if (isset($response['choices'][0]['delta']['content'])) {
-			$content = $response['choices'][0]['delta']['content'];
+		// extract only the Content in the Stream 
+		// which sadly isn't always a perfect json :/
+		$content = $this->extract_content_as_json_string($raw);
+		if (!$content) {return;}
+		
+		foreach ($content as $str) {
+
+			$array = json_decode($str,1);
+			$content = $array['content'] ?? '';
+
+			$this->lastResponse .= $content;
+			$content = json_encode($content);
+		
+			echo 'data: ' . $content . "\n\n";
+			echo str_pad('',4096)."\n";
+			ob_flush();
+			flush();
 		}
 
-		if (!isset($content)) {return;}
-		$this->lastResponse .= $content;
+	}
 
-		$content = json_encode($content);
-
-		echo 'data: ' . $content . "\n\n";
-		echo str_pad('',4096)."\n";
-		ob_flush();
-		flush();
-
+	private function extract_content_as_json_string($string) {
+		$pattern = '/\{"content":".*?"\}/'; // Extracts the Part which is Valid JSON
+		if (preg_match_all($pattern, $string, $matches)) {return $matches[0];}
+		return null;
 	}
 
 	private function count_tokens($messages = null) {
