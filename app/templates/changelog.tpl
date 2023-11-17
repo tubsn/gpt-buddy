@@ -14,6 +14,9 @@
 <h1>Ai-Buddy Changelog und Roadmap</h1>
 <hr>
 
+<h3>17. November 2023 - Bildergallerien im Bildgenerator</h3>
+<p>Generierte Bilder lassen sich jetzt in einer Galerieansicht öffnen. Außerdem wurde ein Pager eingeführt damit nicht immer alle Fotos geladen werden.</p>
+
 <h3>07. November 2023 - Überarbeitung der Dall-E Schnittstelle</h3>
 <p>Der Bildgenerator wurde überarbeitet. Als Model läuft künftig Dall-E3 was höhere Auflösung, Hoch- und Querformate und weitaus bessere Ergebnisse liefert.</p>
 

@@ -4,6 +4,7 @@ namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\Auth;
 use flundr\utility\Session;
+use flundr\utility\Pager;
 
 class Image extends Controller {
 
@@ -11,35 +12,22 @@ class Image extends Controller {
 		$this->view('DefaultLayout');
 		$this->view->interface = 'default';
 		$this->view->title = 'ChatGPT Assistent';
-		$this->models('ChatGPTApi,Prompts,OpenAIImage,OpenAIImage3');
+		$this->models('ChatGPTApi,Prompts,OpenAIImage,Images');
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 	}
 
 	public function index() {
-		$path = PUBLICFOLDER . 'generated/';
-		if (file_exists($path)) {
-			$files = scandir($path, SCANDIR_SORT_DESCENDING);
-			$files = array_diff($files, array('.', '..'));
-			$files = array_slice($files, 0, 21);
-		} else {$files = [];}
 
+		$items = $this->Images->count_files();
+		$itemsPerPage = 30;
+		$pager = new Pager($items, $itemsPerPage);
+
+		$files = $this->Images->read_directory($itemsPerPage, $pager->offset);
+
+		$this->view->pager = $pager->htmldata;
 		$this->view->lastimages = $files;
-		$this->view->title = 'Image Assistent';
-		$this->view->render('image');
-	}
-
-	public function archive() {
-
-		$path = PUBLICFOLDER . 'generated/';
-		if (file_exists($path)) {
-			$files = scandir($path, SCANDIR_SORT_DESCENDING);
-			$files = array_diff($files, array('.', '..'));
-		} else {$files = [];}
-
-		$this->view->lastimages = $files;
-		$this->view->title = 'Image Assistent';
-		$this->view->render('image');
-
+		$this->view->title = 'Bildgenerator';
+		$this->view->render('image-generator/index');
 	}
 
 }

@@ -40,6 +40,11 @@ computed: {
 		return `Fehler: ${this.errormessages}`
 	},
 
+	inputChars() {
+		if (!this.input) {return 0}
+		return this.input.length
+	},
+
 },
 
 watch: {

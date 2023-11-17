@@ -81,6 +81,11 @@ hr {border-color: white;}
 .generated-image, .image-history {background:#1e252f;}
 .generated-image img {border-color: #111824;}
 
+.gallery-container {background-color:#1e252f}
+
+ul.pager li a {background-color:#1e252f;}
+ul.pager li a.active {background-color: #303a46; color:#dee1e6}
+
 .chartbox {background-color: #b7b7b7; color: black; padding: 0 1em; border-radius: 1em; margin-bottom: 2em;}
 
 fl-dialog {color:black}

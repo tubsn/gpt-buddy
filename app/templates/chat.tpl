@@ -1,19 +1,12 @@
 <main v-cloak id="gptInterface" data-portal="<?=PORTAL?>">
 
+<!--
 <div class="fun-fact hide-mobile">
-
 <b>ChatGPT4-Turbo und Dall-E3 stehen zur Verfügung!</b><br>Das neue Model bietet schnellere Antwortzeiten und eine Datenbasis bis April 2023</b>
-
 </div>
-
-
-
+-->
 
 <h1><?=APP_NAME?> | <?=$page['title']?></h1>
-
-<!--
-<p><span style="font-weight:bold; color:#b00;">Testweise wurde das neue GPT-4 Modell aktiviert. Antworten dauern heute etwas länger.</span></p>
--->
 
 <p v-if="description" v-html="'Hinweis: ' + description"></p>
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>

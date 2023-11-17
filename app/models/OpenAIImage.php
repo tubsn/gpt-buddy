@@ -56,7 +56,7 @@ class OpenAIImage
 		$file = $path . $filename;
 		file_put_contents($file,$imagedata);
 		
-		return 'generated/' . $filename;
+		return '/generated/' . $filename;
 	}
 
 }

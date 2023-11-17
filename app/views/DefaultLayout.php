@@ -10,7 +10,7 @@ class DefaultLayout extends htmlView {
 
 	public $title = APP_NAME;
 	public $description = 'ChatGPT - Redaktions Tools';
-	public $css = ['/styles/flundr/css/defaults.css', '/styles/css/main.css', '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css'];
+	public $css = ['/styles/flundr/css/defaults.css', '/styles/css/main.css', '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css', '/styles/css/custom.css'];
 	public $fonts = 'https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,600|Fira+Sans+Condensed:400,600';
 	public $js = '/styles/js/main.js';
 	public $framework = [

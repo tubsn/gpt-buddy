@@ -142,16 +142,13 @@ font-size: 0.7em; background-color: #1d5e55; border-radius: 0.3em; padding: .1em
 .generated-image img {max-width:1792px}
 .generated-image.vertical img {max-width:1024px}
 
-.image-history {border-radius: 1em; box-sizing: border-box; background: #efefef; padding: 1em; margin-bottom:1em;}
-
-.image-history {column-count: 4; column-gap: 1em;}
-.image-history img {margin-bottom:1em;}
+.gallery-container {border-radius: 1em; box-sizing: border-box; background: #efefef; padding: 1em; margin-bottom:0em;}
+.image-history img {max-width:300px}
 
 @media only screen and (max-width: 768px) {
 	.image-generator {grid-template-columns: 1fr}
-	.image-history {column-count: 1;}
+	.image-history img {max-width:100%}
 }
-
 
 /* Form Container */
 .form-container {background-color:#efefef; position:relative; transition: background-color 0.5s ease; transition: border-color 0.5s ease;
@@ -166,6 +163,36 @@ border-top:.5em solid #ddd; border-top-left-radius:0;border-top-right-radius:0;}
 .footer-nav {display: flex; gap:.5em; list-style: none; padding: 0; margin: 0;}
 .footer-nav a {text-decoration: none; color: var(--primary);}
 .footer-nav a:hover {color:#6d6d6d;}
+
+
+/* Pager */
+ul.pager {display: flex;
+flex-wrap: wrap;
+flex-direction: row;
+/* justify-content: space-around; */
+align-items: center;
+align-content: flex-start;
+margin-top:40px;
+margin-bottom:40px;
+list-style-type: none;
+padding:0;
+}
+
+ul.pager li {flex: 0 0 auto;}
+
+ul.pager li:first-of-type {margin-left:0px; flex: 0.5 0 auto; text-align:right;}
+ul.pager li:last-of-type {margin-right:0px; flex: 0.5 0 auto; text-align:left;}
+
+ul.pager li a {color:white; background:#444; padding:10px 20px; border-radius:3px;
+white-space:nowrap; transition: background-color 0.3s; text-decoration:none;
+margin:3px; width:13px; text-align:Center; color:white; display:inline-block}
+
+ul.pager li a:hover, a.archiv:hover {background:var(--primary); transition: background-color 0s}
+
+/*ul.pager li a.active {background:#2fcc8f; color:white;}*/
+ul.pager li a.active {background:#d4d4d4;; color:#696969;}
+ul.pager li a.disabled {background:#ececec; color:#b1b1b1;}
+
 
 
 /* Tables */

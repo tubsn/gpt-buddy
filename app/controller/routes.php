@@ -26,7 +26,6 @@ $routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');
-$routes->get('/image/archive', 'Image@archive');
 $routes->post('/image/generate', 'API@generate_image');
 
 // Imports
