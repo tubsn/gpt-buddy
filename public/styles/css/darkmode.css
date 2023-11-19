@@ -83,8 +83,8 @@ hr {border-color: white;}
 
 .gallery-container {background-color:#1e252f}
 
-ul.pager li a {background-color:#1e252f;}
-ul.pager li a.active {background-color: #303a46; color:#dee1e6}
+ul.pager li a {background-color:#1e252f; color:#d4d4d9}
+ul.pager li a.active {background-color: #000; color:#dee1e6}
 
 .chartbox {background-color: #b7b7b7; color: black; padding: 0 1em; border-radius: 1em; margin-bottom: 2em;}
 

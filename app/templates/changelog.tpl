@@ -11,7 +11,7 @@
 
 <section class="box" style="max-width:1200px; margin:0 auto; margin-top:2em">
 
-<h1>Ai-Buddy Changelog und Roadmap</h1>
+<h1>Ai-Buddy Changelog</h1>
 <hr>
 
 <h3>17. November 2023 - Bildergallerien im Bildgenerator</h3>

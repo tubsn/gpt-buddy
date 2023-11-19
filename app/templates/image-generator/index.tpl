@@ -16,8 +16,9 @@ Bitte sparsam mit dem Bildgenerator umgehen.<br>Die Generierung kostet zwischen 
 
 </main>
 
-
+<div style="margin-bottom:-1em;">
 <?=$pager?>
+</div>
 
 <main class="gallery-container">
 <?php include tpl('image-generator/gallery');?>
