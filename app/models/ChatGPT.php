@@ -230,19 +230,11 @@ class ChatGPT
 
 		// Stop when Stream sends DONE
 		ignore_user_abort(false);
-		if (str_contains($raw, 'data: [DONE]')) {
-			echo "event: stop\n";
-			echo "data: stopped\n\n";
-			echo str_pad('',4096)."\n";
-			ob_flush();
-			flush();
-			return;
-		}
 
 		// extract only the Content in the Stream 
 		// which sadly isn't always a perfect json :/
 		$content = $this->extract_content_as_json_string($raw);
-		if (!$content) {return;}
+		//if (!$content) {return;}
 		
 		foreach ($content as $str) {
 
@@ -254,8 +246,19 @@ class ChatGPT
 		
 			echo 'data: ' . $content . "\n\n";
 			echo str_pad('',4096)."\n";
+
 			ob_flush();
 			flush();
+
+		}
+
+		if (str_contains($raw, 'data: [DONE]')) {
+			echo "event: stop\n";
+			echo "data: stopped\n\n";
+			echo str_pad('',4096)."\n";
+			ob_flush();
+			flush();
+			return;
 		}
 
 	}
