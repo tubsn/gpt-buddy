@@ -28,7 +28,7 @@
 
 <?php foreach ($categories as $category => $prompts): ?>
 
-<a href="/settings/new/?category=<?=$category?>" class="fright button">Prompt anlegen</a>
+<a href="/settings/new?category=<?=$category?>" class="fright button">Prompt anlegen</a>
 
 <h3 id="<?=$category?>"><?=ucfirst($category)?></h3>
 
