@@ -30,7 +30,7 @@ class Settings extends Controller {
 		$chart = new AphexChart();
 		$chart->metric = array_column($stats,'hits');
 		$chart->dimension = array_column($stats,'title');
-		$chart->color = '#1d5e55';
+		$chart->color = CHART_COLOR;
 		$chart->height = 400;
 		$chart->xfont = '12px';
 		$chart->legend = 'top';
@@ -49,7 +49,7 @@ class Settings extends Controller {
 		$chartgrouped = new AphexChart();
 		$chartgrouped->metric = array_column($statsgrouped,'hits');
 		$chartgrouped->dimension = array_column($statsgrouped,'category');
-		$chartgrouped->color = '#1d5e55';
+		$chartgrouped->color = CHART_COLOR;
 		$chartgrouped->height = 400;
 		$chartgrouped->xfont = '12px';
 		$chartgrouped->legend = 'top';

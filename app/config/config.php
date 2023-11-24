@@ -1,6 +1,7 @@
 <?php
 
 define('APP_NAME', 'Ai-Buddy');
+define('CHART_COLOR', '#1d5e55');
 
 define('CATEGORIES', [
 

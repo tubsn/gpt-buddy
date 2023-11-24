@@ -44,7 +44,7 @@ class Stats extends Controller {
 		$monthly = new AphexChart();
 		$monthly->metric = array_values($conversationsByMonth);
 		$monthly->dimension = array_keys($conversationsByMonth);
-		$monthly->color = '#1d5e55';
+		$monthly->color = CHART_COLOR;
 		//$monthly->height = 150;
 		$monthly->xfont = '14px';
 		$monthly->legend = 'top';
@@ -62,7 +62,7 @@ class Stats extends Controller {
 		$daily = new AphexChart();
 		$daily->metric = array_values($conversationsByDay);
 		$daily->dimension = array_keys($conversationsByDay);
-		$daily->color = '#1d5e55';
+		$daily->color = CHART_COLOR;
 		//$chart->height = 800;
 		$daily->xfont = '14px';
 		$daily->legend = 'top';
@@ -86,7 +86,7 @@ class Stats extends Controller {
 		$chart = new AphexChart();
 		$chart->metric = array_values($whiteListesTypes);
 		$chart->dimension = array_keys($whiteListesTypes);
-		$chart->color = '#1d5e55';
+		$chart->color = CHART_COLOR;
 		//$chart->height = 800;
 		$chart->xfont = '14px';
 		$chart->legend = 'top';
@@ -109,7 +109,7 @@ class Stats extends Controller {
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
 		$chart->dimension = array_keys($stats);
-		$chart->color = '#1d5e55';
+		$chart->color = CHART_COLOR;
 		$chart->height = 500;
 		$chart->xfont = '14px';
 		$chart->legend = 'top';
@@ -130,7 +130,7 @@ class Stats extends Controller {
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
 		$chart->dimension = array_keys($stats);
-		$chart->color = '#1d5e55';
+		$chart->color = CHART_COLOR;
 		$chart->height = 500;
 		$chart->xfont = '14px';
 		$chart->legend = 'top';
@@ -152,7 +152,7 @@ class Stats extends Controller {
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
 		$chart->dimension = array_keys($stats);
-		$chart->color = '#1d5e55';
+		$chart->color = CHART_COLOR;
 		$chart->height = 500;
 		$chart->xfont = '14px';
 		$chart->legend = 'top';
@@ -174,7 +174,7 @@ class Stats extends Controller {
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
 		$chart->dimension = array_keys($stats);
-		$chart->color = '#1d5e55';
+		$chart->color = CHART_COLOR;
 		$chart->height = 500;
 		$chart->xfont = '14px';
 		$chart->legend = 'top';

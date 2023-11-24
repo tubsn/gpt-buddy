@@ -80,7 +80,7 @@ background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:ob
 
 .generating {text-align:right; opacity:0.7}
 .generating:hover {opacity:1;}
-.generating b {color:#1d5e55;}
+.generating b {color:var(--primary);}
 
 .loading-wrapper {position:relative;}
 .mini-robot {width:20px; position:absolute; left: -1em; top: -6px;}
@@ -121,7 +121,7 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 
 /* File / Copy Button */
 .copy-button, .file-button {position: absolute; right:0em; top:-1em; opacity:0; transition: opacity 0.2s;
-font-size: 0.7em; background-color: #1d5e55; border-radius: 0.3em; padding: .1em .8em; cursor: pointer; color: #fff;}
+font-size: 0.7em; background-color: var(--primary); border-radius: 0.3em; padding: .1em .8em; cursor: pointer; color: #fff;}
 /*.file-button {background-color:#e1e1e1; color:#333}*/
 
 .gpt-output:hover .copy-button, .user-input:hover .file-button {opacity:1;}
@@ -187,7 +187,7 @@ ul.pager li a.disabled {background:#ececec; color:#b1b1b1;}
 table tr.system, table tr.system:nth-child(2n) {background-color:#ececec;}
 table tr.system:hover, table tr.system:nth-child(2n):hover {color:inherit}
 table tr.system pre {max-height: 72px; overflow-y: auto;}
-table.fancy th {background-color: #1d5e55}
+table.fancy th {background-color: var(--primary);}
 
 
 /* Mobile */
