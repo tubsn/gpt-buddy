@@ -53,4 +53,31 @@ class Import extends Controller {
 		echo $output;
 	}
 
+	public function splitter() {
+
+		$files = [];
+
+		$ff = 'ffmpeg.exe'; // command to open ffmpeg
+		$outDir = PUBLICFOLDER . 'audio/';
+
+		if ($_FILES) {
+
+			$tmp_file = $_FILES['audio']['tmp_name'];
+			$in = $tmp_file;
+			
+			if (!file_exists($outDir)) {mkdir($outDir, 0777, true);}
+			array_map('unlink', array_filter((array) glob($outDir.'*')));
+			echo shell_exec("$ff -i $in -f segment -segment_time 300 -c copy ".$outDir."splitted%03d.mp3");	
+		}
+
+		if (file_exists($outDir)) {
+			$files = scandir($outDir, SCANDIR_SORT_ASCENDING);
+			$files = array_diff($files, array('.', '..'));
+		}
+
+		$this->view->files = $files;	
+		$this->view->render('audiosplitter');
+
+	}
+
 }

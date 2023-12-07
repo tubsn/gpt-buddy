@@ -33,6 +33,8 @@ $routes->post('/image/generate', 'API@generate_image');
 $routes->get('/import/ticker/{id}', 'Import@ticker');
 $routes->get('/import/article/{portal}/{id:\d+}', 'Import@article');
 $routes->get('/import/pdf', 'Import@pdf');
+$routes->get('/import/splitter', 'Import@splitter');
+$routes->post('/import/splitter', 'Import@splitter');
 $routes->post('/import/file', 'Import@file_upload');
 
 // Settings / Prompts

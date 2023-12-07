@@ -3,6 +3,7 @@
 /vendor
 /config/prompts
 /public/storage
+/public/audio
 /public/generated
 /public/uploads
 /public/assets
