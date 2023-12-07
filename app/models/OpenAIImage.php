@@ -47,14 +47,16 @@ class OpenAIImage
 
 	private function save_file($base64SJson) {
 		$imagedata = base64_decode($base64SJson);
+		$image = imagecreatefromstring($imagedata);
 
-		$filename = uniqid() . '.webp';
+		$filename = uniqid() . '.jpg';
 		$path = PUBLICFOLDER . 'generated/';
 
 		if (!file_exists($path)) {mkdir($path, 0777, true);}
-
 		$file = $path . $filename;
-		file_put_contents($file,$imagedata);
+
+		imagejpeg($image, $file, 80);
+		//file_put_contents($file,$imagedata);
 		
 		return '/generated/' . $filename;
 	}
