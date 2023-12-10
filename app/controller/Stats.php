@@ -51,9 +51,8 @@ class Stats extends Controller {
 		$monthly->name = 'Gespräche';
 		$monthly->template = 'charts/default_bar_chart';
 
-		$this->view->monthly = $conversationsByDay;		
+		$this->view->monthly = $conversationsByMonth;		
 		$this->view->monthlyChart = $monthly->create();
-
 
 
 		$conversationsByDay = $this->Stats->conversations_by_day(14);
@@ -105,6 +104,7 @@ class Stats extends Controller {
 
 	public function daily_stats() {
 		$stats = $this->Stats->conversations_by_day(365);
+		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
@@ -126,6 +126,7 @@ class Stats extends Controller {
 
 	public function weekly_stats() {
 		$stats = $this->Stats->conversations_by_week();
+		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
@@ -148,6 +149,7 @@ class Stats extends Controller {
 
 	public function weekday_stats() {
 		$stats = $this->Stats->conversations_by_weekday();
+		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
@@ -170,6 +172,7 @@ class Stats extends Controller {
 
 	public function hourly_stats() {
 		$stats = $this->Stats->conversations_by_hour();
+		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
 		$chart->metric = array_values($stats);
@@ -193,7 +196,6 @@ class Stats extends Controller {
 	public function import_and_summarize() {
 		$this->Stats->import_conversations_from_disk();
 		$importlog = $this->Stats->summarize_conversations('today -2days','tomorrow');
-		//$importlog = $this->Stats->summarize_conversations('2023-07-14','2023-07-17');
 
 		$Conversations = new Conversations();
 		$Conversations->delete_all_conversations();

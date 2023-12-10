@@ -20,8 +20,7 @@ class Chat extends Controller {
 
 		$this->view->referer('/');
 
-		$categorySettings = CATEGORIES[strtolower(PORTAL)];
-		$categorySettings['directActions'] = ['53|Einfach Plaudern...'];
+		$categorySettings = CATEGORIES[strtolower(PORTAL)] ?? [];
 		$this->view->category = $categorySettings;
 
 		$generalPrompts = $this->Prompts->category('alle');		
@@ -51,11 +50,6 @@ class Chat extends Controller {
 	public function faq() {
 		$this->view->title = 'Hinweise zum Umgang mit KI';
 		$this->view->render('faq');
-	}
-
-	public function faq_swp() {
-		$this->view->title = 'Hinweise zum Umgang mit KI';
-		$this->view->render('faq-swp');
 	}
 
 	public function changelog() {

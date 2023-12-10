@@ -16,7 +16,7 @@ Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Fo
 
 	<label>Kategorie:
 		<select name="category" >
-			<option value="user">User (Meine Prompts)</option>
+			<!--<option value="user">User (Meine Prompts)</option>-->
 			<option value="alle">Alle</option>
 			<?php foreach ($categories as $category): ?>
 			<?php if ($selectedCategory == $category): ?>

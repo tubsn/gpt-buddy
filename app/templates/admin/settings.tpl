@@ -9,14 +9,14 @@
 <p>Nutze den Button oben rechts um neue Prompts zu hinterlegen.</p>
 <?php endif ?>
 
-<p>Jeder Prompt ist <b>einer Kategorie</b> zugeordnet. Diese Kategorien lassen sich individuell, je Portal (LR,MOZ,SWP) in dem Hauptmenu anbinden.
-<em>Beispiel:</em> LR kann einen Menupunkt für "Sport" haben, und SWP nicht. Auf der Ai-Buddy Startseite wird immer die Kombination aus den <b>Prompts der Kategorie "alle"</b> und der <b>Portal-Kategorie (lr, moz bzw. swp)</b> angezeigt.<br> Das Menu selbst lässt sich bei Bedarf vollkommen frei Konfigurieren!</p>
+<p>Jeder Prompt ist <b>einer Kategorie</b> zugeordnet. Diese Kategorien lassen sich individuell im Hauptmenü anbinden. Bei mehreren Portalen ist es sinnvoll unterschiedliche Hauptmenüs zu nutzen. 
+<em>Beispiel:</em> Portal1 kann einen Menupunkt für "Sport" haben, und Portal2 nicht. Auf der Ai-Buddy Startseite wird immer die Kombination aus den <b>Prompts der Kategorie "alle"</b> und der <b>Portal-Kategorie</b> angezeigt. Das Menü (Konfiguration unter: app > templates > navigation) lässt sich auch mit externen Links bestücken!</p>
 
 <hr style="margin-bottom:3em;">
 
 
 <h2>Kategorie Übersicht</h2>
-<p>Neue Kategorien können über das Funnelteam angemeldet werden. (Sofern noch keine Prompts für die Kategorie angelegt sind wird sie nicht aufgeführt)</p>
+<p>Kategorien können über die config.php angelegt werden. (Sofern noch keine Prompts für die Kategorie angelegt sind wird diese nicht aufgeführt!)</p>
 
 <ul class="category-list">
 <?php foreach ($categories as $category => $prompts): ?>
@@ -72,6 +72,7 @@
 
 
 <h1>Prompt Nutzungs Statistik</h1>
+<p>Prompts müssen mindestens 10 mal benutzt werden, um hier gelistet zu sein.</p>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <div class="chartbox">

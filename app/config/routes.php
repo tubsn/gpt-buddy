@@ -3,7 +3,6 @@
 // Pages
 $routes->get('/', 'Chat@index');
 $routes->get('/faq', 'Chat@faq');
-$routes->get('/faq-swp', 'Chat@faq_swp');
 $routes->get('/changelog', 'Chat@changelog');
 $routes->get('/engines', 'Chat@engines');
 
@@ -22,7 +21,7 @@ $routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
-$routes->get('/conversations', 'Chat@conversation_list');
+//$routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');

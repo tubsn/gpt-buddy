@@ -59,7 +59,6 @@
 <p>Vermeide komplexe Sätze und konzentriere dich auf ein spezifisches Thema. Sei höflich und präzise in deinen Fragen, aber behandele ChatGPT nicht wie eine menschliche Person. KIs haben kein Bewusstsein oder Gefühle, die ihre Reaktionen beeinflussen.</p>
 <p>Es ist unwahrscheinlich, dass du sofort ein gutes Ergebnis erhältst. Stelle nach der Antwort weitere Fragen, um passendere Informationen zu erhalten.</p>
 
-<p>Bei Fragen und Anmerkungen stehen wir gern unter: <a href="mailto:marc.schuetz@moz.de">marc.schuetz@moz.de</a> oder <a href="mailto:sebastian.butt@lr.de">sebastian.butt@lr.de</a> zur Verfügung.</p>
 </section>
 
 </main>

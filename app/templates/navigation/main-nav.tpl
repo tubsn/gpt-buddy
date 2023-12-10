@@ -2,33 +2,37 @@
 
 <nav class="main-nav">
 	<ul>
-		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a>
-		<!--
+		<li class="app-logo-li"><a title="<?=APP_NAME?>" href="/"><img src="/styles/img/ai-buddy-favicon.svg"></a></li>
+
+		<li><a href="/">Abteilungen</a>
 			<ul class="dropdown" aria-label="submenu">
-				<li><a href="/changelog">Neuigkeiten</a></li>
-				<li><a href="/stats">Statistiken</a></li>
-				<li><a href="/faq">KI Hinweise</a></li>				
+				<li><a href="/support">Kundenservice</a></li>		
+				<li><a href="/sales">Anzeigenverkauf</a></li>	
+				<li><a href="/horoskope">Horoskope</a></li>
+				<li><a href="/coding">Webentwicklung</a></li>
 			</ul>
-		-->
 		</li>
 
-		<?php if (PORTAL == 'SWP'): ?>
-		<?php include(tpl('navigation/nav-swp'));?>
-		<?php endif ?>
+		<li><a href="/redaktion">Redaktion</a>
+			<ul class="dropdown" aria-label="submenu">
+				<li><a href="/sport">Sportredaktion</a></li>				
+				<li><a href="/social">Social Media</a></li>				
+				<li><a href="/tests">Tests</a></li>
+			</ul>
+		</li>
 
-		<?php if (PORTAL == 'MOZ'): ?>
-		<?php include(tpl('navigation/nav-moz'));?>
-		<?php endif ?>
-
-		<?php if (PORTAL == 'LR'): ?>
-		<?php include(tpl('navigation/nav-lr'));?>
-		<?php endif ?>
+		<li><a href="/spelling">Rechtschreibung</a></li>
+		<li><a href="/translate">Übersetzer</a></li>
 
 		<?php if (logged_in()): ?>
 		<!--<li class="hide-mobile"><a href="/user">Meine Prompts</a></li>-->
 		<?php endif ?>
 
-		<li class="hide-mobile"><a href="/image">Bildgenerator</a></li>
+		<li class="hide-mobile"><a href="/image">Bildgenerator</a>
+			<ul class="dropdown" aria-label="submenu">
+				<li><a href="/bilder">Bild Prompts</a></li>
+			</ul>
+		</li>
 
 	</ul>
 
@@ -41,17 +45,12 @@
 			&ensp;
 		</li>
 
-		<?php if (PORTAL == 'SWP'): ?>
-		<li class="hide-mobile"><a href="/faq-swp">KI-Leitfaden</a></li>
-		<?php else: ?>
 		<li class="hide-mobile"><a href="/faq">KI-Leitfaden</a></li>
-		<?php endif ?>
+
 
 		<?php if (auth_rights('chatgpt')): ?>
 		<li><a href="/settings">Konfiguration</a></li>
 		<?php endif; ?>
-
-
 
 
 		<li class="login-icon">
@@ -68,7 +67,10 @@
 			<?php if (auth('level') == 'Admin'): ?>
 			<ul class="dropdown rightmenu" aria-label="submenu">
 				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a>
-				<li><a href="/stats/import">Import Stats</a></li>				
+				<li><a href="/stats/import">Statistik Importieren</a></li>
+				<li><a href="/stats">Statisik Übersicht</a></li>
+				<li><a href="/stats/day">Statisik (Tage)</a></li>
+				<li><a href="/stats/hour">Statisik (Stunden)</a></li>
 				</li>
 			</ul>
 			<?php endif; ?>			
