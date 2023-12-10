@@ -8,6 +8,7 @@
 /public/generated
 /public/uploads
 /public/assets
+/public/styles/css/custom.css
 .env
 .env*
 .gitignore
