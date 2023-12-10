@@ -1,7 +1,8 @@
 /logs
 /cache
 /vendor
-/config/prompts
+/config/config.php
+/app/templates/navigation
 /public/storage
 /public/audio
 /public/generated
@@ -9,6 +10,9 @@
 /public/assets
 .env
 .env*
+.gitignore
 composer.lock
 install.php
+aibuddy.png
 License
+README.md
