@@ -17,7 +17,8 @@ More information on: https://www.artmessengers.de/aibuddy/ai-buddy-features.pdf
 
 ## Requirements
 External OpenAI account (https://platform.openai.com)  
-simple Webserver with PHP8 and MySQL Database
+Webserver with PHP8 and MySQL Database
+preferablly Composer
 
 ## Installation
 1. Important: Before you start you have to rename 3 Files:  
@@ -28,8 +29,13 @@ simple Webserver with PHP8 and MySQL Database
 2. Add your Database credentials and the OpenAI-API Key (https://platform.openai.com) to you .env File
 3. Optionally, in the .env file you can setup an SMTP-E-Mail Server (used for Password recovery) or define IP-Ranges that do not require Logins e.g. for Intranet Usage
 4. Import the Prompt Database (supplied after Licensing) into your Database (e.g. with PHP My Admin)
+5. run "composer install"
 
 ## Configuration
 In the config.php File you can setup Categories which you can use to seperate your Prompts into groups e.G. Editorial, Support, Sales.  
 Prompt-Categories can be accessed like this: www.aibuddy.com/categoryname  
 You should setup your navigation (app/tamples/navigation/main-nav.tpl) according to your Prompt-Categories
+
+## Customization
+You can change CSS in you custom.css File (public/styles/css/custom.css)  
+Uncomment the :root Variables and change the colors to your liking e.g. blue --primary: #4585c4;
