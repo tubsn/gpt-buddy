@@ -1,7 +1,7 @@
 /logs
 /cache
 /vendor
-/config/config.php
+/app/config/config.php
 /app/templates/navigation/main-nav.tpl
 /public/storage
 /public/audio
