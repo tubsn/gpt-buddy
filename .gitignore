@@ -2,7 +2,7 @@
 /cache
 /vendor
 /config/config.php
-/app/templates/navigation
+/app/templates/navigation/main-nav.tpl
 /public/storage
 /public/audio
 /public/generated
@@ -11,9 +11,7 @@
 /public/styles/css/custom.css
 .env
 .env*
-.gitignore
 composer.lock
-install.php
 aibuddy.png
 License
 README.md
