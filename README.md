@@ -17,7 +17,7 @@ More information on: https://www.artmessengers.de/aibuddy/ai-buddy-features.pdf
 
 ## Requirements
 External OpenAI account (https://platform.openai.com)  
-Webserver with PHP8 and MySQL Database
+Webserver with PHP8 and MySQL Database  
 preferablly Composer
 
 ## Installation
