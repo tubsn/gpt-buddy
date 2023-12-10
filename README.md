@@ -1,7 +1,7 @@
 # AI | Buddy	
 Prompt Management System for Interaction with the ChatGPT API 
 
-![AIBuddypreview](aibuddy.png)
+![AIBuddypreview](aibuddy.jpg)
 
 ## Features
 Configurable Prompt Database including lots of examples  
