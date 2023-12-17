@@ -16,12 +16,13 @@ $routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
 $routes->get('/stream/{id}', 'API@stream');
 $routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
+$routes->get('/prompts', 'API@prompts');
+$routes->get('/prompts/{id}', 'API@prompt');
 
 // Conversations
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
-//$routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');

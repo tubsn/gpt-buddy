@@ -68,9 +68,9 @@
 			<ul class="dropdown rightmenu" aria-label="submenu">
 				<li><a href="/admin" title="Einstellungen">Nutzerverwaltung</a>
 				<li><a href="/stats/import">Statistik Importieren</a></li>
-				<li><a href="/stats">Statisik Übersicht</a></li>
-				<li><a href="/stats/day">Statisik (Tage)</a></li>
-				<li><a href="/stats/hour">Statisik (Stunden)</a></li>
+				<li><a href="/stats">Statistik Übersicht</a></li>
+				<li><a href="/stats/day">Statistik (Tage)</a></li>
+				<li><a href="/stats/hour">Statistik (Stunden)</a></li>
 				</li>
 			</ul>
 			<?php endif; ?>			

@@ -2,7 +2,7 @@
 
 namespace app\controller;
 use flundr\mvc\Controller;
-//use flundr\auth\Auth;
+use flundr\auth\JWTAuth;
 
 class API extends Controller {
 
@@ -47,5 +47,24 @@ class API extends Controller {
 	}
 
 	public function ping() {echo 'pong';}
+
+
+	public function prompt($id) {
+		$jwt = new JWTAuth;
+		$jwt->authenticate_via_header();
+
+		$prompt = $this->Prompts->get($id);
+		if (empty($prompt)) {throw new \Exception("Prompt not Found", 404);}
+		echo $this->view->json($prompt);
+	}
+
+	public function prompts() {
+		$jwt = new JWTAuth;
+		$jwt->authenticate_via_header();
+		
+		$prompts = $this->Prompts->all();
+		if (empty($prompts)) {throw new \Exception("No Prompts Found", 404);}
+		echo $this->view->json($prompts);
+	}
 
 }
