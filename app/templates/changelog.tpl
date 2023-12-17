@@ -14,6 +14,9 @@
 <h1>Ai-Buddy Changelog</h1>
 <hr>
 
+<h3>13. Dezember 2023 - API für Prompt export eingeführt</h3>
+<p>Mittels Token Authentifizierung lassen sich jetzt Prompts unter /prompts auslesen. z.B. um Sie in einem externen CMS nutzbar zu machen.</p>
+
 <h3>17. November 2023 - Bildergallerien im Bildgenerator</h3>
 <p>Generierte Bilder lassen sich jetzt in einer Galerieansicht öffnen. Außerdem wurde ein Pager eingeführt damit nicht immer alle Fotos geladen werden.</p>
 
