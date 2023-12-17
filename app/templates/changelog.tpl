@@ -14,7 +14,10 @@
 <h1>Ai-Buddy Changelog</h1>
 <hr>
 
-<h3>13. Dezember 2023 - API für Prompt export eingeführt</h3>
+<h3>14. Dezember 2023 - Neues Onboarding Setup</h3>
+<p>Die Git Struktur wurde für Neuinstallationen optimiert. .env, config.php, custom.css und die Hauptnavigation enthalten jetzt Beispiel Dateien, die (für Neuinstallationen) vom automatischen Updateprozess ausgeschlossen sind.</p>
+
+<h3>12. Dezember 2023 - API für Prompt export eingeführt</h3>
 <p>Mittels Token Authentifizierung lassen sich jetzt Prompts unter /prompts auslesen. z.B. um Sie in einem externen CMS nutzbar zu machen.</p>
 
 <h3>17. November 2023 - Bildergallerien im Bildgenerator</h3>
