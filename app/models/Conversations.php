@@ -17,7 +17,7 @@ class Conversations
 	public function get($id) {
 		$filename = $this->path . $id;
 		if (!file_exists($filename)) {return null;}
-			$data = file_get_contents($filename);
+		$data = file_get_contents($filename);
 		return $this->decode_and_validate($data);
 	}
 
@@ -26,24 +26,17 @@ class Conversations
 		$conversation = $this->get($id);
 
 		$converter = new CommonMarkConverter();
-		foreach ($conversation as $key => $message) {
-			$conversation[$key]['content'] = $converter->convert($message['content']);
+		foreach ($conversation['conversation'] as $key => $message) {
+			$conversation['conversation'][$key]['content'] = $converter->convert($message['content']);
 		}
 		
 		return $conversation;
 
 	}
 
-	public function get_excerpt($id) {
-		$conversation = $this->get($id);
-		return $conversation;
-	}
-
-	public function get_meta($id) {
-		$filename = $this->path . $id;
-		if (!file_exists($filename)) {return null;}
-		$meta['edited'] = filemtime($filename);
-		return $meta;
+	public function get_dialogue($id) {
+		$conversationData = $this->get($id);
+		return $conversationData['conversation'];
 	}
 
 	public function list() {
@@ -95,7 +88,7 @@ class Conversations
 
 	public function remove_last_entry($id) {
 		$data = $this->get($id);
-		array_pop($data);
+		array_pop($data['conversation']);
 		$this->update($data, $id);
 	}
 
@@ -106,11 +99,14 @@ class Conversations
 
 	private function decode_and_validate($data) {
 		$data = json_decode($data,1);
-		$data = array_filter($data, function($set) {
+		if (!isset($data['conversation'])) {
+			$data['conversation'] = [];
+			return $data;
+		}
+		$data['conversation'] = array_filter($data['conversation'], function($set) {
 			if (empty($set['content'])) {return false;}
 			return $set;
 		});
-
 		return $data;
 	}
 

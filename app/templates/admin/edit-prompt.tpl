@@ -2,8 +2,9 @@
 
 <h1>Prompt editieren: <?=$prompt['title']?></h1>
 <p><b>Hinweise:</b>
-Die besten Ergebnisse erhälst du mit einfachen aber detaillierten Instruktionen. Unterteile komplexe Aufgaben in einzelne Arbeitsschritte!<br>
-Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Formatierungen verbrauchen geringfügig mehr Tokens<br>
+Die besten Ergebnisse erhälst du mit einfachen aber detaillierten Instruktionen. <b>Unterteile komplexe Aufgaben in einzelne Arbeitsschritte!</b><br>
+Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Formatierungen verbrauchen geringfügig mehr Tokens.<br>
+Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gleicher Frage immer die selbe Antwort. Hohe Werte eignen sich z.B. für Brainstorming. 
 </p>
 
 <form class="form-container" method="post" action="">
@@ -19,7 +20,7 @@ Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Fo
 		</fl-dialog>
 	</div>
 
-	<fieldset class="grid-3-back-wide">
+	<fieldset class="grid-4-col">
 	<label>Name:
 		<input name="title" type="text" placeholder="sichtbarer Name" value="<?=$prompt['title'] ?? null?>">
 	</label>
@@ -34,6 +35,17 @@ Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Fo
 			<?php if ($prompt['category'] == $category) {continue;} ?>				
 			<option value="<?=$category?>"><?=ucfirst($category)?></option>
 			<?php endforeach ?>
+		</select>
+	</label>
+
+	<label>Prompt Sichtbar:
+		<select name="inactive" >
+			<option value="0">aktiv</option>
+			<?php if ($prompt['inactive']): ?>
+			<option value="1" selected>gesperrt</option>
+			<?php else: ?>
+			<option value="1">gesperrt</option>
+			<?php endif ?>
 		</select>
 	</label>
 
@@ -98,15 +110,8 @@ Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Fo
 		</select>
 	</label>
 
-	<label>Prompt Sichtbar:
-		<select name="inactive" >
-			<option value="0">aktiv</option>
-			<?php if ($prompt['inactive']): ?>
-			<option value="1" selected>gesperrt</option>
-			<?php else: ?>
-			<option value="1">gesperrt</option>
-			<?php endif ?>
-		</select>
+	<label>Temperatur:
+		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="1" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
 	</label>
 
 	<label>Callback Funktion (muss im Backend hinterlegt sein):

@@ -185,7 +185,8 @@ class Stats extends Model
 	private function user_messages_only($conversationID) {
 
 		$conversationDB = new Conversations();
-		$conversation = $conversationDB->get_excerpt($conversationID);
+		$conversation = $conversationDB->get_dialogue($conversationID);
+
 		if (!is_array($conversation)) {return;}
 
 		$output['id'] = $conversationID;

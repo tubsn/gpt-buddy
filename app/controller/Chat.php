@@ -68,7 +68,7 @@ class Chat extends Controller {
 		$funfact = $cache->get();
 		if (empty($funfact)) {
 			$date = date('d.F');
-			$question = 'Mach lustigen Witz zum heutigen Tag ('.$date.'). Maximal 30 Wörter. Orientiere dich am Humor von Dave Chappelle. Themenbereich Naturwissenschaft';
+			$question = 'Mach einen lustigen Witz zum heutigen Tag ('.$date.'). Maximal 30 Wörter. Orientiere dich am Humor von Dave Chappelle. Themenbereich Naturwissenschaft';
 			$funfact = $this->ChatGPT->direct($question);
 			$cache->save($funfact);
 		}
@@ -108,13 +108,8 @@ class Chat extends Controller {
 	public function show_conversation($id) {
 		$conversation = $this->Conversations->get_with_markdown($id);
 		if (empty($conversation)) {throw new \Exception("Conversation not Found", 404);}
-
-		$meta = $this->Conversations->get_meta($id);
-
-		$this->view->templates['header'] = null;
-
-		$this->view->title = 'Chat vom ' . date('d.m.Y H:i', $meta['edited']) . '&thinsp;Uhr';
-		$this->view->conversation = $conversation;
+		$this->view->title = 'Chat vom ' . date('d.m.Y H:i', $conversation['edited']) . '&thinsp;Uhr';
+		$this->view->conversation = $conversation['conversation'];
 		$this->view->render('conversation');
 	}
 
@@ -122,7 +117,7 @@ class Chat extends Controller {
 	public function get_conversation_json($id) {
 		$conversation = $this->Conversations->get($id);
 		if (empty($conversation)) {throw new \Exception("Conversation Unavailable", 404);}
-		$this->view->json($conversation);
+		$this->view->json($conversation['conversation']);
 	}
 
 	public function remove_last_conversation_entry($id) {

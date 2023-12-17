@@ -385,7 +385,7 @@ methods: {
 		})
 
 		eventSource.addEventListener("error", (event) => {
-			this.errormessages = 'API Zugriff: SSE Network Error'
+			this.errormessages = 'SSE ' + event.data
 			this.stopStream(eventSource)
 		});
 

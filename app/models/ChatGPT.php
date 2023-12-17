@@ -29,9 +29,11 @@ class ChatGPT
 	public $conversationID;
 	public $promptID;
 	public $directPromptID;
+	public $maxtimeout = 10;
 	public $error;
 	
 	public $conversation = []; // Message History
+	public $temperature = 0.7;
 	public $stream = true;
 	public $tokens = 0;
 	public $lastResponse;
@@ -52,6 +54,7 @@ class ChatGPT
 
 		return [
 			'conversationID' => $this->conversationID,
+			'temperature' => $this->temperature,
 			'tokens' => $this->tokens,
 		];
 	}
@@ -74,15 +77,25 @@ class ChatGPT
 		if (empty($question)) {$this->error = 'Keine Frage übermittelt'; return;}
 
 		if ($this->conversationID) {
-			$this->conversation = $this->conversations->get($this->conversationID) ?? [];
+			$conversationData = $this->conversations->get($this->conversationID) ?? [];
+			$this->conversation = $conversationData['conversation'];
+			
+			if (isset($conversationData['temperature'])) {
+				$this->temperature = $conversationData['temperature'];
+			}
+
 			if (empty($this->conversation)) {$this->conversationID = null;}
 		}
 
 		if (!$this->conversationID && $this->promptID) {
 			$prompt = $this->prompts->get_and_track($this->promptID);
+
 			if ($prompt) {$this->add($prompt['content'], 'system');}
-			if (isset($prompt['markdown']) && $prompt['markdown']) {
-				$this->add('Nutze ab jetzt Markdown für Formatierungen vorallem Überschriften und Fettungen!', 'system');
+			if (isset($prompt['format']) && $prompt['format']) {
+				$this->add('Nutze Markdown für Formatierungen', 'system');
+			}
+			if (isset($prompt['temperature'])) {
+				$this->temperature = $prompt['temperature'];
 			}
 		}
 
@@ -100,15 +113,41 @@ class ChatGPT
 
 
 	private function save_conversation() {
-		if ($this->conversationID) {$this->conversations->update($this->conversation, $this->conversationID); return;}
-		$this->conversationID = $this->conversations->save($this->conversation);
+		$data['edited'] = time();
+		$data['prompt'] = $this->promptID;
+		$data['temperature'] = $this->temperature;
+		$data['conversation'] = $this->conversation;
+
+		if ($this->conversationID) {$this->conversations->update($data, $this->conversationID);}
+		else {$this->conversationID = $this->conversations->save($data);}
+	}
+
+	private function load_conversation($id) {
+		$conversationData = $this->conversations->get($id);
+
+		if (time() - $conversationData['edited'] > $this->maxtimeout) {
+			$this->error_to_stream('Conversation File timeout'); return;
+		}
+
+		if (empty($conversationData['conversation'])) {
+			$this->error_to_stream('Conversation File corrupted'); return;
+		}
+		
+		$this->conversationID = $id;
+		$this->conversation = $conversationData['conversation'];
+		$this->promptID = $conversationData['prompt'] ?? null;
+		$this->temperature = $conversationData['temperature'] ?? $this->temperature;
 	}
 
 	public function list_engines() {
-
 		$open_ai = new OpenAi(CHATGPTKEY);
 		return $open_ai->engines();
+	}
 
+	public function detect_moderation_flags($text) {
+		$open_ai = new OpenAi(CHATGPTKEY);
+		$flags = $open_ai->moderation(['input' => $text]);
+		return $flags;
 	}
 
 	// Direct GPT Question with Static Response as Json
@@ -138,7 +177,7 @@ class ChatGPT
 		$chat = $open_ai->chat([
 			'model' => $model,
 			'messages' => $this->conversation,
-			'temperature' => 0.7,
+			'temperature' => $this->float_temperature(), // has to be valid floatvalue
 			'max_tokens' => $maxTokens,
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
@@ -151,17 +190,14 @@ class ChatGPT
 	}
 
 
-
 	// Streamed GPT Response
 	public function stream($id) {
 
-		$this->conversationID = $id;
+		$this->load_conversation($id);
+
 		$model = $this->models['default'];
 
-		$conversation = $this->conversations->get($id);
-		$this->conversation = $conversation;
-
-		$conversationTokens = $this->count_tokens($conversation);
+		$conversationTokens = $this->count_tokens();
 		$maxTokens = 4096 - $conversationTokens - 50;
 
 		if ($conversationTokens > 3700) {
@@ -175,14 +211,14 @@ class ChatGPT
 		}
 
 		if ($maxTokens < 1) {
-			$this->error_to_stream('Die Anfrage beinhaltet zu viele Tokens! (8096 mit GPT4 bzw. 16384 mit GPT3.5). Löschen sie gegebenenfalls ihre Historie.');
+			$this->error_to_stream('Die Anfrage beinhaltet zu viele Tokens! (16384 mit GPT3.5). Loeschen sie gegebenenfalls ihre Historie.');
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 		$options = [
 			'model' => $model,
-			'messages' => $conversation,
-			'temperature' => 0.7,
+			'messages' => $this->conversation,
+			'temperature' => $this->float_temperature(), // has to be valid floatvalue
 			'max_tokens' => $maxTokens,
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
@@ -198,30 +234,51 @@ class ChatGPT
 
 		// Update the Conversation with the last response
 		$this->add($this->lastResponse, 'assistant');
-		$this->conversations->update($this->conversation, $id);
+		$this->save_conversation();
 
 	}
 
-	private function handle_GPT_Stream_Api_errors($raw) {
-		$json = json_decode($raw);
-		if (!isset($json->error->message)) {return false;}
+	private function float_temperature() {
+		$temp = $this->temperature;
+		$temp = str_replace(",",".",$temp);
+		$temp = preg_replace('/\.(?=.*\.)/', '', $temp);
+		$temp = floatval($temp);
+		if ($temp > 1) {$temp = 1;}
+		return $temp;
+	}
 
-		$message = $json->error->type . ': ' . $json->error->message;
-		$this->error_to_stream($message);
+	private function handle_GPT_Stream_Api_errors($raw) {
+		//$this->error_to_stream($raw);
+
+		$json = json_decode($raw);
+		if (isset($json->error->message)) {
+			$error = $json->error->type . ': ' . $json->error->message;
+			$this->error_to_stream($error);
+			return;
+		}
+
+		// If json is corrupted try with regex
+		if (!preg_match('/"error":\s*{/', $raw)) {return;}
+
+		$pattern = '/"message": "(.*?)",\s+"type": "(.*?)"/';
+		preg_match($pattern, $raw, $matches);
+		$message = $matches[1];
+		$type = $matches[2];
+
+		$error = $type . ' | ' . $message;
+		$this->error_to_stream($error);
 	}
 
 	private function error_to_stream($message) {
 		$message = json_encode($message);
+		echo 'event: error' . "\n";
 		echo 'data: ' . $message . "\n\n";
-		echo 'event: stop' . "\n";
-		echo 'data: stopped' . "\n\n";
 		echo str_pad('',4096)."\n";
 		ob_flush();
 		flush();
 
 		// Last Entry has to be removed, cause the User Prompt is added to the Conversation anyways
 		$this->conversations->remove_last_entry($this->conversationID);
-
 		exit;
 	}
 
@@ -234,7 +291,6 @@ class ChatGPT
 		// extract only the Content in the Stream 
 		// which sadly isn't always a perfect json :/
 		$content = $this->extract_content_as_json_string($raw);
-		//if (!$content) {return;}
 		
 		foreach ($content as $str) {
 
@@ -266,7 +322,7 @@ class ChatGPT
 	private function extract_content_as_json_string($string) {
 		$pattern = '/\{"content":".*?"\}/'; // Extracts the Part which is Valid JSON
 		if (preg_match_all($pattern, $string, $matches)) {return $matches[0];}
-		return null;
+		return [];
 	}
 
 	private function count_tokens($messages = null) {

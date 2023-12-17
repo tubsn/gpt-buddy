@@ -23,6 +23,7 @@ $routes->get('/prompts/{id}', 'API@prompt');
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
+//$routes->get('/conversations', 'Chat@conversation_list');
 
 // Image Generator
 $routes->get('/image', 'Image@index');

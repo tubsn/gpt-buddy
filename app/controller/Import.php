@@ -57,7 +57,7 @@ class Import extends Controller {
 
 		$files = [];
 
-		$ff = 'ffmpeg.exe'; // command to open ffmpeg
+		$ff = 'ffmpeg'; // command to open ffmpeg
 		$outDir = PUBLICFOLDER . 'audio/';
 
 		if ($_FILES) {

@@ -113,13 +113,7 @@ class Prompts extends Model
 
 	}
 
-
 	public function apply_callback($prompt) {
-
-		if (isset($prompt['format']) && $prompt['format']) {
-			$prompt['content'] = $prompt['content'] . "\nVerwende Markdown falls du Formatierungen im Text platzierst.";
-		}
-
 		if (!isset($prompt['callback'])) {return $prompt;}
 		$callbacks = new Callbacks();
 		return $callbacks->run($prompt['callback'], $prompt);

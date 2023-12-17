@@ -14,6 +14,12 @@
 <h1>Ai-Buddy Changelog</h1>
 <hr>
 
+<h3>17. Dezember 2023 - Umbau der Conversation Speicher Logik</h3>
+<p>Für jede Conversation werden jetzt neben dem eigentlichen Dialog auch Metadaten wie der verwendete Prompt, die Uhrzeit und die Prompttemperatur mitgespeichert. Dadurch ist es z.B. möglich die Temperatur des Models je nach Prompt einzustellen. In den Prompt Einstellungen finden sich die entsprechenden Optionen dafür.</p>
+<p>Achtung in der MySQL Datenbank muss dafür ein entsprechendes Feld (temperature) angelegt werden.</p>
+<p>Zusätzlich wurde die Darstellung von Fehlern im Chatstream verbessert.</p>
+
+
 <h3>14. Dezember 2023 - Neues Onboarding Setup</h3>
 <p>Die Git Struktur wurde für Neuinstallationen optimiert. .env, config.php, custom.css und die Hauptnavigation enthalten jetzt Beispiel Dateien, die (für Neuinstallationen) vom automatischen Updateprozess ausgeschlossen sind.</p>
 
