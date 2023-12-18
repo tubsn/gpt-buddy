@@ -111,7 +111,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	</label>
 
 	<label>Temperatur:
-		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="1" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
+		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
 	</label>
 
 	<label>Callback Funktion (muss im Backend hinterlegt sein):
