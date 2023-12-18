@@ -3,6 +3,11 @@ Prompt Management System for Interaction with the ChatGPT API
 
 ![AIBuddypreview](aibuddy.jpg)
 
+## Latest News
+Important Information for the Prompt Temperatures Update from 2023-12-17  
+The Update requires a new field in the prompt database called "temperatures", varchar(64) and null.  
+As always before updating: rember to save your config.php, custom.css, main-nav.tpl and faq.tpl!!!
+
 ## Features
 Configurable Prompt Database including lots of examples  
 Interactive Text generation based on predefined prompts with ChatGPT  
