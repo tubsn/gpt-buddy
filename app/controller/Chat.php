@@ -122,7 +122,7 @@ class Chat extends Controller {
 
 	public function remove_last_conversation_entry($id) {
 		$this->Conversations->remove_last_entry($id);
-		$this->view->json($this->Conversations->get($id));
+		$this->view->json($this->Conversations->get($id)['conversation']);
 	}
 
 }
