@@ -125,6 +125,10 @@ class ChatGPT
 	private function load_conversation($id) {
 		$conversationData = $this->conversations->get($id);
 
+		if (empty($conversationData)) {
+			$this->error_to_stream('Conversation File not Found - Check the Cache Folder for read and write access!'); return;
+		}
+
 		if (time() - $conversationData['edited'] > $this->maxtimeout) {
 			$this->error_to_stream('Conversation File timeout'); return;
 		}
