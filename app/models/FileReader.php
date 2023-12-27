@@ -14,6 +14,13 @@ class FileReader
 
 	public function import($file) {
 
+		if (is_string($file)) {
+			if (!file_exists($file)) {
+				throw new \Exception("File Import Error", 400);
+			}
+			$file = $this->get_meta($file);
+		}
+
 		if ($file['size'] > 1024 * 1024 * 25) {return 'Achtung: Datei zu groß';}
 
 		//dd($file['type']);
@@ -31,6 +38,13 @@ class FileReader
 
 	}
 
+	private function get_meta($file) {
+		$data = [];
+		$data['size'] = filesize($file);
+		$data['tmp_name'] = filetype($file);
+		$data['type'] = 'application/msword';
+		return $data;
+	}
 
 	public function detect_type($file) {
 		switch ($file['type']) {
