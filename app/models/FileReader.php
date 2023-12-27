@@ -23,7 +23,7 @@ class FileReader
 
 		if ($file['size'] > 1024 * 1024 * 25) {return 'Achtung: Datei zu groß';}
 
-		//dd($file['type']);
+		//dd($file);
 
 		$filepath = $file['tmp_name'];
 		$type = $this->detect_type($file);
@@ -41,8 +41,8 @@ class FileReader
 	private function get_meta($file) {
 		$data = [];
 		$data['size'] = filesize($file);
-		$data['tmp_name'] = filetype($file);
-		$data['type'] = 'application/msword';
+		$data['tmp_name'] = $file;
+		$data['type'] = filetype($file);
 		return $data;
 	}
 
@@ -126,8 +126,7 @@ class FileReader
 
 
 
-    private function readDocx($filename)
-    {
+    private function readDocx($filename) {
 
         $zip = new \ZipArchive();
         if ($zip->open($filename)) {
@@ -139,9 +138,6 @@ class FileReader
             return strip_tags($content);
         }
         return false;
-
     }
-
-
 
 }
