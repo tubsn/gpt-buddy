@@ -42,7 +42,7 @@ class FileReader
 		$data = [];
 		$data['size'] = filesize($file);
 		$data['tmp_name'] = $file;
-		$data['type'] = filetype($file);
+		$data['type'] = mime_content_type($file);
 		return $data;
 	}
 
