@@ -17,6 +17,7 @@
 <h3>23. Januar 2023 - Userinterface verbesserungen</h3>
 <p>Für mehr Kontrolle bei der Textgenerierung, gibt es einen neuen Button, mit dem die Text Generierung jederzeit beendet werden kann. Außerdem wurden die Buttons zum Löschen des Verlaufs verschoben um mehr Klarheit zu schaffen.
 <p>Prompt-Editierungs-UI optisch verbessert.</p>
+<p>Einträge im Verlauf können jetzt angeklickt werden, dadurch wird der Verlauf in das aktuelle Eingabefeld kopiert</p>
 
 
 <h3>17. Dezember 2023 - Umbau der Conversation Speicher Logik</h3>

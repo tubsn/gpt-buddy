@@ -70,7 +70,7 @@
 <div class="grid-2-col">
 
 	<section class="user-input">
-		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()">Datei einfügen (Mp3,Word,PDF,Excel)</div>
+		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF)</span></div>
 		<input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 
 		<label>Eingabe:
@@ -85,7 +85,9 @@
 	</section>
 
 	<section class="gpt-output">
-		<div class="copy-button no-select" @click="copyOutputToClipboard">Text kopieren</div>
+
+		<div class="copy-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"> <span>Inhalt kopieren</span></div>
+
 		<label v-if="markdown == true" class="no-select">Ausgabe:</label>
 		<div v-if="markdown == true" v-html="output" class="io-textarea io-output-div" placeholder=""></div>
 		<label v-else>Ausgabe:

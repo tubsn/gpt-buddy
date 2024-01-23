@@ -22,7 +22,7 @@ main {margin:2em 4em; margin-bottom:1em;}
 button, .button {border-radius: 0.3em;}
 button:disabled {opacity:0.5; background-color:#aaa}
 button:disabled {cursor:not-allowed;}
-form button.light, form a.light {background-color:#e1e1e1;}
+form button.light, form a.light, button.light, .button.light {background-color:white;}
 
 button.stop {background-color: #b79393}
 button.stop:hover {background-color:#a65252 !important}
@@ -124,14 +124,15 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 .user-input button.light {float:right; position:relative; top:10px; background-color: white; border: 0px solid var(--primary)}
 
 /* File / Copy Button */
-.copy-button, .file-button {position: absolute; right:0em; top:-1em; opacity:0; transition: opacity 0.2s;
-font-size: 0.7em; background-color: var(--primary); border-radius: 0.3em; padding: .1em .8em; cursor: pointer; color: #fff;}
-/*.file-button {background-color:#e1e1e1; color:#333}*/
+.copy-button, .file-button {cursor:pointer; position: absolute; right:0em; top:-1em; font-size: 0.7em; padding:0.4em 0.4em 0 0.4em;
+text-align:center; background-color:white; border-radius:0.3em; border: 1px solid #c8c8c8}
 
-.gpt-output:hover .copy-button, .user-input:hover .file-button {opacity:1;}
-.copy-button:active, .file-button:active {background-color:var(--primary-darker); color:white;}
-.copy-button:hover, .file-button:hover {background-color:var(--primary-lighter); color:white}
-.copy-button:active, .file-button:active {background-color:var(--primary);}
+.copy-button img, .file-button img {width:22px; position:relative; top:2px;}
+.copy-button span, .file-button span {display:none; position:relative; bottom:2px; left:1px}
+.copy-button:hover span, .file-button:hover span {display:inline-block;}
+.copy-button:active, .file-button:active {background-color:#ccc}
+
+.file-button img.cloud {width:20px; top:3px}
 
 
 /* Image Generator */
