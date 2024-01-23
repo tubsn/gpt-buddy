@@ -24,6 +24,9 @@ button:disabled {opacity:0.5; background-color:#aaa}
 button:disabled {cursor:not-allowed;}
 form button.light, form a.light {background-color:#e1e1e1;}
 
+button.stop {background-color: #b79393}
+button.stop:hover {background-color:#a65252 !important}
+
 select {cursor:pointer;}
 form button[type="submit"]:hover, form button[type="submit"]:focus {background-color: var(--primary); outline:none;}
 form button:hover, form button:focus, .button:hover, .button:focus {background-color: var(--primary); outline:none;}

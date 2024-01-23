@@ -76,7 +76,10 @@
 		<label>Eingabe:
 		<textarea v-model="input" ref="autofocusElement" class="io-textarea" :disabled="loading" placeholder="Text oder Frage eingeben - Anweisungen werden im Verlauf gespeichert und müssen nicht mehrmals übergeben werden"></textarea>
 		</label>
-		<button type="submit" @click.prevent="ask" :disabled="loading">Absenden</button>
+		
+		<button type="submit" @click.prevent="ask" v-if="!loading">Absenden</button>
+		<button type="submit" class="stop" @click.prevent="stopStream" v-if="loading">generierung abbrechen</button>
+
 		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chatverlauf löschen</small></button>
 		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeInput()" :disabled="loading">Eingabe löschen</button>
 	</section>

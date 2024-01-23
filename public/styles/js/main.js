@@ -19,6 +19,7 @@ data() {
 		quality: 'standard',
 		style: 'vivid',
 		loading: false,
+		eventSource: null,
 		responseSeconds: 0,
 		tokens: 0,
 		chars: 0,
@@ -376,25 +377,25 @@ methods: {
 		let gpt4path = ''
 		if (this.gpt4) {gpt4path = 'force4/'}
 
-		let eventSource = new EventSource(apiurl + '/stream/' + gpt4path + conversionID);
+		this.eventSource = new EventSource(apiurl + '/stream/' + gpt4path + conversionID);
 
-		eventSource.addEventListener('message', (event) => {
+		this.eventSource.addEventListener('message', (event) => {
 			this.output += JSON.parse(event.data)
 		})
 
-		eventSource.addEventListener('stop', (event) => {
-			this.stopStream(eventSource)
+		this.eventSource.addEventListener('stop', (event) => {
+			this.stopStream()
 			this.fetchConversation()
 		})
 
-		eventSource.addEventListener("error", (event) => {
+		this.eventSource.addEventListener("error", (event) => {
 			this.errormessages = 'SSE ' + event.data
-			this.stopStream(eventSource)
+			this.stopStream()
 		});
 
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
-				this.stopStream(eventSource)
+				this.stopStream()
 				this.removeLastHistoryEntry()
 			}
 		});
@@ -435,8 +436,8 @@ methods: {
 
 	},
 
-	stopStream(stream) {
-		stream.close()
+	stopStream() {
+		this.eventSource.close()
 
 		//if (this.isOutputUrl() == true) {window.open(this.output, '_blank')}
 
