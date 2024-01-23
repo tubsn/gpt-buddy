@@ -265,6 +265,9 @@ methods: {
 		navigator.clipboard.writeText(text);
 	},
 
+	copyToInput(event) {
+		this.input = event.target.innerText
+	},
 
 	async bestServer() {
 		if (!this.loadbalancer) {return ''}

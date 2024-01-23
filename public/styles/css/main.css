@@ -64,6 +64,7 @@ hr.black {border-color:#000}
 .history pre {white-space:break-spaces;}
 .history {font-size: 0.8em; line-height: 120%;}
 table.fancy.history td, table.fancy.history th {padding: 0 20px}
+table.fancy.history pre:hover {cursor:pointer; background-color: #fbeac9}
 
 .error-message {padding:0.2em 0.4em; display:inline-block; color:white; background-color:var(--warning); border-radius: 0.3em;}
 

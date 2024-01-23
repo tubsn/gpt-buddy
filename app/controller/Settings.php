@@ -22,8 +22,8 @@ class Settings extends Controller {
 	public function index() {
 
 		$prompts = $this->Prompts->list_all();
-		$categories = array_group_by('category', $prompts);
 
+		$categories = array_group_by('category', $prompts);
 		$this->view->categories = $categories;
 
 		$stats = $this->Prompts->most_hits();

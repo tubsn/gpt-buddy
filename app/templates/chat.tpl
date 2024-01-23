@@ -106,7 +106,7 @@
 	<table class="fancy history wide">
 		<tr :class="entry.role.toLowerCase()" v-for="entry in history"> 
 			<td class="ucfirst">{{entry.role}}</td>
-			<td><pre>{{entry.content}}</pre></td>
+			<td><pre @click="copyToInput">{{entry.content}}</pre></td>
 		</tr>
 	</table>
 

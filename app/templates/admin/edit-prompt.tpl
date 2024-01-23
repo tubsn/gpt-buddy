@@ -12,33 +12,40 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	<input name="hits" type="hidden" value="<?=$prompt['hits'] ?? 0?>">
 	<?php endif ?>
 
-	<div class="fright">
-		<a id="del-match-<?=$prompt['id']?>" class="noline pointer"><img class="icon-delete" src="/styles/flundr/img/icon-delete-black.svg"></a>
-		<fl-dialog selector="#del-match-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/delete">
-		<h1><?=$prompt['title']?> - löschen?</h1>
-		<p>Möchten Sie den Prompt wirklich löschen?</p>
-		</fl-dialog>
-	</div>
+<fieldset class="grid-2-wide">
+<div>
+	<fieldset class="grid-2-col">
+		<label>Name:
+			<input name="title" type="text" placeholder="sichtbarer Name" value="<?=$prompt['title'] ?? null?>">
+		</label>
 
-	<fieldset class="grid-4-col">
-	<label>Name:
-		<input name="title" type="text" placeholder="sichtbarer Name" value="<?=$prompt['title'] ?? null?>">
+		<label>Kategorie:
+			<select name="category" >
+				<option value="alle">Alle</option>
+				<?php if ($prompt['category']): ?>
+				<option value="<?=$prompt['category']?>" selected><?=ucfirst($prompt['category'])?></option>
+				<?php endif ?>
+				<?php foreach ($categories as $category): ?>
+				<?php if ($prompt['category'] == $category) {continue;} ?>				
+				<option value="<?=$category?>"><?=ucfirst($category)?></option>
+				<?php endforeach ?>
+			</select>
+		</label>
+	</fieldset>
+
+	<label>Hilfetext:
+		<textarea name="description" type="text" placeholder="Hilfestellung zur Eingabe"><?=$prompt['description'] ?? null?></textarea>
 	</label>
 
-	<label>Kategorie:
-		<select name="category" >
-			<option value="alle">Alle</option>
-			<?php if ($prompt['category']): ?>
-			<option value="<?=$prompt['category']?>" selected><?=ucfirst($prompt['category'])?></option>
-			<?php endif ?>
-			<?php foreach ($categories as $category): ?>
-			<?php if ($prompt['category'] == $category) {continue;} ?>				
-			<option value="<?=$category?>"><?=ucfirst($category)?></option>
-			<?php endforeach ?>
-		</select>
+	<label>Prompt Inhalte:
+		<textarea class="settings-textarea" name="content" placeholder="z.B. Korrigiere meine Rechtschreibung nach Duden mit ostfriesischem Dialekt"><?=$prompt['content'] ?? null?></textarea>
 	</label>
+</div>
 
-	<label>Prompt Sichtbar:
+<div>
+
+	<fieldset>
+	<label>Sichtbarkeit:
 		<select name="inactive" >
 			<option value="0">aktiv</option>
 			<?php if ($prompt['inactive']): ?>
@@ -49,34 +56,6 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Hilfetext:
-		<input name="description" type="text" placeholder="Hilfestellung zur Eingabe" value="<?=$prompt['description'] ?? null?>">
-	</label>
-
-	</fieldset>
-
-	<fieldset>
-		<label>Prompt Inhalte:
-			<textarea class="settings-textarea" name="content" placeholder="z.B. Korrigiere meine Rechtschreibung nach Duden mit ostfriesischem Dialekt"><?=$prompt['content'] ?? null?></textarea>
-		</label>
-		<?php if ($prompt['history']): ?>
-		<details>
-			<summary>Prompt Historie anzeigen</summary>
-			<?php foreach ($prompt['history'] as $index => $old): ?>
-			<div class="box" style="position:relative; background-color: white;">
-				<small style="font-size:0.7em;position:absolute; right:0; top:-2.2em">vom <?=$old['edited']?> Uhr</small>
-				<code><?=$old['content']?></code>
-
-			</div>
-			<hr>
-			<?php endforeach ?>
-		</details>
-		<?php endif ?>
-
-	</fieldset>
-
-	<fieldset class="grid-5-back-wide">
-
 	<label>Formatierung:
 		<select name="format" >
 			<option value="0">keine Formatierung</option>
@@ -84,6 +63,21 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			<option value="1" selected>Formatierung aktiv</option>
 			<?php else: ?>
 			<option value="1">Formatierung aktiv</option>
+			<?php endif ?>
+		</select>
+	</label>
+
+	<label>Temperatur:
+		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
+	</label>
+
+	<label>GPT4 erzwingen:
+		<select name="advanced" >
+			<option value="0">nein</option>
+			<?php if ($prompt['advanced']): ?>
+			<option value="1" selected>Ja</option>
+			<?php else: ?>
+			<option value="1">ja</option>
 			<?php endif ?>
 		</select>
 	</label>
@@ -99,31 +93,43 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>GPT4 erzwingen:
-		<select name="advanced" >
-			<option value="0">nein</option>
-			<?php if ($prompt['advanced']): ?>
-			<option value="1" selected>Ja</option>
-			<?php else: ?>
-			<option value="1">ja</option>
-			<?php endif ?>
-		</select>
-	</label>
-
-	<label>Temperatur:
-		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
-	</label>
-
 	<label>Callback Funktion (muss im Backend hinterlegt sein):
-		<input name="callback" type="text" placeholder="z.B. current-date" value="<?=$prompt['callback'] ?? null?>">
+		<input name="callback" type="text" placeholder="Funktionsname eingeben" value="<?=$prompt['callback'] ?? null?>">
 	</label>
 
 	</fieldset>
+</div>
+</fieldset>
 
-	<hr class="black">
+	<fieldset>
+		<?php if ($prompt['history']): ?>
+		<details>
+			<summary>Prompt Historie anzeigen</summary>
+			<?php foreach ($prompt['history'] as $index => $old): ?>
+			<div class="box" style="position:relative; background-color: white;">
+				<small style="font-size:0.7em;position:absolute; right:0; top:-2.2em">vom <?=$old['edited']?> Uhr</small>
+				<code><?=$old['content']?></code>
+
+			</div>
+			<hr>
+			<?php endforeach ?>
+		</details>
+		<?php endif ?>
+	</fieldset>
+
 
 	<button class="submit">Angaben speichern</button>&ensp;
 	<a class="button light" href="/settings">zurück zur Übersicht</a>
+
+	<div class="fright">
+		<a id="del-match-<?=$prompt['id']?>" class="button light">Prompt löschen</a>
+		<fl-dialog selector="#del-match-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/delete">
+		<h1><?=$prompt['title']?> - löschen?</h1>
+		<p>Möchten Sie den Prompt wirklich löschen?</p>
+		</fl-dialog>
+	</div>
+
+
 </form>
 
 <?php if ($prompt['edited']): ?>

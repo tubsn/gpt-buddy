@@ -9,8 +9,10 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 <form class="form-container" method="post" action="">
 
-	<fieldset class="grid-4-col">
 
+<fieldset class="grid-2-wide">
+<div>
+	<fieldset class="grid-2-col">
 	<label>Aktionstitel:
 		<input name="title" type="text" placeholder="sichtbarer Name">
 	</label>
@@ -28,6 +30,21 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			<?php endforeach ?>
 		</select>
 	</label>
+	</fieldset>
+
+	<label>Hilfetext:
+		<textarea name="description" type="text" placeholder="Hilfestellung zur Eingabe"></textarea>
+	</label>
+
+	<label>Prompt Inhalte:
+		<textarea class="settings-textarea" name="content" placeholder="z.B. Korrigiere meine Rechtschreibung nach Duden mit ostfriesischem Dialekt"></textarea>
+	</label>
+
+</div>
+
+<div>
+
+	<fieldset>	
 
 	<label>Prompt Sichtbar:
 		<select name="inactive" >
@@ -36,19 +53,6 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Hilfetext:
-		<input name="description" type="text" placeholder="Hilfestellung zur Eingabe">
-	</label>
-
-	</fieldset>
-
-	<fieldset>
-		<label>Prompt Inhalte:
-			<textarea class="settings-textarea" name="content" placeholder="z.B. Korrigiere meine Rechtschreibung nach Duden mit ostfriesischem Dialekt"></textarea>
-		</label>
-	</fieldset>
-
-<fieldset class="grid-5-back-wide">
 	<label>Formatierung:
 		<select name="format" >
 			<option value="0">keine Formatierung</option>
@@ -77,8 +81,10 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	<label>Callback Funktion (muss im Backend hinterlegt sein):
 		<input name="callback" type="text" placeholder="z.B. current-date">
 	</label>
-
+	
 	</fieldset>
+</div>
+</fieldset>
 
 	<hr class="black">
 
