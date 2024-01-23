@@ -105,7 +105,6 @@ background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:ob
 .conversation-detail {max-width: 1400px; margin:2em auto;}
 .settings-textarea {min-height:300px;}
 
-
 /* Chat Area */
 .io-textarea {height:460px; border-radius: .2em;}
 .io-textarea:focus {outline: 2px solid var(--primary);}
@@ -119,6 +118,7 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 
 .io-textarea ol li, .io-textarea ul li {margin-bottom:0.4em;}
 
+.user-input button.light {float:right; position:relative; top:10px; background-color: white; border: 0px solid var(--primary)}
 
 /* File / Copy Button */
 .copy-button, .file-button {position: absolute; right:0em; top:-1em; opacity:0; transition: opacity 0.2s;
