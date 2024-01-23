@@ -13,7 +13,7 @@ h1, h2, h3, h4, h5, h6 {color:var(--primary-lighter-font)}
 .auth-layout {background:#2e333c}
 
 table.fancy {background-color: #1e252f}
-table.fancy tr:nth-child(2n) {background-color: #2c323c;}
+/*table.fancy tr:nth-child(2n) {background-color: #2c323c;}*/
 
 table.fancy td, table.fancy th {border-bottom-color: #171717;}
 table.fancy th {background-color: #10151e}
@@ -24,8 +24,10 @@ table.js-sortable th.dir-d {background-image: linear-gradient(#171a1e 0%, #2a313
 
 table.fancy tr:hover {background-color:#203a36}
 
-table tr.system, table tr.system:nth-child(2n) {background-color: var(--primary-superdark)}
+/*table tr.system, table tr.system:nth-child(2n) {background-color: var(--primary-superdark)}*/
 .promptlist .inactive {background-color:#161f2b}
+
+table.fancy.history pre:hover {background-color: var(--grey)}
 
 
 a:link, a:visited {color:var(--primary-lighter-font)}
@@ -53,7 +55,8 @@ form button.light:active, .button.light:active {background-color: var(--primary)
 
 button:disabled {background-color:#525762}
 
-.file-button {background: #2b3442; color: #d4d4d9;}
+.copy-button, .file-button {border:none; background: #424d5e; color: #000;}
+.copy-button:active, .file-button:active {background-color:var(--primary-darker)}
 
 .icon-delete {opacity:0.7}
 

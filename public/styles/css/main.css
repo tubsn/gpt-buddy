@@ -69,6 +69,9 @@ hr.black {border-color:#000}
 table.fancy.history td, table.fancy.history th {padding: 0 20px}
 table.fancy.history pre:hover {cursor:pointer; background-color: #fbeac9}
 
+table tr.system, table.fancy tr:nth-child(2n) {background-color:transparent;}
+table.fancy.history tr:hover, table tr.system {background-color:inherit;}
+
 .error-message {padding:0.2em 0.4em; display:inline-block; color:white; background-color:var(--warning); border-radius: 0.3em;}
 
 
@@ -120,8 +123,7 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 .gpt-output, .user-input {position:relative;}
 
 .io-textarea ol li, .io-textarea ul li {margin-bottom:0.4em;}
-
-.user-input button.light {float:right; position:relative; top:10px; background-color: white; border: 0px solid var(--primary)}
+.user-input button.light {float:right; position:relative; top:10px;}
 
 /* File / Copy Button */
 .copy-button, .file-button {cursor:pointer; position: absolute; right:0em; top:-1em; font-size: 0.7em; padding:0.4em 0.4em 0 0.4em;
@@ -189,8 +191,8 @@ ul.pager li a.disabled {background:#ececec; color:#b1b1b1;}
 
 
 /* Tables */
-table tr.system, table tr.system:nth-child(2n) {background-color:#ececec;}
-table tr.system:hover, table tr.system:nth-child(2n):hover {color:inherit}
+/*table tr.system, table tr.system:nth-child(2n) {background-color:#ececec;}
+table tr.system:hover, table tr.system:nth-child(2n):hover {color:inherit}*/
 table tr.system pre {max-height: 72px; overflow-y: auto;}
 table.fancy th {background-color: var(--primary);}
 
