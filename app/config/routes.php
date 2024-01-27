@@ -44,6 +44,8 @@ $routes->get('/settings/new', 'Settings@new');
 $routes->post('/settings/new', 'Settings@create');
 $routes->get('/settings/{id:\d+}', 'Settings@edit');
 $routes->post('/settings/{id:\d+}', 'Settings@save');
+$routes->get('/settings/{id:\d+}/copy', 'Settings@copy');
+$routes->post('/settings/{id:\d+}/copy', 'Settings@create');
 $routes->get('/settings/{id:\d+}/delete', 'Settings@delete');
 
 // Stats

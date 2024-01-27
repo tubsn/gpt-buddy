@@ -55,8 +55,15 @@
 
 
 <td class="text-right">
-			<a id="del-match-<?=$prompt['id']?>" class="noline pointer"><img class="icon-delete" src="/styles/flundr/img/icon-delete-black.svg"></a>
-		<fl-dialog selector="#del-match-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/delete">
+
+		<a id="copy-prompt-<?=$prompt['id']?>" title="kopieren" class="noline pointer"><img class="icon-delete" src="/styles/flundr/img/icon-copy.svg"></a>
+		<fl-dialog selector="#copy-prompt-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/copy">
+		<h1><?=$prompt['title']?> - kopieren?</h1>
+		<p>Möchten Sie den Prompt wirklich kopieren?</p>
+		</fl-dialog>
+
+		<a id="del-prompt-<?=$prompt['id']?>"  title="löschen" class="noline pointer"><img class="icon-delete" src="/styles/flundr/img/icon-delete-black.svg"></a>
+		<fl-dialog selector="#del-prompt-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/delete">
 		<h1><?=$prompt['title']?> - löschen?</h1>
 		<p>Möchten Sie den Prompt wirklich löschen?</p>
 		</fl-dialog>
@@ -71,7 +78,7 @@
 <?php endforeach ?>
 
 
-<h1>Prompt Nutzungs Statistik</h1>
+<h1>Prompt-Nutzungsstatistik</h1>
 <p>Prompts müssen mindestens 10 mal benutzt werden, um hier gelistet zu sein.</p>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

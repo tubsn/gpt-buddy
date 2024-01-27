@@ -24,14 +24,16 @@ button:disabled {opacity:0.5; background-color:#aaa}
 button:disabled {cursor:not-allowed;}
 form button.light, form a.light, button.light, .button.light {background-color:white;}
 
-button.stop {background-color: #b79393}
-button.stop:hover {background-color:#a65252 !important}
+button.stop {background-color: var(--warning); opacity:0.7}
+button.stop:hover {background-color:var(--warning) !important; opacity:1}
 
 select {cursor:pointer;}
 form button[type="submit"]:hover, form button[type="submit"]:focus {background-color: var(--primary); outline:none;}
 form button:hover, form button:focus, .button:hover, .button:focus {background-color: var(--primary); outline:none;}
 h1 > a:hover, h2 > a:hover, h3 > a:hover {color: var(--primary);}
+a:link {color: var(--primary)}
 a:visited {color:inherit;}
+
 
 textarea:focus, input:focus, textarea:focus, select:focus {outline: 2px solid var(--primary);}
 
@@ -67,7 +69,7 @@ hr.black {border-color:#000}
 .history pre {white-space:break-spaces;}
 .history {font-size: 0.8em; line-height: 120%;}
 table.fancy.history td, table.fancy.history th {padding: 0 20px}
-table.fancy.history pre:hover {cursor:pointer; background-color: #fbeac9}
+table.fancy.history pre:hover {cursor:pointer; background-color: var(--primary-highlight)}
 
 table tr.system, table.fancy tr:nth-child(2n) {background-color:transparent;}
 table.fancy.history tr:hover, table tr.system {background-color:inherit;}
@@ -279,7 +281,7 @@ animation: menu-scroll-in 0.1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;}
 100% {transform: scale(1); transform-origin: 0% 0%; opacity: 1;} }
 
 .main-nav ul li:hover {background-color:var(--primary-darker);}
-.main-nav ul li ul li {width: 100%; box-sizing: border-box; border-bottom:1px dashed #388f83; background:var(--primary-darker);}
+.main-nav ul li ul li {width: 100%; box-sizing: border-box; border-bottom:1px dashed var(--primary-highlight); background:var(--primary-darker);}
 .main-nav ul li ul li:last-of-type {border-bottom:none; border-bottom-left-radius:10px; border-bottom-right-radius:10px;}
 .main-nav ul li ul li a {text-indent:.5em; white-space: nowrap; padding-right:.5em; }
 .main-nav ul li ul li:last-of-type:hover {background:none !important;}
@@ -302,7 +304,7 @@ table.js-sortable th {cursor:pointer;}
 table.js-sortable th.dir-u {background-image: linear-gradient(to top, #0d0d0d 0%, #242424 82%, #6dae55 82%, #a7ce80 100%) !important;}
 table.js-sortable th.dir-d {background-image: linear-gradient(#0d0d0d 0%, #242424 82%, #6dae55 82%, #a7ce80 100%) !important}
 table.fancy.js-sortable th:hover {background-color: #0b0b0b}
-table.fancy tr:hover {background-color: #e9f0ef;}
+table.fancy tr:hover {background-color: var(--grey);}
 
 
 /* Auth */

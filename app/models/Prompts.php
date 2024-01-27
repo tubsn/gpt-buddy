@@ -70,6 +70,20 @@ class Prompts extends Model
 		return $output;
 	}
 
+	public function copy($id) {
+		$copy = $this->db->read($id);
+
+		if (empty($copy)) {
+			throw new \Exception("Prompt ID not found", 400);
+		}
+
+		$copy['history'] = null;
+		unset($copy['id'], $copy['edited'], $copy['created'], $copy['hits']);
+
+		$copy['title'] .= ' (Kopie)';
+		return $copy;
+	}
+
 	public function most_hits() {
 		$table = $this->db->table;
 		$SQLstatement = $this->db->connection->prepare("SELECT hits,title FROM $table WHERE hits >= 10 ");

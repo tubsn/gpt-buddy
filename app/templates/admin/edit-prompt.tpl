@@ -121,18 +121,29 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	<button class="submit">Angaben speichern</button>&ensp;
 	<a class="button light" href="/settings">zurück zur Übersicht</a>
 
+	<?php if (isset($prompt['id'])): ?>
 	<div class="fright">
-		<a id="del-match-<?=$prompt['id']?>" class="button light">Prompt löschen</a>
+		
+		<a id="copy-prompt-<?=$prompt['id']?>" title="kopieren" class="button light"><img class="icon-delete" src="/styles/flundr/img/icon-copy.svg"> kopieren</a>
+		<fl-dialog selector="#copy-prompt-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/copy">
+		<h1><?=$prompt['title']?> - kopieren?</h1>
+		<p>Möchten Sie den Prompt wirklich kopieren?</p>
+		</fl-dialog>
+
+
+
+		<a id="del-match-<?=$prompt['id']?>" class="button light"><img class="icon-delete" src="/styles/flundr/img/icon-delete-black.svg"> löschen</a>
 		<fl-dialog selector="#del-match-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/delete">
 		<h1><?=$prompt['title']?> - löschen?</h1>
 		<p>Möchten Sie den Prompt wirklich löschen?</p>
 		</fl-dialog>
 	</div>
+	<?php endif ?>
 
 
 </form>
 
-<?php if ($prompt['edited']): ?>
+<?php if (isset($prompt['edited'])): ?>
 <small class="fright">
 Editiert: <?=formatDate($prompt['edited'],'d.m.Y H:i')?>
 </small>

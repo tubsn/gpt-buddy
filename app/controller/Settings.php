@@ -93,7 +93,7 @@ class Settings extends Controller {
 		$this->view->render('admin/new-prompt');
 	}
 
-	public function create() {
+	public function create($id = null) {
 		$_POST['user'] = auth('id');
 		$this->Prompts->create($_POST);
 		$this->view->redirect('/settings');
@@ -103,6 +103,15 @@ class Settings extends Controller {
 		$this->Prompts->update_with_history($_POST, $id);
 		$this->view->back();
 		//$this->view->redirect('/settings');
+	}
+
+	public function copy($id) {
+		$prompt = $this->Prompts->copy($id);
+		$this->view->prompt = $prompt;
+		$categories = array_keys(CATEGORIES);
+		$categories = array_filter($categories, fn ($set) => $set != 'user');
+		$this->view->categories = $categories;
+		$this->view->render('admin/edit-prompt');
 	}
 
 	public function delete($id) {

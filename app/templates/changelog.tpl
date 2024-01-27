@@ -14,8 +14,11 @@
 <h1>Ai-Buddy Changelog</h1>
 <hr>
 
+<h3>27. Januar 2023 - Duplizieren von Prompts</h3>
+<p>Prompts lassen sich jetzt im Konfigurationsmenu duplizieren.</p>
+
 <h3>23. Januar 2023 - Userinterface verbesserungen</h3>
-<p>Für mehr Kontrolle bei der Textgenerierung, gibt es einen neuen Button, mit dem die Text Generierung jederzeit beendet werden kann. Außerdem wurden die Buttons zum Löschen des Verlaufs verschoben um mehr Klarheit zu schaffen.
+<p>Für mehr Kontrolle bei der Textgenerierung, gibt es einen neuen Button, mit dem die Textgenerierung jederzeit beendet werden kann. Außerdem wurden die Buttons zum Löschen des Verlaufs verschoben um mehr Klarheit zu schaffen.
 <p>Prompt-Editierungs-UI optisch verbessert.</p>
 <p>Einträge im Verlauf können jetzt angeklickt werden, dadurch wird der Verlauf in das aktuelle Eingabefeld kopiert</p>
 
