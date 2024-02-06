@@ -5,7 +5,7 @@
         "gioni06/gpt3-tokenizer": "^1.2",
         "league/commonmark": "^2.4",
         "smalot/pdfparser": "^2.7",
-        "phpoffice/phpspreadsheet": "^1.29"        
+        "phpoffice/phpspreadsheet": "^1.29"
     },
     "autoload": {
         "psr-4": {

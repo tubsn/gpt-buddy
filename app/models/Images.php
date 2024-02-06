@@ -36,11 +36,12 @@ class Images extends Model
 
 		$files = array_map(function($filename) {
 			
-			$info = getimagesize($this->internalPath . $filename);
+			$info = getimagesize($this->internalPath . $filename, $meta);
 			$file['path'] = $this->externalPath . $filename;
 			$file['width'] = $info[0];
 			$file['height'] = $info[1];
 			$file['name'] = $filename;
+			$file['prompt'] = $this->extract_prompt_data($meta);
 
 			return $file;
 
@@ -48,6 +49,13 @@ class Images extends Model
 
 		return $files;
 
+	}
+
+	public function extract_prompt_data($meta) {
+		if (!isset($meta['APP13'])) {return '';} // IPTC Comment Field
+		$comments = explode('--PROMPT--', $meta['APP13']);
+		$prompt = $comments[1] ?? '';
+		return trim($prompt);
 	}
 
 }

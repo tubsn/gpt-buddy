@@ -39,13 +39,13 @@ class OpenAIImage
 			throw new \Exception($out['error']['message'], 400);
 		}
 
-		$path = $this->save_file($out['data'][0]['b64_json']);
+		$path = $this->save_file($out['data'][0]['b64_json'], $prompt);
 		return $path;
 
 	}
 
 
-	private function save_file($base64SJson) {
+	private function save_file($base64SJson, $prompt) {
 		$imagedata = base64_decode($base64SJson);
 		$image = imagecreatefromstring($imagedata);
 
@@ -57,8 +57,17 @@ class OpenAIImage
 
 		imagejpeg($image, $file, 80);
 		//file_put_contents($file,$imagedata);
+
+		$this->add_prompt_to_file($file, $prompt);
 		
 		return '/generated/' . $filename;
+	}
+
+
+	public function add_prompt_to_file($file, $prompt) {
+		$comment = '--PROMPT--' . strip_tags($prompt);
+		$imgWithPrompt = iptcembed($comment, $file);
+		file_put_contents($file, $imgWithPrompt);		
 	}
 
 }

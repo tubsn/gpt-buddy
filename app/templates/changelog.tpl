@@ -11,7 +11,7 @@
 
 <section class="box" style="max-width:1200px; margin:0 auto; margin-top:2em">
 
-<h1>Ai-Buddy Changelog</h1>
+<h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
 <h3>27. Januar 2023 - Duplizieren von Prompts</h3>

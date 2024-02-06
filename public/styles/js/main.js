@@ -310,7 +310,7 @@ methods: {
 
 		this.loading = true
 		let value = event.target.value || null;
-		if (!value) {this.input = ''; return}
+		if (!value) {this.input = ''; this.loading = false; return}
 
 		let id = value.match(/-(\d{8}).html/);
 		if (id) {id = id[1]}
@@ -321,11 +321,11 @@ methods: {
 		if (value.includes('swp.de')) {portal = 'SWP'}
 
 		let response = await fetch('/import/article/' + portal + '/' + id)
-		if (!response.ok) {this.input = 'URL ungültig oder Artikel nicht gefunden'; return}
+		if (!response.ok) {this.input = 'URL ungültig oder Artikel nicht gefunden'; this.loading = false; return}
 
 		let json = await response.json()
-		.catch(error => {this.input = error; return})
-		this.input = json.content
+		.catch(error => {this.input = error; this.loading = false; return})
+		this.input = json.content || ''
 		this.loading = false
 
 	},
