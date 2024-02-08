@@ -65,6 +65,10 @@ class OpenAIImage
 
 
 	public function add_prompt_to_file($file, $prompt) {
+
+		$prompt = strip_tags($prompt);
+		$prompt = htmlentities($prompt);
+
 		$comment = '--PROMPT--' . strip_tags($prompt);
 		$imgWithPrompt = iptcembed($comment, $file);
 		file_put_contents($file, $imgWithPrompt);		
