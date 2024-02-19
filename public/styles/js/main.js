@@ -439,13 +439,11 @@ methods: {
 	stopStream() {
 		this.eventSource.close()
 
-		//if (this.isOutputUrl() == true) {window.open(this.output, '_blank')}
-
 		this.markdown = true		
 		marked.use({breaks: true, mangle:false, headerIds: false,});
-		this.output = marked.parse(this.output);
 		this.chars = this.output.length
 
+		this.output = marked.parse(this.output);
 		Vue.nextTick(() => {hljs.highlightAll();})
 
 		this.loading = false
