@@ -37,8 +37,10 @@ a:visited {color:inherit;}
 
 textarea:focus, input:focus, textarea:focus, select:focus {outline: 2px solid var(--primary);}
 
+/*
 textarea {resize: none;}
 textarea:hover, textarea:focus {resize: vertical;}
+*/
 
 input[type='checkbox'] {accent-color: var(--primary);}
 input[type='checkbox']:focus {outline:none;}
