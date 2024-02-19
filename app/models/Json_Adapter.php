@@ -9,7 +9,7 @@ class Json_Adapter
 
 	public function get_by_id($articleID = null) {
 
-		$url = $this->portalURL . '/' . $articleID . '?_XML=RSS';
+		$url = $this->portalURL . '/' . $articleID;
 		$curlData = $this->curl_with_redirect($url);
 
 		$url = $curlData['url'];
