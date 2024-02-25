@@ -1,4 +1,4 @@
-# AI | Buddy	
+# GPT | Buddy	
 Prompt Management System for Interaction with the ChatGPT API 
 
 ![AIBuddypreview](aibuddy.jpg)
@@ -16,8 +16,8 @@ AI Image generation via Dall-E3
 Integrated User- and Rights-Management System  
 Detailed prompt usage statistics to identify workflows for your Company  
 
-## Licensing
-For Demonstration or Licensing information please contact stuff@artmessengers.de  
+## Demonstration
+For Demonstration purposes please contact stuff@artmessengers.de  
 More information on: https://www.artmessengers.de/aibuddy/ai-buddy-features.pdf
 
 ## Requirements
