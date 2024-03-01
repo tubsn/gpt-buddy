@@ -3,6 +3,7 @@
 namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\JWTAuth;
+use flundr\auth\Auth;
 
 class API extends Controller {
 
@@ -58,6 +59,18 @@ class API extends Controller {
 		$prompts = $this->Prompts->all();
 		if (empty($prompts)) {throw new \Exception("No Prompts Found", 404);}
 		echo $this->view->json($prompts);
+	}
+
+	public function create_bearer_token() {
+
+		if (!Auth::logged_in()) { Auth::loginpage(); }
+		if (Auth::get('level') != 'Admin') {
+			throw new \Exception("Sie haben keine Berechtigung diese Seite aufzurufen", 403);
+		}
+
+		$jwt = new JWTAuth;
+		$token = $jwt->create_token(null, null, '+1year');
+		echo ($token);
 	}
 
 }

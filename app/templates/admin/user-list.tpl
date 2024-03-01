@@ -42,4 +42,13 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 
 	<a class="button mt" href="/admin/new">Neuen User anlegen</a>
 
+<hr>
+
+<div style="margin-top:3em;">
+	<h1>Api Verwaltung</h1>
+	<p>Hier können Tokens für die Promptapi generiert werden. Die Bearer Tokens sind immer 1 Jahr gültig.</p>
+	<a class="button mt" href="/admin/apitoken">Bearer Token generieren</a>
+</div>
+
 </main>
+

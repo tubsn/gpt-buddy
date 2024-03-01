@@ -18,6 +18,7 @@ $routes->get('/stream/{id}', 'API@stream');
 $routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
 $routes->get('/prompts', 'API@prompts');
 $routes->get('/prompts/{id}', 'API@prompt');
+$routes->get('/admin/apitoken', 'API@create_bearer_token');
 
 // Conversations
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
