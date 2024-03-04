@@ -47,6 +47,12 @@ class Chat extends Controller {
 
 	}
 
+	public function external_api_url_test() {
+		$out = $this->ChatGPT->direct('Hi was geht?');
+		dd($out);
+	}
+
+
 	public function faq() {
 		$this->view->title = 'Hinweise zum Umgang mit KI';
 		$this->view->render('faq');

@@ -1,7 +1,7 @@
 {
     "require": {
         "flundr/core": "^2.0",
-        "orhanerday/open-ai": "^4.7",
+        "orhanerday/open-ai": "^5.1",
         "gioni06/gpt3-tokenizer": "^1.2",
         "league/commonmark": "^2.4",
         "smalot/pdfparser": "^2.7",

@@ -6,6 +6,8 @@ $routes->get('/faq', 'Chat@faq');
 $routes->get('/changelog', 'Chat@changelog');
 $routes->get('/engines', 'Chat@engines');
 
+$routes->get('/test', 'Chat@external_api_url_test');
+
 // Namenswahl
 $routes->get('/name', 'Stats@form_name');
 $routes->get('/name/liste', 'Stats@list_name');

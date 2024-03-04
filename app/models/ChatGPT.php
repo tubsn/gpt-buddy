@@ -145,7 +145,7 @@ class ChatGPT
 
 	public function list_engines() {
 		$open_ai = new OpenAi(CHATGPTKEY);
-		return $open_ai->engines();
+		return $open_ai->listModels();
 	}
 
 	public function detect_moderation_flags($text) {
@@ -178,6 +178,8 @@ class ChatGPT
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
+		if (defined(CHATGPTBASEURL)) {$open_ai->setBaseURL(CHATGPTBASEURL);}
+
 		$chat = $open_ai->chat([
 			'model' => $model,
 			'messages' => $this->conversation,
@@ -219,6 +221,8 @@ class ChatGPT
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
+		if (defined(CHATGPTBASEURL)) {$open_ai->setBaseURL(CHATGPTBASEURL);}
+				
 		$options = [
 			'model' => $model,
 			'messages' => $this->conversation,
