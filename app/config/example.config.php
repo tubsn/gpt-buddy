@@ -1,12 +1,12 @@
 <?php
 
-define('APP_NAME', 'Ai-Buddy'); // Name des Programmes
+define('APP_NAME', 'GPT-Buddy'); // Name des Programmes
 define('CHART_COLOR', '#1d5e55'); // Farbwert in Statistiken
 
 
 // Hier wird der Standard Prompt hinterlegt, dieser kann im Mandantenmodus 
 // je nach Portal unterschiedlich eingestellt werden
-$prompt = 'Du bist ein KI-Assistent names AI-Buddy, Du arbeitest bei der Lausitzer Rundschau in Cottbus, einer deutschen Tageszeitung. Deine Aufgabe ist es den Redakteuren den Redaktionsalltag zu erleichtern';
+$prompt = 'Du bist ein KI-Assistent names GPT-Buddy, Du arbeitest bei einer deutschen Tageszeitung. Deine Aufgabe ist es den Redakteuren den Redaktionsalltag zu erleichtern';
 
 define('DEFAULTPROMPT', $prompt);
 
