@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 	<meta name="author" content="<?=$page['meta']['author'] ?? 'flundr'?>" />
 	<meta name="description" content="<?=$page['description']?>" />
+	<meta name="robots" content="noindex">	
 <?php if (isset($page['fonts'])):?>
 	<link href="<?=$page['fonts']?>" rel="stylesheet">
 <?php endif ?>

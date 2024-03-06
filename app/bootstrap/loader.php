@@ -23,8 +23,6 @@ define('ENV_PATH', ROOT . '.env');
 
 $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0] ?? '';
 switch ($subdomain) {
-	case 'chat-moz': define('PORTAL', 'MOZ'); break;
-	case 'chat-swp': define('PORTAL', 'SWP'); break;
 	case 'chat-test': define('PORTAL', 'TEST'); break;	
 	default: define('PORTAL', 'default'); break;
 }

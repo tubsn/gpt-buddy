@@ -11,60 +11,10 @@ class Callbacks
 
 	public function run($callback, $prompt = null) {
 
-		if ($callback == 'lr-news') {
-			return $this->json_feed_lr($prompt);
-		}
-
-		if ($callback == 'wyld-db') {
-			return $this->wyld_marketingplan($prompt);
-		}
-
-		if ($callback == 'article-scores') {
-			return $this->compare_article_scores($prompt);
-		}
-
-		if ($callback == 'audience-haeuslebauer') {
-			return $this->audience_haeusle_bauer($prompt);
-		}
-
-
 		if ($callback == 'current-date') {return $this->current_date($prompt);}
 		if ($callback == 'current-time') {return $this->current_time($prompt);}
 
 		return $prompt;
-	}
-
-	private function wyld_marketingplan($prompt) {
-
-		$rssData = $this->curl('https://wyld.lr-digital.de/api/booked');
-		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
-
-		return $prompt;
-
-	}
-
-	private function audience_haeusle_bauer($prompt) {
-
-		if (PORTAL == 'MOZ') {$rssData = $this->curl('https://reports-moz.lr-digital.de/export/articles/audience/Häuslebauer');}
-		if (PORTAL == 'SWP') {$rssData = $this->curl('https://reports-swp.lr-digital.de/export/articles/audience/Häuslebauer');}
-
-		else {$rssData = $this->curl('https://reports.lr-digital.de/export/articles/audience/H%C3%A4uslebauer');}
-		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
-
-		return $prompt;
-
-	}
-
-
-	private function compare_article_scores($prompt) {
-
-		if (PORTAL == 'MOZ') {$rssData = $this->curl('https://reports-moz.lr-digital.de/export/articles/score');}
-		if (PORTAL == 'SWP') {$rssData = $this->curl('https://reports-swp.lr-digital.de/export/articles/score');}
-		else {$rssData = $this->curl('https://reports.lr-digital.de/export/articles/score');}
-		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
-
-		return $prompt;
-
 	}
 
 	private function current_date($prompt) {
@@ -77,18 +27,6 @@ class Callbacks
 		$date = date('H:i', time());
 		$prompt['content'] = $prompt['content'] . "\n" . 'Es ist ' . $date . ' Uhr.';
 		return $prompt;
-	}
-
-	private function json_feed_lr($prompt) {
-
-		$rssData = $this->curl('https://epreader.lr-digital.de/excerpt');
-		
-		$date = 'Das aktuelle Datum ist: ' . date('d.m.Y H:i');
-		$prompt['content'] = $prompt['content'] . "\n" . $date;
-		$prompt['content'] = $prompt['content'] . "\n" . json_encode($rssData);
-
-		return $prompt;
-
 	}
 
 	private function curl($url) {

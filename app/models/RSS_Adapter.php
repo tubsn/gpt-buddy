@@ -5,14 +5,11 @@ namespace app\models;
 class RSS_Adapter
 {
 
-	public $portalURL = 'https://www.lr-online.de';
+	public $portalURL = 'https://www.test.de';
 
 	function __construct() {}
 
 	public function get_by_id($articleID = null) {
-
-		if (PORTAL == 'MOZ') {$this->portalURL = 'https://www.moz.de';}
-		if (PORTAL == 'SWP') {$this->portalURL = 'https://www.swp.de';}
 
 		$url = $this->portalURL . '/' . $articleID . '?_XML=RSS';
 		$curlData = $this->curl_with_redirect($url);
@@ -95,36 +92,6 @@ class RSS_Adapter
 		$searchPattern = "/-(\d{8}).html/";
 		preg_match($searchPattern, $url, $matches);
 		return $matches[1]; // First Match should be the ID
-	}
-
-	private function extract_ressort($url) {
-
-		$path = parse_url($url, PHP_URL_PATH);
-		$path = trim ($path, '/');
-		$paths = explode('/',$path);
-
-		$paths = array_filter($paths, function($path) {
-			return strpos($path,'.html') == false ;
-		});
-
-		if ($paths[0] == 'lausitz') {
-			return $paths[1];
-		}
-
-		if (isset($paths[1]) && $paths[1] == 'sport') {
-			return $paths[1];
-		}
-
-		return $paths[0];
-
-	}
-
-	private function get_image($enclosureURL) {
-		// toString throws Fatal Error if cast on null
-		if ($enclosureURL) {
-			return $enclosureURL->__toString();
-		}
-		return null;
 	}
 
 

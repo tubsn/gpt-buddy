@@ -88,7 +88,7 @@
 </ul>
 
 <h3>16. Juni 2023 - Darkmode</h3>
-<p>Es steht ab sofort ein Darkmode für den Ai-Buddy zur verfügung. Yey!</p>
+<p>Es steht ab sofort ein Darkmode für den Buddy zur verfügung. Yey!</p>
 
 <h3>3. Juni 2023 - Antworten Streams</h3>
 <p>Antworten werden jetzt gestreamt d.h. der Nutzer kann während der generierung die Antwort bereits anlesen. Was zu mehr produktivität führt.</p>
@@ -98,7 +98,7 @@
 Dadurch ist sichergestellt, dass parallel mehrere Nutzeranfragen gleichzeitig verarbeitet werden können. Das System ist dadruch flexibel aufrüstbar, solange bis wir an die ChatGPT Api vorgaben (zur Zeit 3,5 Abfragen pro Minute) stoßen. Aber auch das ließe sich über mehrere API Konten weiter skalieren.</p>
 
 <h3>12. Mai 2023 - Github Open Source</h3>
-<p>Der Ai-Buddy Code kann für Studienzwecke bei Github eingesehen werden.</p>
+<p>Der Buddy Code kann für Studienzwecke bei Github eingesehen werden.</p>
 
 <h3>xx. April 2023 - Start</h3>
 <p>Projekt ins Leben gerufen</p>

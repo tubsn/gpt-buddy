@@ -33,7 +33,6 @@ define('CATEGORIES', [
 
 	'redaktion'		=> ['title' => 'Redaktions Helfer', 'articleImport' => true],
 	'sport'			=> ['title' => 'Alles für den Spocht!', 'articleImport' => true],
-	'horoskope'		=> ['title' => 'das große Astro-Portal', 'hideDefault' => true],
 	'support'		=> ['title' => 'Kundenservice', 'hideDefault' => true],
 	'sales'			=> ['title' => 'Anzeigenverkauf', 'hideDefault' => true],
 	'social'		=> ['title' => 'Social Media', 'articleImport' => true, 'hideDefault' => true],

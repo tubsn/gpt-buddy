@@ -5,7 +5,7 @@ namespace app\models;
 class Json_Adapter
 {
 
-	public $portalURL = 'https://test5.zvw.de/REST/frontend/zvw/v1/chat_gpt_input/article';
+	public $portalURL = '';
 
 	public function get_by_id($articleID = null) {
 
