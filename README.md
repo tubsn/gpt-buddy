@@ -1,7 +1,7 @@
 # GPT | Buddy	
 Prompt Management System for Interaction with the ChatGPT API 
 
-![AIBuddypreview](aibuddy.jpg)
+![Buddypreview](buddy.jpg)
 
 ## Latest News
 Important Information for the Prompt Temperatures Update from 2023-12-17  
@@ -18,7 +18,7 @@ Detailed prompt usage statistics to identify workflows for your Company
 
 ## Demonstration
 For Demonstration purposes please contact stuff@artmessengers.de  
-More information on: https://www.artmessengers.de/aibuddy/ai-buddy-features.pdf
+More information on: https://www.artmessengers.de/buddy/buddy-features.pdf
 
 ## Requirements
 External OpenAI account (https://platform.openai.com)  
@@ -38,7 +38,7 @@ preferablly Composer
 
 ## Configuration
 In the config.php File you can setup Categories which you can use to seperate your Prompts into groups e.G. Editorial, Support, Sales.  
-Prompt-Categories can be accessed like this: www.aibuddy.com/categoryname  
+Prompt-Categories can be accessed like this: www.buddy.com/categoryname  
 You should setup your navigation (app/tamples/navigation/main-nav.tpl) according to your Prompt-Categories
 
 ## Customization
