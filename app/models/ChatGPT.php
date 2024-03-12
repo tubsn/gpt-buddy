@@ -178,7 +178,7 @@ class ChatGPT
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
-		if (defined(CHATGPTBASEURL)) {$open_ai->setBaseURL(CHATGPTBASEURL);}
+		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
 		$chat = $open_ai->chat([
 			'model' => $model,
@@ -221,8 +221,8 @@ class ChatGPT
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
-		if (defined(CHATGPTBASEURL)) {$open_ai->setBaseURL(CHATGPTBASEURL);}
-				
+		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
+
 		$options = [
 			'model' => $model,
 			'messages' => $this->conversation,
