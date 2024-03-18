@@ -33,7 +33,7 @@ preferablly Composer
    public/styles/css/example.custom.css -> **custom.css**  
 2. Add your Database credentials and the OpenAI-API Key (https://platform.openai.com) to you .env File
 3. Optionally, in the .env file you can setup an SMTP-E-Mail Server (used for Password recovery) or define IP-Ranges that do not require Logins e.g. for Intranet Usage
-4. Import the Prompt Database (supplied after Licensing) into your Database (e.g. with PHP My Admin)
+4. Import the Prompt Database (supplied externally) into your Database (e.g. with PHP My Admin)
 5. run "composer install"
 
 ## Configuration
