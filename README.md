@@ -26,15 +26,16 @@ Webserver with PHP8 and MySQL Database
 preferablly Composer
 
 ## Installation
-1. Important: Before you start you have to rename 3 Files:  
+1. Important: Before you start you have to rename 4 Files:  
    example.env -> **.env**  
    app/config/example.config.php -> **config.php**  
-   app/templates/navigation/example.main-nav.tpl -> **main-nav.tpl**  
+   app/templates/navigation/example.main-nav.tpl -> **main-nav.tpl**
+   app/templates/example.faq.tpl -> **faq.tpl**     
    public/styles/css/example.custom.css -> **custom.css**  
-2. Add your Database credentials and the OpenAI-API Key (https://platform.openai.com) to you .env File
-3. Optionally, in the .env file you can setup an SMTP-E-Mail Server (used for Password recovery) or define IP-Ranges that do not require Logins e.g. for Intranet Usage
-4. Import the Prompt Database (supplied externally) into your Database (e.g. with PHP My Admin)
-5. run "composer install"
+3. Add your Database credentials and the OpenAI-API Key (https://platform.openai.com) to you .env File
+4. Optionally, in the .env file you can setup an SMTP-E-Mail Server (used for Password recovery) or define IP-Ranges that do not require Logins e.g. for Intranet Usage
+5. Import the Prompt Database (supplied externally) into your Database (e.g. with PHP My Admin)
+6. run "composer install"
 
 ## Configuration
 In the config.php File you can setup Categories which you can use to seperate your Prompts into groups e.G. Editorial, Support, Sales.  
