@@ -3,6 +3,7 @@
 /vendor
 /app/config/config.php
 /app/templates/navigation/main-nav.tpl
+/app/templates/faq.tpl
 /public/storage
 /public/audio
 /public/generated
