@@ -14,6 +14,8 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+
+
 <h3>27. Januar 2023 - Duplizieren von Prompts</h3>
 <p>Prompts lassen sich jetzt im Konfigurationsmenu duplizieren.</p>
 
