@@ -55,7 +55,6 @@
 
 
 <td class="text-right">
-
 		<a id="copy-prompt-<?=$prompt['id']?>" title="kopieren" class="noline pointer"><img class="icon-delete" src="/styles/flundr/img/icon-copy.svg"></a>
 		<fl-dialog selector="#copy-prompt-<?=$prompt['id']?>" href="/settings/<?=$prompt['id']?>/copy">
 		<h1><?=$prompt['title']?> - kopieren?</h1>
@@ -68,6 +67,7 @@
 		<p>Möchten Sie den Prompt wirklich löschen?</p>
 		</fl-dialog>
 </td>
+	
 
 </tr>
 <?php endforeach ?>
