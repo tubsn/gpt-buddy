@@ -10,7 +10,7 @@ class Settings extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 
-		if (!Auth::has_right('chatgpt')) {
+		if (!Auth::has_right('chatgpt') && !$this->user_can_see_config()) {
 			throw new \Exception("Sie haben keine Berechtigung diese Seite aufzurufen", 403);
 		}
 
@@ -19,9 +19,30 @@ class Settings extends Controller {
 		$this->models('Prompts');
 	}
 
+	public function user_can_see_config() {
+		$configureableCategories = $this->editable_rights();
+		if (count($configureableCategories) > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public function editable_rights() {
+		$usersCategories = explode_and_trim(',', auth('rights'));
+		$categories = array_keys(CATEGORIES);
+		$categories = array_filter($categories, fn ($category) => in_array($category, $usersCategories));
+		return $categories;
+	}
+
+
 	public function index() {
 
 		$prompts = $this->Prompts->list_all();
+
+		if (!Auth::has_right('chatgpt')) {
+			$usersCategories = $this->editable_rights();
+			$prompts = array_filter($prompts, fn ($set) => in_array($set['category'], $usersCategories));
+		}
 
 		$categories = array_group_by('category', $prompts);
 		$this->view->categories = $categories;
@@ -68,18 +89,18 @@ class Settings extends Controller {
 		if (isset($prompt['history'])) {
 			$prompt['history'] = json_decode($prompt['history'],1);
 			$prompt['history'] = array_reverse($prompt['history']);
-
-			/*
-			if (count($prompt['history'])>1) {
-				array_shift($prompt['history']);
-			}
-			*/
-
 		}
+		
 		$this->view->prompt = $prompt;
 		if (!$this->view->prompt) {throw new \Exception("Prompt not Found", 404);}
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');
+
+		if (!Auth::has_right('chatgpt')) {
+			$usersCategories = $this->editable_rights();
+			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
+		}
+
 		$this->view->categories = $categories;
 		$this->view->render('admin/edit-prompt');
 	}
@@ -88,6 +109,12 @@ class Settings extends Controller {
 	public function new() {
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');		
+
+		if (!Auth::has_right('chatgpt')) {
+			$usersCategories = $this->editable_rights();
+			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
+		}
+
 		$this->view->categories = $categories;
 		$this->view->selectedCategory = $_GET['category'] ?? null;
 		$this->view->render('admin/new-prompt');
