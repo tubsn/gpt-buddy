@@ -161,6 +161,11 @@ text-align:center; background-color:white; border-radius:0.3em; border: 1px soli
 	.image-history img {max-width:100%}
 }
 
+/* Vision Image */
+.input-payload {max-width:150px; max-height:30px; position: absolute; top: -4.5em; right:3em; cursor:pointer; }
+.input-payload img {max-height:110px; border-radius:0.3em; border:2px solid var(--primary);}
+.input-payload:hover:after {position: absolute; content: '✕'; right: 0.4em; top: 0.2em; color: white; font-size: 0.7em;} 
+
 /* Form Container */
 .form-container {background-color:#efefef; position:relative; transition: background-color 0.5s ease; transition: border-color 0.5s ease;
 padding:1em 2em; margin-bottom:1em; border-radius:1em; 

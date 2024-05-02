@@ -70,7 +70,11 @@
 <div class="grid-2-col">
 
 	<section class="user-input">
-		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF)</span></div>
+		<figure v-if="payload" title="Klicken zum entfernen" @click="payload = ''" class="input-payload">
+			<img :src="payload">
+		</figure>
+
+		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span></div>
 		<input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 
 		<label>Eingabe:
@@ -111,7 +115,7 @@
 	<table class="fancy history wide">
 		<tr :class="entry.role.toLowerCase()" v-for="entry in history"> 
 			<td class="ucfirst">{{entry.role}}</td>
-			<td><pre @click="copyToInput">{{entry.content}}</pre></td>
+			<td><pre @click="copyToInput">{{filterInstructions(entry.content)}}</pre></td>
 		</tr>
 	</table>
 

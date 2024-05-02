@@ -8,6 +8,7 @@
 /public/audio
 /public/generated
 /public/uploads
+/public/visionupload
 /public/assets
 /public/styles/css/custom.css
 .env

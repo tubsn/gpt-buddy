@@ -4,6 +4,9 @@ namespace app\models;
 use \Smalot\PdfParser\Parser;
 use \Smalot\PdfParser\Config;
 use \app\models\OpenAIWhisper;
+use \flundr\file\Storage;
+use \flundr\utility\Log;
+use \Intervention\Image\ImageManager;
 
 class FileReader
 {
@@ -29,6 +32,7 @@ class FileReader
 		$type = $this->detect_type($file);
 
 		if ($type == 'pdf') {return $this->pdf($filepath);}
+		if ($type == 'image') {return $this->image($file);}
 		if ($type == 'audio') {return $this->audio($file);}
 		if ($type == 'word') {return $this->docx($filepath);}
 		if ($type == 'excel') {return $this->excel($filepath);}
@@ -70,6 +74,28 @@ class FileReader
 	}
 
 
+	private function image($file) {
+		$visionfolder = new Storage();
+		$visionfolder->formats = ['jpg','jpeg','png','webp'];
+		$uploadinfo = $visionfolder->store([$file]);
+		$data['payload'] = $uploadinfo[0]['url'];
+
+		try {
+			// Resize the Image to a max of 2000px
+			$imgmanager = new ImageManager();
+			$img = $imgmanager->make(PUBLICFOLDER . $data['payload']);
+			$img->resize(2000, 2000, function ($constraint) {
+				$constraint->aspectRatio();
+				$constraint->upsize();
+			});
+			$img->save(PUBLICFOLDER . $data['payload'], 70, 'jpg');
+		} 
+		catch (\Exception $e) {Log::error($e->getMessage());}
+		
+		return json_encode($data);
+	}
+
+
 	private function docx($filepath) {
 		$content = $this->readDocx($filepath);
 		return strip_tags($content);
@@ -83,21 +109,9 @@ class FileReader
 
 	private function pdf($filepath) {
 
-		//$parser = new Parser();
-
 		$config = new Config();
 		$config->setFontSpaceLimit(-50);
 		$parser = new Parser([], $config);
-
-
-		// Base 64 Parsing
-		//$pdf = $parser->parseContent(base64_decode($base64PDF));
-
-		//Specific Page
-		//$pdf->getPages()[0]->getText();
-
-		//$metaData = $pdf->getDetails();
-		//dd($metaData);
 
 		try {
 			$pdf = $parser->parseFile($filepath);
@@ -123,8 +137,6 @@ class FileReader
 		return $output;
 
 	}
-
-
 
     private function readDocx($filename) {
 

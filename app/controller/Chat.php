@@ -87,6 +87,7 @@ class Chat extends Controller {
 		$options['promptID'] = $_POST['action'] ?? null;
 		$options['directPromptID'] = $_POST['directPromptID'] ?? null;
 		$options['conversationID'] = $_POST['conversationID'] ?? null;
+		$options['payload'] = $_POST['payload'] ?? null;
 		$response = $this->ChatGPT->ask($question, $options);
 		$this->view->json($response); // contains ConversionID
 	}

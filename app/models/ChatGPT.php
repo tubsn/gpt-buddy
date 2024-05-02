@@ -20,8 +20,7 @@ class ChatGPT
 	public $models = [
 		'default' => 'gpt-3.5-turbo',
 		'16k' => 'gpt-3.5-turbo-16k',
-		'gpt4' => 'gpt-4',
-		'gpt4turbo' => 'gpt-4-1106-preview',
+		'gpt4turbo' => 'gpt-4-turbo',
 	];
 
 	public $forceGPT4 = false;
@@ -33,6 +32,7 @@ class ChatGPT
 	public $error;
 	
 	public $conversation = []; // Message History
+	public $payload = null;
 	public $temperature = 0.7;
 	public $stream = true;
 	public $tokens = 0;
@@ -64,6 +64,7 @@ class ChatGPT
 		if ($options['directPromptID']) {$this->directPromptID = $options['directPromptID']; return;}
 		if ($options['conversationID'] && !empty($options['conversationID'])) {$this->conversationID = $options['conversationID'];}
 		if ($options['promptID']) {$this->promptID = $options['promptID'];}
+		if ($options['payload']) {$this->payload = $options['payload'];}
 	}
 
 
@@ -99,6 +100,13 @@ class ChatGPT
 			}
 		}
 
+		if (!empty($this->payload)) {
+			$question = [
+				['type' => 'text', 'text' => $question],
+				['type' => 'image_url', 'image_url' => ['url' => PAGEURL . $this->payload]],
+			];
+		};
+
 		$this->add($question, 'user');
 		$this->count_tokens();
 		$this->save_conversation();
@@ -110,7 +118,6 @@ class ChatGPT
 		if (!in_array($role, $allowedRoles)) {throw new \Exception("Role not allowed", 404);}
 		array_push($this->conversation, ['role' => $role, 'content' => $message]);
 	}
-
 
 	private function save_conversation() {
 		$data['edited'] = time();
@@ -338,6 +345,13 @@ class ChatGPT
 		if (!$messages) {$messages = $this->conversation;}
 
 		$content = array_column($messages, 'content');
+
+		// Fix Token Count for Vision Model
+		$content = array_map(function($set) {
+			if (is_array($set)) {return $set[0]['text'];}
+			else return $set;
+		}, $content);
+
 		$content = implode("\n", $content);
 
 		$config = new Gpt3TokenizerConfig();
@@ -346,7 +360,6 @@ class ChatGPT
 
 		$this->tokens = $numberOfTokens;
 		return $numberOfTokens;		
-
 	}
 
 

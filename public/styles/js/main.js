@@ -12,6 +12,7 @@ data() {
 		gpt4forced: false,
 		input: '',
 		output: '',
+		payload: '',
 		history: '', // Conversion History
 		historyExpanded: true,
 		conversationID: null,
@@ -145,6 +146,18 @@ methods: {
 
 		.then(response => response.text())
 		.then(data => {
+			try {
+				let jsondata = JSON.parse(data)
+				if (jsondata.payload) {
+					this.payload = jsondata.payload
+					this.gpt4 = true,
+					this.loading = false
+					return
+				}
+			} catch (error) {
+				console.log(error)
+			}
+			
 			this.input = data
 			this.loading = false
 		})
@@ -155,6 +168,11 @@ methods: {
 
 	},
 
+	filterInstructions(node) {
+		// Removes OpenAI instrucational Arrays e.g. for Vision Uploads
+		if (node[0].text) {return node[0].text}
+		else {return node}
+	},
 
 	resetMetaInfo() {
 		this.responseSeconds = 0
@@ -210,7 +228,10 @@ methods: {
 
 	},
 
-	wipeInput() {this.input = ''},
+	wipeInput() {
+		this.input = ''
+		this.payload = ''		
+	},
 
 	wipeHistory() {
 		this.history = ''
@@ -339,6 +360,7 @@ methods: {
 
 		let formData = new FormData()
 		formData.append('question', this.input)
+		formData.append('payload', this.payload)
 		formData.append('action', this.action)
 		formData.append('conversationID', this.conversationID)
 
@@ -356,6 +378,8 @@ methods: {
 		// PHP Api Handling Errors
 		if (json.error) {this.showError(json.error); return}
 
+		//this.payload = ''
+
 		this.tokens = json.tokens || 0
 		if (json.conversationID) {
 			this.conversationID = json.conversationID
@@ -363,7 +387,6 @@ methods: {
 		}
 
 		this.chars = this.output.length
-
 	},
 
 
@@ -389,7 +412,7 @@ methods: {
 		})
 
 		this.eventSource.addEventListener("error", (event) => {
-			this.errormessages = 'SSE ' + event.data
+			this.errormessages = event.data
 			this.stopStream()
 		});
 
