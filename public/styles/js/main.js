@@ -70,6 +70,7 @@ mounted() {
 	this.getHistory()
 	this.setPromptSettings()
 	this.preselectActionByHash()
+	this.initCopyPaste()
 },
 
 methods: {
@@ -132,7 +133,11 @@ methods: {
 
 
 	uploadFile(event) {
-		let file = event.target.files[0]
+
+		let file = event
+		if (event.target) {
+			file = event.target.files[0]
+		}
 
 		this.loading = true
 
@@ -490,7 +495,41 @@ methods: {
 
 	},
 
-},
+	initCopyPaste() {
+		let _this = this
+		document.addEventListener('DOMContentLoaded', () => {
+			document.onpaste = function(event){
+				const content = _this.getContentFromPasteEvent(event);
+				if (typeof content === 'object') {_this.copyPasteUpload(content);}
+			}
+		});
+	},
+
+	getContentFromPasteEvent(event) {
+
+		const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+		for (let index in items) {
+			const item = items[index];
+
+			if (item.kind === 'file') {
+				return item.getAsFile();
+			}
+
+		}
+
+		return (event.clipboardData || window.clipboardData).getData("text")
+	},
+
+	async copyPasteUpload(file) {
+		if (!confirm('Möchten Sie ihren Screenshot hochladen?')) {return}
+		this.uploadFile(file)
+	},
+
+
+
+
+}, // End of Methods
 
 }).mount('#gptInterface')
 
