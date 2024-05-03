@@ -16,14 +16,17 @@
 
 
 
-<h3>27. Januar 2023 - Duplizieren von Prompts</h3>
+<h3>02. Mai 2024 - Bildupload und GPT-Vision Model</h3>
+<p>Über den Dateiupload ist es jetzt möglich JPG, PNG, und WEBP Dateien hochzuladen und diese dann über GPT-Vision erkennen zu lassen. Damit ist es möglich Probleme mit Skizzen zu beschreiben, z.B. erstelle mir eine Tabelle in HTML mit folgenden Vorgaben... Hochgeladene Bilddaten lassen sich durch klick auf das Thumbnail bzw. "x" wieder entfernen.</p>
+<p>Damit die Bilderkennung funktioniert, muss zwingend GPT4 aktiviert sein. (wird beim Upload automatisch angeschaltet)</p>
+
+<h3>27. Januar 2024 - Duplizieren von Prompts</h3>
 <p>Prompts lassen sich jetzt im Konfigurationsmenu duplizieren.</p>
 
-<h3>23. Januar 2023 - Userinterface verbesserungen</h3>
+<h3>23. Januar 2024 - Userinterface verbesserungen</h3>
 <p>Für mehr Kontrolle bei der Textgenerierung, gibt es einen neuen Button, mit dem die Textgenerierung jederzeit beendet werden kann. Außerdem wurden die Buttons zum Löschen des Verlaufs verschoben um mehr Klarheit zu schaffen.
 <p>Prompt-Editierungs-UI optisch verbessert.</p>
 <p>Einträge im Verlauf können jetzt angeklickt werden, dadurch wird der Verlauf in das aktuelle Eingabefeld kopiert</p>
-
 
 <h3>17. Dezember 2023 - Umbau der Conversation Speicher Logik</h3>
 <p>Für jede Conversation werden jetzt neben dem eigentlichen Dialog auch Metadaten wie der verwendete Prompt, die Uhrzeit und die Prompttemperatur mitgespeichert. Dadurch ist es z.B. möglich die Temperatur des Models je nach Prompt einzustellen. In den Prompt Einstellungen finden sich die entsprechenden Optionen dafür.</p>
