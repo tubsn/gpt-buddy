@@ -36,7 +36,7 @@
 
 		<?php if ($category['articleImport'] ?? false): ?>
 		<label class="hide-mobile">Importieren:
-			<input type="text" @input="importArticle" placeholder="Artikel URL eintragen">
+			<input type="text" @input="importArticle" placeholder="URL / ID eintragen">
 		</label>
 		<?php endif ?>
 	</div>

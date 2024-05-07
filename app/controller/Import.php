@@ -10,10 +10,12 @@ class Import extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
-		$this->models('Scrape,RSS_Adapter,Json_Adapter,LiveTickerAdapter,FileReader');
+		$this->models('Scrape,RSS_Adapter,Json_Adapter,BNNTickerAdapter,FileReader');
 	}
 
 	public function article($portal, $id) {
+
+		if (strlen($id) == 4) {$this->ticker($id); return;}
 
 		$content = $this->Json_Adapter->get_by_id($id);
 
@@ -28,8 +30,9 @@ class Import extends Controller {
 	}
 
 	public function ticker($id) {
-		$ticker = $this->LiveTickerAdapter->get_by_id($id);
-		$this->view->json($ticker);
+		$ticker = $this->BNNTickerAdapter->get_by_id($id);
+		$data['content'] = implode(" ",$ticker);
+		$this->view->json($data);
 	}
 
 	public function pdf() {
