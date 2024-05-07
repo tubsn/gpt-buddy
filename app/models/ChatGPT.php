@@ -20,7 +20,7 @@ class ChatGPT
 	public $models = [
 		'default' => 'gpt-3.5-turbo',
 		'16k' => 'gpt-3.5-turbo-16k',
-		'gpt4turbo' => 'gpt-4-turbo',
+		'gpt4turbo' => 'gpt-4-turbo-2024-04-09',
 	];
 
 	public $forceGPT4 = false;
