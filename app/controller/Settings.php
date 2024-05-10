@@ -16,7 +16,7 @@ class Settings extends Controller {
 
 		$this->view('DefaultLayout');
 		$this->view->title = 'Settings';
-		$this->models('Prompts');
+		$this->models('Prompts,Knowledge');
 	}
 
 	public function user_can_see_config() {
@@ -145,5 +145,43 @@ class Settings extends Controller {
 		$this->Prompts->delete($id);
 		$this->view->redirect('/settings');
 	}
+
+
+
+	public function knowledges() {
+		$this->view->knowledges = $this->Knowledge->all();
+		$this->view->title = 'Knowledge Informationen';
+		$this->view->referer('/settings/knowledge');
+		$this->view->render('admin/list-knowledge');
+	}
+
+	public function new_knowledge() {
+		$this->view->render('admin/new-knowledge');
+	}
+
+	public function create_knowledge($id = null) {
+		$this->Knowledge->create($_POST);
+		$this->view->redirect('/settings/knowledge');
+	}
+
+	public function edit_knowledge($id) {
+		$knowledge = $this->Knowledge->get($id);
+		$this->view->knowledge = $knowledge;
+		if (!$this->view->knowledge) {throw new \Exception("Knowledge not Found", 404);}
+		$this->view->render('admin/edit-knowledge');
+	}
+
+	public function save_knowledge($id) {
+		$this->Knowledge->update($_POST, $id);
+		$this->view->back();
+	}
+
+	public function delete_knowledge($id) {
+		$this->Knowledge->delete($id);
+		$this->view->redirect('/settings/knowledge');
+	}
+
+
+
 
 }

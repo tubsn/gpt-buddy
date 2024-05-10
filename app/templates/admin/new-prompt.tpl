@@ -78,7 +78,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7">
 	</label>
 
-	<label>Callback Funktion (muss im Backend hinterlegt sein):
+	<label>Callback / Knowledgebase:
 		<input name="callback" type="text" placeholder="z.B. current-date">
 	</label>
 	
