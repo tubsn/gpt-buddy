@@ -1,6 +1,9 @@
 <main>
 
-<a href="/settings/new" class="fright button">Neue Aktion / Prompt anlegen</a>
+<div class="fright">
+<a href="/settings/knowledge" class="button">Knowledgebase editieren</a>
+<a href="/settings/new" class="button">Prompt anlegen</a>
+</div>
 
 <h1><?=APP_NAME?> | Prompt Einstellungen</h1>
 

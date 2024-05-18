@@ -93,7 +93,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Callback Funktion (muss im Backend hinterlegt sein):
+	<label>Callback / Knowledgebase:
 		<input name="callback" type="text" placeholder="Funktionsname eingeben" value="<?=$prompt['callback'] ?? null?>">
 	</label>
 

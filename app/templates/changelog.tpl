@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>18. Mai 2024 - GPT-4o Model</h3>
+<p>Für alle Anfragen im GPT-4-Modus wird jetzt standardmäßig das GPT-4o (Omni) Modell verwendet. Es ist günstiger und schneller als die bisherigen GPT-4-Modelle. Aktueller Wissensstand des Modells ist Oktober 2023.</p>
+<p>Außerdem wurde die maximale Token-Beschränkung für die Ausgabe deaktiviert. Sie liegt jetzt immer bei 4096 Tokens, dem aktuellen Standard für alle neueren Modelle sowie GPT-3.5.</p>
 
 
 <h3>02. Mai 2024 - Bildupload und GPT-Vision Model</h3>

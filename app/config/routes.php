@@ -51,6 +51,14 @@ $routes->get('/settings/{id:\d+}/copy', 'Settings@copy');
 $routes->post('/settings/{id:\d+}/copy', 'Settings@create');
 $routes->get('/settings/{id:\d+}/delete', 'Settings@delete');
 
+// Settings Knowledge
+$routes->get('/settings/knowledge', 'Settings@knowledges');
+$routes->get('/settings/knowledge/new', 'Settings@new_knowledge');
+$routes->post('/settings/knowledge/new', 'Settings@create_knowledge');
+$routes->get('/settings/knowledge/{id:\d+}', 'Settings@edit_knowledge');
+$routes->post('/settings/knowledge/{id:\d+}', 'Settings@save_knowledge');
+$routes->get('/settings/knowledge/{id:\d+}/delete', 'Settings@delete_knowledge');
+
 // Stats
 $routes->get('/stats', 'Stats@index');
 $routes->get('/stats/hour', 'Stats@hourly_stats');
