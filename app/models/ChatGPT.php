@@ -19,8 +19,7 @@ class ChatGPT
 
 	public $models = [
 		'default' => 'gpt-3.5-turbo',
-		'16k' => 'gpt-3.5-turbo-16k',
-		'gpt4turbo' => 'gpt-4-turbo',
+		'gpt4' => 'gpt-4o',
 	];
 
 	public $forceGPT4 = false;
@@ -167,21 +166,10 @@ class ChatGPT
 		$this->add($question);
 		$model = $this->models['default'];
 
-		$conversationTokens = $this->count_tokens($this->conversation);
-		$maxTokens = 4096 - $conversationTokens - 50;
-
-		if ($conversationTokens > 3700) {
-			$model = $this->models['16k'];
-			$maxTokens = 16384 - $conversationTokens - 50;
-		}
+		$this->count_tokens($this->conversation);
 
 		if ($this->forceGPT4) {
-			$model = $this->models['gpt4turbo'];
-			$maxTokens = 4096;
-		}
-
-		if ($maxTokens < 1) {
-			$this->error_to_stream('Die Anfrage beinhaltet zu viele Tokens! (8096 mit GPT4 bzw. 16384 mit GPT3.5). Löschen sie gegebenenfalls ihre Historie.');
+			$model = $this->models['gpt4'];
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
@@ -191,7 +179,7 @@ class ChatGPT
 			'model' => $model,
 			'messages' => $this->conversation,
 			'temperature' => $this->float_temperature(), // has to be valid floatvalue
-			'max_tokens' => $maxTokens,
+			'max_tokens' => 4096, 
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
 		]);
@@ -207,24 +195,12 @@ class ChatGPT
 	public function stream($id) {
 
 		$this->load_conversation($id);
+		$this->count_tokens();
 
 		$model = $this->models['default'];
 
-		$conversationTokens = $this->count_tokens();
-		$maxTokens = 4096 - $conversationTokens - 50;
-
-		if ($conversationTokens > 3700) {
-			$model = $this->models['16k'];
-			$maxTokens = 16384 - $conversationTokens - 50;
-		}
-
 		if ($this->forceGPT4) {
-			$model = $this->models['gpt4turbo'];
-			$maxTokens = 4096;
-		}
-
-		if ($maxTokens < 1) {
-			$this->error_to_stream('Die Anfrage beinhaltet zu viele Tokens! (16384 mit GPT3.5). Loeschen sie gegebenenfalls ihre Historie.');
+			$model = $this->models['gpt4'];
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
@@ -234,7 +210,7 @@ class ChatGPT
 			'model' => $model,
 			'messages' => $this->conversation,
 			'temperature' => $this->float_temperature(), // has to be valid floatvalue
-			'max_tokens' => $maxTokens,
+			'max_tokens' => 4096,  
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
 			'stream' => true,
