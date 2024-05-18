@@ -36,7 +36,7 @@
 
 		<?php if ($category['articleImport'] ?? false): ?>
 		<label class="hide-mobile">Importieren:
-			<input type="text" @input="importArticle" placeholder="URL / ID eintragen">
+			<input type="text" @input="importArticle" placeholder="Artikel URL eintragen">
 		</label>
 		<?php endif ?>
 	</div>
@@ -72,16 +72,17 @@
 	<section class="user-input">
 		<figure v-if="payload" title="Klicken zum entfernen" @click="payload = ''" class="input-payload">
 			<img :src="payload">
-		</figure>		
-		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG)</span></div>
+		</figure>
+
+		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span></div>
 		<input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 
-		<label>Eingabe: <a v-if="input" :href="'mailto:<?=auth('email') ?? 'redaktion.politik@bnn.de'?>?subject=aibuddy&body=' + input">(Text versenden)</a>
+		<label>Eingabe:
 		<textarea v-model="input" ref="autofocusElement" class="io-textarea" :disabled="loading" placeholder="Text oder Frage eingeben - Anweisungen werden im Verlauf gespeichert und müssen nicht mehrmals übergeben werden"></textarea>
 		</label>
 		
 		<button type="submit" @click.prevent="ask" v-if="!loading">Absenden</button>
-		<button type="submit" class="stop" @click.prevent="stopStream" v-if="loading">generierung abbrechen</button>
+		<button type="submit" class="stop" @click.prevent="stopStream" v-if="loading">Generierung abbrechen</button>
 
 		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chatverlauf löschen</small></button>
 		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeInput()" :disabled="loading">Eingabe löschen</button>
@@ -93,8 +94,7 @@
 
 		<label v-if="markdown == true" class="no-select">Ausgabe:</label>
 		<div v-if="markdown == true" v-html="output" class="io-textarea io-output-div" placeholder=""></div>
-
-		<label v-else>Ausgabe: <a v-if="output" :href="'mailto:<?=auth('email') ?? 'redaktion.politik@bnn.de'?>?subject=aibuddy&body=' + output">(Text versenden)</a>
+		<label v-else>Ausgabe:
 			<textarea v-model="output" class="io-textarea" placeholder=""></textarea>
 		</label>
 		<div class="fright small">
@@ -115,7 +115,7 @@
 	<table class="fancy history wide">
 		<tr :class="entry.role.toLowerCase()" v-for="entry in history"> 
 			<td class="ucfirst">{{entry.role}}</td>
-			<td><pre @click="copyToInput">{{entry.content}}</pre></td>
+			<td><pre @click="copyToInput">{{filterInstructions(entry.content)}}</pre></td>
 		</tr>
 	</table>
 
