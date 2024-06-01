@@ -49,7 +49,7 @@ details summary::marker {color:var(--primary)}
 details a.button {padding: 0em 0.5em}
 
 h3 a small {font-weight:normal; font-size:0.6em;}
-code {white-space: pre-line;}
+code {white-space: preserve;}
 
 
 /* Misc Stuff */
