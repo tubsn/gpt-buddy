@@ -161,7 +161,9 @@ class ChatGPT
 	}
 
 	// Direct GPT Question with Static Response as Json
-	public function direct($question, $restrictTokens = false) {
+	public function direct($question, $systemPrompt = null) {
+
+		if ($systemPrompt) {$this->add($systemPrompt, 'system');}
 
 		$this->add($question);
 		$model = $this->models['default'];
