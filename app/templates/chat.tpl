@@ -57,7 +57,7 @@
 
 	<div class="meta-options hide-mobile">
 		<div class="force-gpt4">
-			<label><input v-model="gpt4" type="checkbox"> GPT-4-Turbo aktivieren
+			<label><input v-model="gpt4" type="checkbox"> GPT-4o aktivieren
 			</label>
 			<p v-if="gpt4">Antworten genauer, <br/>Kosten höher.</p>
 		</div>
