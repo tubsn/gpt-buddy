@@ -1,0 +1,62 @@
+<main>
+
+
+<div class="fright">
+<fl-upload id="attachment-upload" destination="">[+] Neue Audiodatei hochladen</fl-upload>
+</div>
+
+
+<h1><?=$page['title']?></h1>
+
+<hr>
+
+<p>Mithilfe des Audio Converters können größere Dateien (>25mb) transkribiert werden. Diese werden dazu zunächst in ein anderes Format umgewandelt und neukomprimiert. Das transkribieren kann, je nach Aufnahmelänge, einige Minuten dauern.</p>
+
+<?php if ($files): ?>
+<?php endif ?>
+
+<section style="display:flex; gap:1em; align-items: start;">
+
+
+<textarea class="box" style="min-height:600px" placeholder="Bitte zunächst eine Datei hochladen und rechts auf transkribieren drücken ..."><?=session('tts')?></textarea>
+
+
+<?php foreach ($files as $index => $file): ?>
+<figure class="box" style="display:flex; align-items: center; flex-direction: column; gap:0.5em; ">
+
+	<a href="/audio/<?=$file?>" download><?=$file?>
+
+	<div style="margin:0 auto; text-align:center;">
+	<div class="svg">
+		<svg id="Flat" style="width:100px; height:100px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="#1d5e55"><path d="m22 15.75c-.4141 0-.75-.3359-.75-.75v-6c0-.4141.3359-.75.75-.75s.75.3359.75.75v6c0 .4141-.3359.75-.75.75z"/><path d="m18.6665 17.75c-.4141 0-.75-.3359-.75-.75v-10c0-.4141.3359-.75.75-.75s.75.3359.75.75v10c0 .4141-.3359.75-.75.75z"/><path d="m15.3335 14.75c-.4141 0-.75-.3359-.75-.75v-4c0-.4141.3359-.75.75-.75s.75.3359.75.75v4c0 .4141-.3359.75-.75.75z"/><path d="m12 18.75c-.4141 0-.75-.3359-.75-.75v-12c0-.4141.3359-.75.75-.75s.75.3359.75.75v12c0 .4141-.3359.75-.75.75z"/><path d="m8.6665 20.75c-.4141 0-.75-.3359-.75-.75v-16c0-.4141.3359-.75.75-.75s.75.3359.75.75v16c0 .4141-.3359.75-.75.75z"/><path d="m5.3335 16.75c-.4141 0-.75-.3359-.75-.75v-8c0-.4141.3359-.75.75-.75s.75.3359.75.75v8c0 .4141-.3359.75-.75.75z"/><path d="m2 15.75c-.4141 0-.75-.3359-.75-.75v-6c0-.4141.3359-.75.75-.75s.75.3359.75.75v6c0 .4141-.3359.75-.75.75z"/></g></svg>
+	</div>
+	</a>
+	
+	<audio controls src="/audio/<?=$file?>"></audio>
+	</div>
+
+<a href="/import/converter/tts/<?=$index?>" class="button js-transcribe" style="">Transkribieren
+	<span class="loader-wrapper hidden">
+		<div class="loadIndicator white"><div></div><div></div><div></div></div>
+	</span>
+</a>
+</figure>
+
+<?php endforeach ?>
+</section>
+
+<script>
+	const loader = document.querySelector('.loader-wrapper');
+	const transcribeBtn = document.querySelector('.js-transcribe');
+	transcribeBtn.addEventListener('click', (e) => {
+		loader.classList.remove('hidden');
+	})
+</script>
+
+
+<?php if (session('tts')): ?>
+<a href="/redaktion#125" class="button">Text im Ai Buddy weiteverarbeiten</a>
+<script>sessionStorage.setItem('input', '<?=session('tts')?>');</script>
+<?php endif ?>
+
+</main>

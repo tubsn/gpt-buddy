@@ -181,10 +181,10 @@ Fehler: ${fileInfo.error} - Dateityp: .${fileInfo.ext} - Dateigröße: ${fileInf
 				return;
 			});
 
-			window.location.href += "#anhaenge";
 			location.reload(); // Note for later: should not reload after Error?
 		}
 
+		location.reload(); // Note for later: should not reload after Error?
 		// Return what else is left
 		console.log(response);
 

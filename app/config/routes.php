@@ -39,6 +39,9 @@ $routes->get('/import/article/{portal}/{id:\d+}', 'Import@article');
 $routes->get('/import/pdf', 'Import@pdf');
 $routes->get('/import/splitter', 'Import@splitter');
 $routes->post('/import/splitter', 'Import@splitter');
+$routes->get('/import/converter', 'Import@converter');
+$routes->get('/import/converter/tts/{fileindex:\d+}', 'Import@transcribe');
+$routes->post('/import/converter', 'Import@converter');
 $routes->post('/import/file', 'Import@file_upload');
 
 // Settings / Prompts
