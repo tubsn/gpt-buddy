@@ -181,7 +181,7 @@ class ChatGPT
 			'model' => $model,
 			'messages' => $this->conversation,
 			'temperature' => $this->float_temperature(), // has to be valid floatvalue
-			'max_tokens' => 4096, 
+			// 'max_tokens' => 4096, 
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
 		]);
@@ -212,7 +212,7 @@ class ChatGPT
 			'model' => $model,
 			'messages' => $this->conversation,
 			'temperature' => $this->float_temperature(), // has to be valid floatvalue
-			'max_tokens' => 4096,  
+			// 'max_tokens' => 4096, 
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
 			'stream' => true,

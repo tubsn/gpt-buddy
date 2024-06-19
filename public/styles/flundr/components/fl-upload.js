@@ -108,7 +108,7 @@ class fl_uploads {
 
 		for (const file of files) {
 
-			if (file.size >= (20 * 1024 * 1024)) {
+			if (file.size >= (100 * 1024 * 1024)) {
 				skippedFileErrors.push('<li>'+file.name+'</li>');
 				continue;
 			}

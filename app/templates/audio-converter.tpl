@@ -24,11 +24,11 @@
 <?php foreach ($files as $index => $file): ?>
 <figure class="box" style="display:flex; align-items: center; flex-direction: column; gap:0.5em; ">
 
-	<a href="/audio/<?=$file?>" download><?=$file?>
+	<a href="/audio/<?=$file?>" download title="komprimierte Audiodatei herunterladen"><?=$file?>
 
 	<div style="margin:0 auto; text-align:center;">
 	<div class="svg">
-		<svg id="Flat" style="width:100px; height:100px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="#1d5e55"><path d="m22 15.75c-.4141 0-.75-.3359-.75-.75v-6c0-.4141.3359-.75.75-.75s.75.3359.75.75v6c0 .4141-.3359.75-.75.75z"/><path d="m18.6665 17.75c-.4141 0-.75-.3359-.75-.75v-10c0-.4141.3359-.75.75-.75s.75.3359.75.75v10c0 .4141-.3359.75-.75.75z"/><path d="m15.3335 14.75c-.4141 0-.75-.3359-.75-.75v-4c0-.4141.3359-.75.75-.75s.75.3359.75.75v4c0 .4141-.3359.75-.75.75z"/><path d="m12 18.75c-.4141 0-.75-.3359-.75-.75v-12c0-.4141.3359-.75.75-.75s.75.3359.75.75v12c0 .4141-.3359.75-.75.75z"/><path d="m8.6665 20.75c-.4141 0-.75-.3359-.75-.75v-16c0-.4141.3359-.75.75-.75s.75.3359.75.75v16c0 .4141-.3359.75-.75.75z"/><path d="m5.3335 16.75c-.4141 0-.75-.3359-.75-.75v-8c0-.4141.3359-.75.75-.75s.75.3359.75.75v8c0 .4141-.3359.75-.75.75z"/><path d="m2 15.75c-.4141 0-.75-.3359-.75-.75v-6c0-.4141.3359-.75.75-.75s.75.3359.75.75v6c0 .4141-.3359.75-.75.75z"/></g></svg>
+		<svg id="Flat" style="width:100px; height:100px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="<?=CHART_COLOR ?? '#1d5e55'?>"><path d="m22 15.75c-.4141 0-.75-.3359-.75-.75v-6c0-.4141.3359-.75.75-.75s.75.3359.75.75v6c0 .4141-.3359.75-.75.75z"/><path d="m18.6665 17.75c-.4141 0-.75-.3359-.75-.75v-10c0-.4141.3359-.75.75-.75s.75.3359.75.75v10c0 .4141-.3359.75-.75.75z"/><path d="m15.3335 14.75c-.4141 0-.75-.3359-.75-.75v-4c0-.4141.3359-.75.75-.75s.75.3359.75.75v4c0 .4141-.3359.75-.75.75z"/><path d="m12 18.75c-.4141 0-.75-.3359-.75-.75v-12c0-.4141.3359-.75.75-.75s.75.3359.75.75v12c0 .4141-.3359.75-.75.75z"/><path d="m8.6665 20.75c-.4141 0-.75-.3359-.75-.75v-16c0-.4141.3359-.75.75-.75s.75.3359.75.75v16c0 .4141-.3359.75-.75.75z"/><path d="m5.3335 16.75c-.4141 0-.75-.3359-.75-.75v-8c0-.4141.3359-.75.75-.75s.75.3359.75.75v8c0 .4141-.3359.75-.75.75z"/><path d="m2 15.75c-.4141 0-.75-.3359-.75-.75v-6c0-.4141.3359-.75.75-.75s.75.3359.75.75v6c0 .4141-.3359.75-.75.75z"/></g></svg>
 	</div>
 	</a>
 	
@@ -48,9 +48,11 @@
 <script>
 	const loader = document.querySelector('.loader-wrapper');
 	const transcribeBtn = document.querySelector('.js-transcribe');
-	transcribeBtn.addEventListener('click', (e) => {
-		loader.classList.remove('hidden');
-	})
+	if (transcribeBtn) {
+		transcribeBtn.addEventListener('click', (e) => {
+			loader.classList.remove('hidden');
+		})
+	}
 </script>
 
 
