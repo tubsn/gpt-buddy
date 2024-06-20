@@ -41,7 +41,7 @@
 		<th style="width:100px">Erstellt</th>
 		<th style="width:40%">Titel</th>
 		<th style="width:60%">Inhalt</th>
-		<th style="width:80px">Direkt</th>
+		<th style="width:80px">Temp.</th>
 		<th style="width:50px; text-align:right;">Hits</th>
 		<th style="width:50px; text-align:right;">⚙</th>
 	</tr>
@@ -50,10 +50,10 @@
 <tbody>
 <?php foreach ($prompts as $prompt): ?>
 <tr class="<?=($prompt['inactive']) ? 'inactive' : ''?>">
-	<td><?=formatDate($prompt['created'],'Y-m-d')?></td>
+	<td style="white-space:nowrap;"><?=formatDate($prompt['created'],'Y-m-d')?></td>
 	<td><a class="noline" href="/settings/<?=$prompt['id']?>"><?=$prompt['title']?></a></td>
 	<td style="white-space:nowrap; overflow: hidden; text-overflow: ellipsis;"><?=substr($prompt['content'],0,150)?> ...</td>
-	<td><?=($prompt['direct']) ? 'ja' : '-'?></td>
+	<td><?=($prompt['temperature']) ? $prompt['temperature'] : '-'?></td>
 	<td class="text-right"><?=$prompt['hits'] ?? '-'?></td>
 
 

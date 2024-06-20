@@ -10,7 +10,7 @@
 
 <hr>
 
-<p>Mithilfe des Audio Converters können größere Dateien (>25mb) transkribiert werden. Diese werden dazu zunächst in ein anderes Format umgewandelt und neukomprimiert. Das transkribieren kann, je nach Aufnahmelänge, einige Minuten dauern.</p>
+<p>Mithilfe des Audio Converters können größere Audiodateien transkribiert werden. Diese werden neu komprimiert und im Anschluss an die KI gesendet. Hierbei werden Gespräche von maximal 45 Minuten unterstützt. Das Transkribieren kann, je nach Aufnahmelänge, mehrere Minuten dauern. Längere Gespräche müssen im Vorfeld über einen <a href="/import/splitter">Datei Splitter</a> in mehrere Dateien aufgeteilt werden.</p>
 
 <?php if ($files): ?>
 <?php endif ?>
@@ -24,7 +24,7 @@
 <?php foreach ($files as $index => $file): ?>
 <figure class="box" style="display:flex; align-items: center; flex-direction: column; gap:0.5em; ">
 
-	<a href="/audio/<?=$file?>" download title="komprimierte Audiodatei herunterladen"><?=$file?>
+	<a href="/<?=$urlpath?><?=$file?>" download title="komprimierte Audiodatei herunterladen"><?=$file?>
 
 	<div style="margin:0 auto; text-align:center;">
 	<div class="svg">
@@ -32,7 +32,7 @@
 	</div>
 	</a>
 	
-	<audio controls src="/audio/<?=$file?>"></audio>
+	<audio controls src="/<?=$urlpath?><?=$file?>"></audio>
 	</div>
 
 <a href="/import/converter/tts/<?=$index?>" class="button js-transcribe" style="">Transkribieren

@@ -45,17 +45,19 @@ class Import extends Controller {
 
 		$files = [];
 
-		$ff = 'ffmpeg'; // command to open ffmpeg
-		$outDir = PUBLICFOLDER . 'audio/';
+		$ff = FFMPEGPATH ?? 'ffmpeg'; // command to open ffmpeg
+		$urlpath = 'audio/splitter/';
+		$outDir = PUBLICFOLDER . $urlpath;
 
 		if ($_FILES) {
-
 			$tmp_file = $_FILES['audio']['tmp_name'];
+			$filename = pathinfo($_FILES['audio']['name'], PATHINFO_FILENAME);
+			$extension = pathinfo($_FILES['audio']['name'], PATHINFO_EXTENSION);
+
 			$in = $tmp_file;
-			
 			if (!file_exists($outDir)) {mkdir($outDir, 0777, true);}
 			array_map('unlink', array_filter((array) glob($outDir.'*')));
-			echo shell_exec("$ff -i $in -f segment -segment_time 300 -c copy ".$outDir."splitted%03d.mp3");
+			echo shell_exec("$ff -i $in -f segment -segment_time 600 -c copy ".$outDir.$filename."-%03d." . $extension);
 		}
 
 		if (file_exists($outDir)) {
@@ -63,7 +65,8 @@ class Import extends Controller {
 			$files = array_diff($files, array('.', '..'));
 		}
 
-		$this->view->files = $files;	
+		$this->view->files = $files;
+		$this->view->urlpath = $urlpath;
 		$this->view->render('audiosplitter');
 
 	}
@@ -75,8 +78,9 @@ class Import extends Controller {
 
 		$files = [];
 
-		$ff = 'ffmpeg'; // command to open ffmpeg
-		$outDir = PUBLICFOLDER . 'audio/';
+		$ff = FFMPEGPATH ?? 'ffmpeg'; // command to open ffmpeg
+		$urlpath = 'audio/converter/';
+		$outDir = PUBLICFOLDER . $urlpath;
 
 		if ($_FILES) {
 
@@ -87,9 +91,13 @@ class Import extends Controller {
 			if (!file_exists($outDir)) {mkdir($outDir, 0777, true);}
 			array_map('unlink', array_filter((array) glob($outDir.'*')));
 
+			// Filename shall not contain any special chars!
+			$filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename);
+
 			echo shell_exec("$ff -i $in -vn -map_metadata -1 -ac 1 -c:a libopus -b:a 12k -application voip ".$outDir.$filename.".ogg");
 
 			Session::unset('tts');
+			die;
 		}
 
 		if (file_exists($outDir)) {
@@ -99,6 +107,7 @@ class Import extends Controller {
 
 		$this->view->title = APP_NAME . ' | Audio Converter (Beta)';
 		$this->view->files = $files;	
+		$this->view->urlpath = $urlpath;
 		$this->view->render('audio-converter');
 
 	}
@@ -107,7 +116,7 @@ class Import extends Controller {
 
 		Session::unset('tts');
 
-		$audioDir = PUBLICFOLDER . 'audio/';
+		$audioDir = PUBLICFOLDER . 'audio/converter/';
 		$files = scandir($audioDir, SCANDIR_SORT_ASCENDING);
 		$audiofile = $audioDir . $files[$fileindex];
 
