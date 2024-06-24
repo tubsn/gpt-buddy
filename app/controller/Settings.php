@@ -128,8 +128,10 @@ class Settings extends Controller {
 
 	public function save($id) {
 		$this->Prompts->update_with_history($_POST, $id);
-		$this->view->back();
-		//$this->view->redirect('/settings');
+		$category = $_POST['category'];
+		if ($category == 'alle') {$category = '';}
+		$backlink = '/' . $category . '#' . $id;
+		$this->view->redirect($backlink);
 	}
 
 	public function copy($id) {
