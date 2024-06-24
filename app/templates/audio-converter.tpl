@@ -18,7 +18,7 @@
 <section style="display:flex; gap:1em; align-items: start;">
 
 
-<textarea class="box" style="min-height:600px" placeholder="Bitte zunächst eine Datei hochladen und rechts auf transkribieren drücken ..."><?=session('tts')?></textarea>
+<textarea class="box js-input" style="min-height:600px" placeholder="Bitte zunächst eine Datei hochladen und rechts auf transkribieren drücken ..."><?=session('tts')?></textarea>
 
 
 <?php foreach ($files as $index => $file): ?>
@@ -53,12 +53,17 @@
 			loader.classList.remove('hidden');
 		})
 	}
+
+	const transcribeTextarea = document.querySelector('.js-input');
+	sessionStorage.setItem('input', transcribeTextarea.value);
+	if (transcribeTextarea) {
+		transcribeTextarea.addEventListener('change', (e) => {
+			sessionStorage.setItem('input', transcribeTextarea.value);
+		})
+	}
+
 </script>
 
-
-<?php if (session('tts')): ?>
 <a href="/redaktion#125" class="button">Text im Ai Buddy weiteverarbeiten</a>
-<script>sessionStorage.setItem('input', '<?=session('tts')?>');</script>
-<?php endif ?>
 
 </main>
