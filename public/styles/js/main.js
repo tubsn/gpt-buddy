@@ -124,6 +124,12 @@ methods: {
 				if (options.includes(hash)) {
 					this.action = hash
 					selectbox.value = hash
+					this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')					
+					let advancedMode = selectbox.options[selectbox.selectedIndex].getAttribute('data-advanced') || false
+					if (advancedMode == true) {
+						this.gpt4 = true
+						this.gpt4forced = true
+					}					
 				}
 			}
 
