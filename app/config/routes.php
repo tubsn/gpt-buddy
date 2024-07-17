@@ -8,6 +8,10 @@ $routes->get('/engines', 'Chat@engines');
 
 $routes->get('/test', 'Chat@external_api_url_test');
 
+$routes->get('/multiimport', 'MultiImport@index');
+$routes->post('/multiimport', 'MultiImport@upload');
+
+
 // Namenswahl
 $routes->get('/name', 'Stats@form_name');
 $routes->get('/name/liste', 'Stats@list_name');

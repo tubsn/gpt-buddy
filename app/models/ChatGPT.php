@@ -23,6 +23,7 @@ class ChatGPT
 	];
 
 	public $forceGPT4 = false;
+	public $jsonMode = false;
 
 	public $conversationID;
 	public $promptID;
@@ -174,6 +175,9 @@ class ChatGPT
 			$model = $this->models['gpt4'];
 		}
 
+		$responseFormat = ['type' => 'text'];
+		if ($this->jsonMode) {$responseFormat = ['type' => 'json_object'];}
+
 		$open_ai = new OpenAi(CHATGPTKEY);
 		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
@@ -181,9 +185,8 @@ class ChatGPT
 			'model' => $model,
 			'messages' => $this->conversation,
 			'temperature' => $this->float_temperature(), // has to be valid floatvalue
+			'response_format' => $responseFormat,
 			// 'max_tokens' => 4096, 
-			'frequency_penalty' => 0,
-			'presence_penalty' => 0,
 		]);
 
 		$chat = json_decode($chat); // response is in Json
