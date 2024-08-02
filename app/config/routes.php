@@ -10,6 +10,9 @@ $routes->get('/test', 'Chat@external_api_url_test');
 
 $routes->get('/multiimport', 'MultiImport@index');
 $routes->post('/multiimport', 'MultiImport@upload');
+$routes->get('/multiimport/today', 'MultiImport@imported_today');
+
+$routes->get('/export/cue', 'Export@cue_congrats');
 
 
 // Namenswahl

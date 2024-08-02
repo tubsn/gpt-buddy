@@ -3,7 +3,10 @@ const multiImportApp = Vue.createApp({
 		loading: false,
 		ignoredFiles: [],
 		results: [],
+		imported: [],
 		loaders: [],
+		prompt: 0,
+		ressort: 0,
 		maxfilesizemb: 50,
 		output: '111',
 	}},
@@ -12,9 +15,23 @@ const multiImportApp = Vue.createApp({
 		maxsize() {return (this.maxfilesizemb || 50) * 1024 * 1024},
 	},
 
-	mounted: function() {},
+	mounted: function() {
+
+		this.setSelectDefaults();
+		this.getImports();
+
+	},
 
 	methods: {
+
+		setSelectDefaults() {
+			defaultOptions = document.querySelectorAll('main select option:first-child');
+			defaultOptions.forEach(option => {
+				const selectbox = option.parentNode;
+				const name = selectbox.dataset.name
+				this[name] = option.value;
+			})
+		},
 
 		resetResults() {
 			this.results = []
@@ -44,6 +61,13 @@ const multiImportApp = Vue.createApp({
 		},
 
 
+		async getImports() {
+			let response = await fetch('/multiimport/today')
+			if (!response.ok) {}
+			let json = await response.json();
+			this.imported = json
+		},
+
 		async gatherFiles(input) {
 
 			this.loading = true
@@ -72,6 +96,8 @@ const multiImportApp = Vue.createApp({
 			
 			let formData = new FormData()
 			formData.append('file', file)
+			formData.append('prompt', this.prompt)
+			formData.append('ressort', this.ressort)
 
 			let response = await fetch('', {method: 'POST', body: formData})
 			if (!response.ok) {this.connectionError(response.status); this.uploadDone(); return}
@@ -94,6 +120,9 @@ const multiImportApp = Vue.createApp({
 			
 		},
 
+		connectionError(responseCode) {
+			alert('Fehlercode: ' + responseCode);
+		},
 
 		uploadDone() {
 			this.loading = false

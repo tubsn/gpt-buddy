@@ -7,42 +7,44 @@ use flundr\utility\Session;
 use flundr\cache\RequestCache;
 use app\models\ChatGPT;
 use app\models\FileReader;
+use app\models\Prompts;
 use \Smalot\PdfParser\Parser;
 use \Smalot\PdfParser\Config;
 
-
 class MultiImport extends Controller {
+
+	public $prompt = null;
 
 	public function __construct() {
 		$this->view('MultiImportLayout');
 		$this->view->title = 'ChatGPT Assistent';
-		$this->models('ChatGPTApi,Prompts,OpenAIVision');
+		$this->models('ChatGPTApi,Prompts,OpenAIVision,Prompts,Imports');
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 	}
 
 	public function index() {
-
-			
-		//$data = $this->OpenAIVision->see(PUBLICFOLDER . 'uploads/jubi.pdf');
-		//dd($data);
-		
-		/*	
-		$data = json_decode($data,1);
-		$this->view->data = $data['data'];
-		*/
-
-		//dump($this->view->data);
-
+		$this->view->prompts = $this->Prompts->category('importer');
+		$this->view->title = 'Import Assistent';
 		$this->view->render('multiimport/index');
 	}
 
-	public function upload() {
+	public function imported_today() {
+		$data = $this->Imports->all();
+		$this->view->json($data);
+	}
 
+	public function upload() {
+	
 		$file = $_FILES['file'];
 		if ($file['size'] > 1024 * 1024 * 25) {throw new \Exception('Achtung: Datei zu groß', 400);}
 
 		$filetype = $this->detect_type($file);
-		$data = null;
+
+		$this->prompt = $this->Prompts->get($_POST['prompt']);
+		$this->Imports->ressort = $_POST['ressort'];
+		$this->Imports->prompt = $this->prompt;
+		
+		$data = [];
 
 		if ($filetype == 'pdf') {$data = $this->pdf($file);}
 		if ($filetype == 'image') {$data = $this->image($file);}
@@ -51,6 +53,7 @@ class MultiImport extends Controller {
 		if ($filetype == 'text') {$data = $this->default($file);}
 		if ($filetype == false) {throw new \Exception('Unknown Filetype ', 400);}
 
+		$this->Imports->add($data);
 		$this->view->json($data);
 	}
 
@@ -64,8 +67,14 @@ class MultiImport extends Controller {
 		$parser = new Parser([], $config);
 
 		try {
-			$pdf = $parser->parseFile($file);
+			$pdf = $parser->parseFile($file['tmp_name']);
 			$text = $pdf->getText();
+
+			if (empty($text)) {
+				return 'Achtung: PDF Datien mit eingescanntem 
+				Foto werden zur Zeit nicht unterstüzt. Bitte mache einen Screenshot von dem PDF Inhalt.';
+			}
+
 			$text = preg_replace('/[^\S\r\n]+/', ' ', $text); // Remove Multiple Whitespaces
 			return strip_tags($text);
 		} 
@@ -82,11 +91,11 @@ class MultiImport extends Controller {
 
 		$ChatGPT = new ChatGPT();
 		$ChatGPT->jsonMode = true;
-		$systemprompt = 'Extrahiere Daten und gebe als Ergebnis ausschließlich Json zurück. Umschließe alle Datesätze mit "data": [...]. Ich möchte die Daten automatisiert in eine Datenbank importieren. Nutze daher für die Ausgabe keine Formatierungen oder Steuerungszeichen!';
-		$userprompt = 'Ich benötige Vorname, Nachname, Ort, Anschrift, Datum, und den Typ des Jubiläums oder Termins aus folgendem Datensatz';
-		$analyzeprompt = 'Analysiere folgende Daten nach Jubiläen und Terminen. Falls du ein Datum in den Angaben findest ist es meist das Jubiläum oder der Geburtstag. Wenn du keine entsprechenden Angaben findest setze einen leeren Wert ""';
 
-		$prompt = $systemprompt . $userprompt . $analyzeprompt . $data;
+		$prompt = $this->prompt['content'];
+		$date = date('d.m.Y', time());
+		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;		
+		$prompt = $prompt . $content;
 		
 		$response = $ChatGPT->direct($prompt);
 		$response = json_decode($response,1);
@@ -110,11 +119,11 @@ class MultiImport extends Controller {
 
 		$ChatGPT = new ChatGPT();
 		$ChatGPT->jsonMode = true;
-		$systemprompt = 'Extrahiere Daten und gebe als Ergebnis ausschließlich Json zurück. Umschließe alle Datesätze mit "data": [...]. Ich möchte die Daten automatisiert in eine Datenbank importieren. Nutze daher für die Ausgabe keine Formatierungen oder Steuerungszeichen!';
-		$userprompt = 'Ich benötige Vorname, Nachname, Ort, Anschrift, Datum, und den Typ des Jubiläums oder Termins aus folgendem Datensatz';
-		$analyzeprompt = 'Analysiere folgende Daten nach Jubiläen und Terminen. Wenn du keine entsprechenden Angaben findest setze einen leeren Wert ""';
 
-		$prompt = $systemprompt . $userprompt . $analyzeprompt . $content;
+		$prompt = $this->prompt['content'];
+		$date = date('d.m.Y', time());
+		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;
+		$prompt = $prompt . $content;
 		
 		$response = $ChatGPT->direct($prompt);
 		$response = json_decode($response,1);
@@ -128,11 +137,15 @@ class MultiImport extends Controller {
 		$path = $file['tmp_name'];
 		$filename = $file['name'];
 
+		$prompt = $this->prompt['content'];
+		$date = date('d.m.Y', time());
+		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;
+
 		$cache = new RequestCache($filename, 0 * 60 * 60);
 		$data = $cache->get();
 
 		if (!$data) {
-			$data = $this->OpenAIVision->see($path);
+			$data = $this->OpenAIVision->see($path, $prompt);
 			$cache->save($data);
 		}
 

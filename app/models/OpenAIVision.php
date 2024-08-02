@@ -9,16 +9,16 @@ class OpenAIVision
 
 	public function __construct() {}
 
-	public function see($file) {
+	public function see($file, $prompt = null) {
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
-		$systemprompt = 'Extrahiere Daten und gebe als Ergebnis ausschließlich Json zurück. Umschließe alle Datesätze mit "data": [...]. Ich möchte die Daten automatisiert in eine Datenbank importieren. Nutze daher für die Ausgabe keine Formatierungen oder Steuerungszeichen!';
+		if (empty($prompt)) {
+			$prompt = 'Extrahiere Daten und gebe als Ergebnis ausschließlich Json zurück. Umschließe alle Datesätze mit "data": [...]. Ich möchte die Daten automatisiert in eine Datenbank importieren. Nutze daher für die Ausgabe keine Formatierungen oder Steuerungszeichen! Bitte wandle alle Datumsangaben ins deutsche Format (z.B. 17.06.2023). Ich benötige Vorname, Nachname, Ort, Anschrift, Datum, und den Typ des Jubiläums oder Termins aus folgendem Datensatz';
+		}
 		
-		$userprompt = 'Bitte wandle alle Datumsangaben ins deutsche Format (z.B. 17.06.2023). Ich benötige Vorname, Nachname, Ort, Anschrift, Datum, und den Typ des Jubiläums oder Termins aus folgendem Datensatz';
-		
-		$analyzeprompt = 'Analysiere folgende Daten nach Jubiläen und Terminen. Wenn du keine entsprechenden Angaben findest setze einen leeren Wert ""';
+		$analyzeprompt = 'Analysiere die folgende Daten';
 		$imageData = $this->file_to_base64($file);
 
 		$imageTransport = [
@@ -27,8 +27,7 @@ class OpenAIVision
 		];
 
 		$messages = [ 
-			['role' => 'system', 'content' => $systemprompt],
-			['role' => 'user', 'content' => $userprompt],
+			['role' => 'system', 'content' => $prompt],
 			['role' => 'user', 'content' => $imageTransport]
 		];
 
