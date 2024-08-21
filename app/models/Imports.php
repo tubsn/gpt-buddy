@@ -16,8 +16,87 @@ class Imports extends Model
 		$this->db->table = 'imports';
 	}
 
+	public function filter($options = []) {
 
-	public function gather($from = 'today', $to = 'today +7 days') {
+		$filters = [];
+		$parameters = [];
+		$whereSelector = 'WHERE';
+
+		if (isset($options['ressort'])) {
+			if (count($filters) > 0) {$whereSelector = 'AND';}
+			array_push($filters, $whereSelector . ' ressort = :ressort');
+			$parameters['ressort'] = $options['ressort'];
+		}
+
+		if (isset($options['location'])) {
+			if (count($filters) > 0) {$whereSelector = 'AND';}
+			array_push($filters, $whereSelector . ' location = :location');
+			$parameters['location'] = $options['location'];
+		}
+
+		if (isset($options['period'])) {
+			if (count($filters) > 0) {$whereSelector = 'AND';}
+			array_push($filters, $whereSelector . " DATE_FORMAT(created, '%Y-%m') = :period");
+			$parameters['period'] = $options['period'];
+		}
+
+		$filters = implode(' ', $filters);
+
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT * FROM $table
+			$filters
+			ORDER BY created DESC
+		");
+		$SQLstatement->execute($parameters);
+
+		$output = $SQLstatement->fetchALL();
+		return $output;
+
+	}
+
+
+	public function distinct_locations() {
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT distinct location
+			FROM $table 
+		");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchAll(PDO::FETCH_COLUMN);
+		return array_filter($output);
+	}
+
+	public function latest() {
+
+		$from = 'yesterday';
+		$to = 'tomorrow';
+
+		$from = date('y-m-d', strtotime($from));
+		$to = date('y-m-d', strtotime($to));
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT *
+			FROM $table 
+			WHERE created BETWEEN :startdate AND :enddate
+			ORDER BY created DESC
+
+		");
+		$SQLstatement->execute([':startdate' => $from, 'enddate' => $to]);
+		$output = $SQLstatement->fetchAll();
+		return $output;
+	}
+
+
+
+	public function gather($from = 'today', $to = 'today +7 days', $filter = null) {
+
+		$ressortFilter = '';
+		if (in_array($filter, IMPORT_RESSORTS) ) {
+			$ressortFilter = "AND ressort = '" . $filter ."'";
+		}
 
 		$from = date('m-d', strtotime($from));
 		$to = date('m-d', strtotime($to));
@@ -28,7 +107,8 @@ class Imports extends Model
 			firstname, lastname, location, DATE_FORMAT(birthday, '%d.%m.%Y') as birthday, age
 			FROM $table 
 			WHERE DATE_FORMAT(birthday, '%m-%d') BETWEEN :startdate AND :enddate
-
+			$ressortFilter
+			ORDER BY birthdate, age DESC, lastname
 		");
 		$SQLstatement->execute([':startdate' => $from, 'enddate' => $to]);
 		$output = $SQLstatement->fetchAll(PDO::FETCH_GROUP);
@@ -38,7 +118,6 @@ class Imports extends Model
 		$output = $this->map_date_keys($output);
 
 		return $output;
-
 
 	}
 
@@ -67,16 +146,16 @@ class Imports extends Model
 
 
 	public function add($data, array $options = []) {
-
+		$ids = [];
 		if (!is_array($data)) {return false;}
-
 		foreach ($data as $set) {
 			if (!is_array($set)) {continue;}
 			$import = $this->fill_import($set);
 			$import['ressort'] = $this->ressort ?? null;
-			$this->create($import);
+			$newID = $this->create($import);
+			array_push($ids, $newID);
 		}
-
+		return $ids;
 	}
 
 	public function fill_import(array $data) {

@@ -55,6 +55,8 @@ form button.light:active, .button.light:active {background-color: var(--primary)
 
 button:disabled {background-color:#525762}
 
+.button.grey {background-color:#303a46; color:white}
+
 .copy-button, .file-button {border:none; background: #424d5e; color: #000;}
 .copy-button:active, .file-button:active {background-color:var(--primary-darker)}
 

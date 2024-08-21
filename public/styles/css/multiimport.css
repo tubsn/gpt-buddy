@@ -1,2 +1,24 @@
 
-.parameters {display:flex; gap:2em;}
+.parameters {display:flex; gap:2em; align-items:end;}
+.parameters select {margin:0;}
+
+.parameters form {display:flex; gap:1em; align-items:end;}
+
+.filter-picker-form {max-width:400px; float:right; background-color:#eee; padding:0.5em 1em; border-radius:0.5em;}
+.filter-picker-form {display:flex; gap:1em;}
+.current-week, .current-month {background-color:#ccc}
+
+.cloud {width:22px; margin-bottom:-5px;}
+
+
+.data-preview {display:flex; gap:1em; flex-wrap: wrap;}
+.data-preview-item {background-color: white; padding: 1em; border-radius: 1em;}
+.data-preview-item button {font-size:0.8em;}
+
+/* Table Sort */
+table.js-sortable th {cursor:pointer;}
+table.js-sortable th.dir-u {background-image: linear-gradient(to top, #0d0d0d 0%, #242424 82%, #50a296 82%, #1d5e55 100%) !important;}
+table.js-sortable th.dir-d {background-image: linear-gradient(#0d0d0d 0%, #242424 82%, #1d5e55 82%, #50a296 100%) !important}
+table.fancy.js-sortable th:hover {background-color: #0b0b0b}
+table.fancy tr:hover {background-color: var(--grey);}
+

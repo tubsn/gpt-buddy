@@ -53,8 +53,6 @@ lightbox.init();
 
 
 <style>
-.pswp__custom-caption {background: rgba(0, 0, 0, .2); color: #fff; padding: .5em 1em; 
-	 width:100%; text-align:center; font-size:0.9em; position: absolute; bottom: 0px;}
-.pswp__custom-caption.hidden {display:none;}
+
 </style>
 

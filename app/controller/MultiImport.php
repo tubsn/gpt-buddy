@@ -5,6 +5,7 @@ use flundr\mvc\Controller;
 use flundr\auth\Auth;
 use flundr\utility\Session;
 use flundr\cache\RequestCache;
+use flundr\date\Datepicker;
 use app\models\ChatGPT;
 use app\models\FileReader;
 use app\models\Prompts;
@@ -24,23 +25,106 @@ class MultiImport extends Controller {
 
 	public function index() {
 		$this->view->prompts = $this->Prompts->category('importer');
-		$this->view->title = 'Import Assistent';
+		$this->view->title = 'KI-Import Assistent';
 		$this->view->render('multiimport/index');
 	}
 
+	public function archive() {
+
+		$options = [];
+		$ressort = $_GET['ressort'] ?? '';
+		if (!empty($ressort)) {
+			$options['ressort'] = $ressort;
+		}
+
+		$dateHelper = new Datepicker();
+
+		$months = $dateHelper->months('last month -2 months', 'next Month +2 months');
+
+		$from = $_GET['date'] ?? 'first day of this month';
+		$to = date("Y-m-d", strtotime('last day of this month'));
+		$selectedDate = date("Y-m-d", strtotime('first day of this month'));
+
+		$date = $_GET['date'] ?? '';
+		if (!empty($date)) {
+			$from = $date;
+			$to = date('Y-m-t', strtotime($date));
+			$selectedDate = date('M Y', strtotime($date));
+			$options['period'] = date('Y-m', strtotime($date));
+		}
+
+		$location = $_GET['location'] ?? '';
+		if (!empty($location)) {
+			$options['location'] = $location;
+		}
+
+		$this->view->from = $from;
+		$this->view->to = $to;
+		$this->view->months = $months;
+		$this->view->currentMonth = date('M');
+		$this->view->selectedDate = $selectedDate;
+
+		$this->view->selectedRessort = $ressort;
+		$this->view->selectedLocation = $location;
+		$this->view->locations = $this->Imports->distinct_locations();
+		$this->view->events = $this->Imports->filter($options);
+		$this->view->title = 'Importierte Daten';
+		$this->view->render('multiimport/archive');
+	}
+
+
 	public function imported_today() {
-		$data = $this->Imports->all();
+		$data = $this->Imports->latest();
 		$this->view->json($data);
 	}
 
+	public function import() {
+		if ($_FILES) {$this->upload(); return;}
+		if (isset($_POST['textarea']) && !empty($_POST['textarea'])) {$this->import_text(); return;}
+
+		if (empty($data)) {
+			echo 'keine Daten erkannt';
+			return;			
+		}		
+	}
+
+	public function import_text() {
+		$text = $_POST['textarea'];
+
+		$this->prompt = $this->Prompts->get($_POST['prompt']);
+		$this->Imports->ressort = $_POST['ressort'];
+		$this->Imports->prompt = $this->prompt;
+
+		$ChatGPT = new ChatGPT();
+		$ChatGPT->jsonMode = true;
+
+		$prompt = $this->prompt['content'];
+		$date = date('d.m.Y', time());
+		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;
+		$prompt = $prompt . "\n" . $text;
+		
+		$response = $ChatGPT->direct($prompt);
+		$data = json_decode($response,1);
+		$data = $data['data'];
+		
+		$ids = $this->Imports->add($data);
+
+		if (empty($data)) {
+			throw new \Exception("Keine Daten erkannt", 400);
+			return;			
+		}
+
+		$this->view->json(['entries' => $data, 'importIDs' => $ids]);
+	}
+
 	public function upload() {
-	
+
 		$file = $_FILES['file'];
 		if ($file['size'] > 1024 * 1024 * 25) {throw new \Exception('Achtung: Datei zu groß', 400);}
 
 		$filetype = $this->detect_type($file);
-
 		$this->prompt = $this->Prompts->get($_POST['prompt']);
+
 		$this->Imports->ressort = $_POST['ressort'];
 		$this->Imports->prompt = $this->prompt;
 		
@@ -50,14 +134,12 @@ class MultiImport extends Controller {
 		if ($filetype == 'image') {$data = $this->image($file);}
 		if ($filetype == 'word') {$data = $this->docx($file['tmp_name']);}
 		if ($filetype == 'excel') {$data = $this->excel($file['tmp_name']);}
-		if ($filetype == 'text') {$data = $this->default($file);}
+		//if ($filetype == 'text') {$data = $this->default($file);}
 		if ($filetype == false) {throw new \Exception('Unknown Filetype ', 400);}
 
-		$this->Imports->add($data);
-		$this->view->json($data);
+		$ids = $this->Imports->add($data);
+		$this->view->json(['entries' => $data, 'importIDs' => $ids]);
 	}
-
-
 
 
 	public function pdf($file) {
@@ -175,9 +257,44 @@ class MultiImport extends Controller {
 		return false;
 	}
 
+	public function new() {
+		$todayWhileAgo = 
+		$this->view->event = ['ressort' => 'Karlsruhe'];
+		$this->view->prompts = $this->Prompts->category('importer');
+		$this->view->render('/multiimport/edit');
+	}
+
+	public function create() {
+		if (isset($_POST['birthday']) && empty($_POST['birthday'])) {unset($_POST['birthday']);}
+		$this->Imports->create($_POST);
+		$this->view->redirect('/multiimport/archive');
+	}
 
 
+	public function edit($id) {
+		$this->view->event = $this->Imports->get($id);
+		$this->view->prompts = $this->Prompts->category('importer');
+		$this->view->render('/multiimport/edit');
+	}
 
+	public function update($id) {
+		$this->Imports->update($_POST, $id);
+		$this->view->redirect('/multiimport/archive');
+	}
+
+	public function delete($id) {
+		$this->Imports->delete($id);
+		$this->view->redirect('/multiimport/archive');
+	}
+
+	public function mass_delete() {
+		$ids = $_POST['ids'];
+		$ids = explode(',',$ids);
+		foreach ($ids as $id) {
+			$this->Imports->delete($id);
+		}
+		echo 'done';
+	}
 
 
 }

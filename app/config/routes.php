@@ -9,8 +9,16 @@ $routes->get('/engines', 'Chat@engines');
 $routes->get('/test', 'Chat@external_api_url_test');
 
 $routes->get('/multiimport', 'MultiImport@index');
-$routes->post('/multiimport', 'MultiImport@upload');
+$routes->post('/multiimport', 'MultiImport@import');
+$routes->get('/multiimport/archive', 'MultiImport@archive');
 $routes->get('/multiimport/today', 'MultiImport@imported_today');
+
+$routes->get('/multiimport/new', 'MultiImport@new');
+$routes->post('/multiimport/new', 'MultiImport@create');
+$routes->get('/multiimport/{id:\d+}', 'MultiImport@edit');
+$routes->post('/multiimport/{id:\d+}', 'MultiImport@update');
+$routes->get('/multiimport/{id:\d+}/delete', 'MultiImport@delete');
+$routes->post('/multiimport/delete', 'MultiImport@mass_delete');
 
 $routes->get('/export/cue', 'Export@cue_congrats');
 

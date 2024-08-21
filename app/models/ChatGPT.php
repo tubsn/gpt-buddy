@@ -18,7 +18,7 @@ class ChatGPT
 	private $conversations;
 
 	public $models = [
-		'default' => 'gpt-3.5-turbo',
+		'default' => 'gpt-4o-mini',
 		'gpt4' => 'gpt-4o',
 	];
 

@@ -23,6 +23,9 @@ button, .button {border-radius: 0.3em;}
 button:disabled {opacity:0.5; background-color:#aaa}
 button:disabled {cursor:not-allowed;}
 form button.light, form a.light, button.light, .button.light {background-color:white;}
+.button.grey {background-color:#ddd; color:#333}
+.button.grey:hover {color:white}
+.button.danger:hover {background-color:#a02222; color:white}
 
 button.stop {background-color: var(--warning); opacity:0.7}
 button.stop:hover {background-color:var(--warning) !important; opacity:1}
