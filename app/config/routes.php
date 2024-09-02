@@ -19,6 +19,8 @@ $routes->get('/multiimport/{id:\d+}', 'MultiImport@edit');
 $routes->post('/multiimport/{id:\d+}', 'MultiImport@update');
 $routes->get('/multiimport/{id:\d+}/delete', 'MultiImport@delete');
 $routes->post('/multiimport/delete', 'MultiImport@mass_delete');
+$routes->get('/multiimport/wipe_all', 'MultiImport@wipe_db');
+$routes->get('/multiimport/wipe_old', 'MultiImport@wipe_old');
 
 $routes->get('/export/cue', 'Export@cue_congrats');
 

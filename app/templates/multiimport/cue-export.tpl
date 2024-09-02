@@ -1,4 +1,4 @@
-<main>
+<main id="multiImportApp">
 
 <style>
 	.cue-article {max-width:370px;}
@@ -6,8 +6,12 @@
 
 <?php include tpl('multiimport/datepicker');?>
 
+<h1>Geburtstage für Kalenderwoche <?=$selectedWeek?> </h1>
+<h3>vom <?=formatDate($from,'d.m.Y')?> - <?=formatDate($to,'d.m.Y')?>
+<?php if (!empty($filter)): ?>
+ - für <?=$filter?>	
+<?php endif ?></h3>
 
-<h3>Geburtstage vom <?=formatDate($from,'d.m.Y')?> - <?=formatDate($to,'d.m.Y')?></h3>
 
 <?php if ($events): ?>
 <section class="cue-article box">
@@ -26,7 +30,7 @@
 <?php else: ?>
 <div class="box">
 	<h3>Keine Termine:</h3>
-	Für diesen Zeitraum sind keine Termine vorhanden. <br>Bitte wählen Sie ein anderes Datum (oben rechts), oder importieren Sie neue Inhalte!</div>
+	Für diesen Zeitraum sind keine Termine vorhanden. <br>Bitte wählen Sie ein anderes Datum (oben rechts), oder <a href="/multiimport">importieren</a> Sie neue Inhalte!</div>
 <?php endif ?>
 
 </main>

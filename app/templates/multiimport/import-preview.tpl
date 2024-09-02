@@ -5,7 +5,7 @@
 
 		<h3>{{result.name}}
 
-			<button @click="removeImport(result.index)" class="button danger fright">Import entfernen</button>
+			<button @click="removeImport(result.index)" v-if="result.status" class="button danger fright"><img class="trashbin" src="/styles/flundr/img/icon-delete-white.svg"> Import widerrufen</button>
 
 			<span v-if="loaders[result.index]">wird verarbeitet</span> <div v-if="loaders[result.index]" class="loadIndicator"><div></div><div></div><div></div></div>
 		</h3>

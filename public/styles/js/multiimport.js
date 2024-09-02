@@ -3,7 +3,6 @@ const multiImportApp = Vue.createApp({
 		loading: false,
 		ignoredFiles: [],
 		results: [],
-		imported: [],
 		loaders: [],
 		prompt: 0,
 		ressort: 0,
@@ -37,7 +36,7 @@ const multiImportApp = Vue.createApp({
 		resetResults() {this.results = []},
 
 		loadUserSettings() {
-			this.ressort = localStorage.ressort
+			if (localStorage.ressort) {this.ressort = localStorage.ressort}
 		},
 
 		remember(event, name) {
@@ -45,17 +44,17 @@ const multiImportApp = Vue.createApp({
 			localStorage[name] = value
 		},
 
+		/* Might be useful for drag an drop features
 		dropped(event) {
 			let files = [];
 			[...event.dataTransfer.items].forEach((item, i) => {
-				// If dropped items aren't files, reject them
 				if (item.kind === "file") {
 					const file = item.getAsFile()
 					files.push(file)
 				}
 			})
 			this.gatherFiles(files)
-		},
+		},*/
 
 		checkIntegrity(files) {
 			this.ignoredFiles = files.filter(file => file.size > this.maxsize)
@@ -87,11 +86,15 @@ const multiImportApp = Vue.createApp({
 			if (files.length < 1) {this.uploadDone(); return}
 
 			for (const [index, file] of files.entries()) {
-			    this.results.push({name: 'Datei: ' + file.name, status: null, index: index});
-			    this.loaders[index] = true;
-			    await this.upload(file, index);
-			    this.loaders[index] = false;
+				this.results.push({name: 'Datei: ' + file.name, status: null, index: index});
 			}
+
+			for (const [index, file] of files.entries()) {
+				this.loaders[index] = true;
+				await this.upload(file, index);
+				this.loaders[index] = false;
+			}
+
 
 			this.uploadDone()
 		},
@@ -109,7 +112,7 @@ const multiImportApp = Vue.createApp({
 			
 			if (!response.ok || response.status != 200) {
 				console.error (await response.text())
-				this.displayError('Errorcode ' , response.status);
+				this.displayError('Import nicht möglich - wahrscheinlich wurden keine Daten erkannt' , response.status);
 				this.loading = false
 				return
 			}
@@ -143,7 +146,7 @@ const multiImportApp = Vue.createApp({
 
 			if (!response.ok || response.status != 200) {
 				console.error (await response.text())
-				this.displayError('Errorcode ' , response.status);
+				this.displayError('Import nicht möglich - wahrscheinlich wurden keine Daten erkannt' , response.status);
 				this.loading = false
 				return
 			}
@@ -178,15 +181,17 @@ const multiImportApp = Vue.createApp({
 
 		displayError(message, code = '') {
 			if (code) {code = ` ${code}`}
-			this.errorMessage = 'Fehler: ' + message + code;
+			this.errorMessage = message + code;
 		},
 
-		uploadDone() {
-			this.loading = false
-			//this.getImports();
-			//this.$emit('done')
-		},
+		uploadDone() {this.loading = false},
 
+		resetFilters(event) {
+			event.preventDefault();
+			const form = event.target.parentElement
+			form.reset();
+			form.submit();
+		},
 
 
 		initCopyPaste() {
@@ -200,7 +205,6 @@ const multiImportApp = Vue.createApp({
 		},
 
 		getContentFromPasteEvent(event) {
-
 			const items = (event.clipboardData || event.originalEvent.clipboardData).items;
 
 			for (let index in items) {
@@ -216,9 +220,17 @@ const multiImportApp = Vue.createApp({
 		},
 
 		async copyPasteUpload(file) {
+			
 			if (!confirm('Möchten Sie ihren Screenshot hochladen?')) {return}
-			this.loading = true			
-			this.upload(file,0)
+
+			this.loading = true
+			this.loaders[0] = true;
+			this.errorMessage = ''
+
+			this.results.push({name: 'Screenshot', status: '', index: 0, ids: null});
+
+			await this.upload(file, 0)
+			this.loaders[0] = false;
 			this.uploadDone()
 		},
 

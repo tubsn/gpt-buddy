@@ -5,35 +5,42 @@
 		<option value="">Alle</option>
 		<?php foreach (IMPORT_RESSORTS as $ressort): ?>
 		<?php if ($filter == $ressort): ?>
-		<option selected value="<?=$ressort?>"><?=$ressort?></option>
+		<option selected value="<?=$ressort?>"><?=$ressort?>
+		<?php if (isset($stats['ressort'][$ressort])): ?>
+		[<?=$stats['ressort'][$ressort] ?? ''?>]
+		<?php endif ?>
+		</option>
 		<?php else: ?>
-		<option value="<?=$ressort?>"><?=$ressort?></option>
+		<option value="<?=$ressort?>"><?=$ressort?>
+		<?php if (isset($stats['ressort'][$ressort])): ?>
+		[<?=$stats['ressort'][$ressort] ?? ''?>]
+		<?php endif ?>
+		</option>
 		<?php endif ?>
 		<?php endforeach ?>
 	</select>
 	</label>
 
+
+
 	<label>Kalenderwoche wählen:
-	<select name="date" class="kw-picker">
+	<select name="kw" class="kw-picker">
 
-		<?php foreach ($months as $month => $date): ?>
-
-		<?php if (str_contains($month, $currentWeek)): ?>
+		<?php foreach ($weeks as $week): ?>
+		<?php if ($week['week'] == $currentWeek): ?>
 		<?php $class='current-week'; $selected = 'selected';?>
 		<?php else: ?>
 		<?php $class=''; $selected = '';?>			
 		<?php endif ?>
 
-		<?php if ($from != 'today' && $date['start'] == $from): ?>
-		<option selected value="<?=$date['start']?>" class="<?=$class?>"><?=$month?></option>
-		
-		<?php else: ?>
-		<?php if ($from != 'today'): ?>
-		<option value="<?=$date['start']?>" class="<?=$class?>"><?=$month?></option>
-		<?php else: ?>
-		<option <?=$selected?> value="<?=$date['start']?>" class="<?=$class?>"><?=$month?></option>
+		<?php if ($week['week'] == $selectedWeek): ?>
+		<?php $selected = 'selected';?>
 		<?php endif ?>
-		<?php endif ?>
+
+		<option <?=$selected?> value="<?=$week['week']?>" class="<?=$class?>">
+			KW <?=$week['week']?> - Einträge: [<?=$week['entries']?>]
+		</option>
+
 
 		<?php endforeach ?>
 	</select>

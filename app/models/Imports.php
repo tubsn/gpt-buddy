@@ -34,11 +34,35 @@ class Imports extends Model
 			$parameters['location'] = $options['location'];
 		}
 
-		if (isset($options['period'])) {
-			if (count($filters) > 0) {$whereSelector = 'AND';}
-			array_push($filters, $whereSelector . " DATE_FORMAT(created, '%Y-%m') = :period");
-			$parameters['period'] = $options['period'];
+		$from = null;
+		$to = null;
+
+		if (isset($options['from'])) {$from = $options['from'];}
+		if (isset($options['to'])) {$to = $options['to'];}
+		if ($from || $to) {
+			
+			
+			if ($to < $from) {
+				$frombackup = $from; $from = $to; $to = $frombackup;
+			}
+			
+
+			if ($from) {
+				$from = substr($from,5);
+				if (count($filters) > 0) {$whereSelector = 'AND';}
+				array_push($filters, $whereSelector . " DATE_FORMAT(birthday, '%m-%d') >= :from");
+				$parameters['from'] = $from;
+			}
+
+			if ($to) {
+				$to = substr($to,5);
+				if (count($filters) > 0) {$whereSelector = 'AND';}
+				array_push($filters, $whereSelector . " DATE_FORMAT(birthday, '%m-%d') <= :to");
+				$parameters['to'] = $to;
+			}
+
 		}
+
 
 		$filters = implode(' ', $filters);
 
@@ -54,6 +78,29 @@ class Imports extends Model
 		$output = $SQLstatement->fetchALL();
 		return $output;
 
+	}
+
+
+	public function gather_stats($field = 'ressort') {
+
+		if (!in_array($field, $this->table_fields())) {return [];}
+	
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT $field, count(*) FROM $table 
+			GROUP BY $field
+		");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchAll(PDO::FETCH_UNIQUE|PDO::FETCH_COLUMN);	
+		return $output;
+	}
+
+	public function table_fields() {
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("SHOW columns FROM $table");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchAll();	
+		return array_column($output,'Field');
 	}
 
 
@@ -89,6 +136,24 @@ class Imports extends Model
 		return $output;
 	}
 
+
+	public function gather_by_week() {
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT 
+			WEEK(concat(DATE_FORMAT(NOW(), '%Y-'),DATE_FORMAT(birthday, '%m-%d')), 1) AS calendar_week,
+			count(*)
+			FROM $table 
+			GROUP BY calendar_week
+			ORDER BY calendar_week DESC
+
+		");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchAll(PDO::FETCH_UNIQUE|PDO::FETCH_COLUMN);
+		return $output;
+
+	}
 
 
 	public function gather($from = 'today', $to = 'today +7 days', $filter = null) {
@@ -220,4 +285,28 @@ class Imports extends Model
 		return $output;
 
 	}
+
+	public function clear_db() {
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			TRUNCATE TABLE $table;  
+		");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetch();
+		return $output;
+	}
+
+	public function remove_old_entries() {
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			DELETE FROM $table
+			WHERE DATE_FORMAT(birthday, '%m-%d') < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL -1 WEEK), '%m-%d');
+		");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetch();
+		return $output;
+	}
+
+
+
 }

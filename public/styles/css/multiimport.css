@@ -2,14 +2,16 @@
 .parameters {display:flex; gap:2em; align-items:end;}
 .parameters select {margin:0;}
 
-.parameters form {display:flex; gap:1em; align-items:end;}
+.parameters form {display:flex; gap:1em; align-items:end; margin-bottom:0;}
+.parameters form input {margin-bottom:0;}
+.parameters form input {padding-top:0.2em; padding-bottom:0.2em;}
 
 .filter-picker-form {max-width:400px; float:right; background-color:#eee; padding:0.5em 1em; border-radius:0.5em;}
 .filter-picker-form {display:flex; gap:1em;}
 .current-week, .current-month {background-color:#ccc}
 
 .cloud {width:22px; margin-bottom:-5px;}
-
+.trashbin {width: 16px; position: relative; bottom: 0px;}
 
 .data-preview {display:flex; gap:1em; flex-wrap: wrap;}
 .data-preview-item {background-color: white; padding: 1em; border-radius: 1em;}

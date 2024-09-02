@@ -37,38 +37,28 @@ class MultiImport extends Controller {
 			$options['ressort'] = $ressort;
 		}
 
-		$dateHelper = new Datepicker();
-
-		$months = $dateHelper->months('last month -2 months', 'next Month +2 months');
-
-		$from = $_GET['date'] ?? 'first day of this month';
-		$to = date("Y-m-d", strtotime('last day of this month'));
-		$selectedDate = date("Y-m-d", strtotime('first day of this month'));
-
-		$date = $_GET['date'] ?? '';
-		if (!empty($date)) {
-			$from = $date;
-			$to = date('Y-m-t', strtotime($date));
-			$selectedDate = date('M Y', strtotime($date));
-			$options['period'] = date('Y-m', strtotime($date));
-		}
+		$from = $_GET['from'] ?? null;
+		$to = $_GET['to'] ?? null;
+		if (!empty($from)) {$options['from'] = $from;}
+		if (!empty($to)) {$options['to'] = $to;}
 
 		$location = $_GET['location'] ?? '';
 		if (!empty($location)) {
 			$options['location'] = $location;
 		}
 
+		$stats['ressort'] = $this->Imports->gather_stats('ressort');
+		$stats['location'] = $this->Imports->gather_stats('location');
+
 		$this->view->from = $from;
 		$this->view->to = $to;
-		$this->view->months = $months;
-		$this->view->currentMonth = date('M');
-		$this->view->selectedDate = $selectedDate;
 
+		$this->view->stats = $stats;
 		$this->view->selectedRessort = $ressort;
 		$this->view->selectedLocation = $location;
 		$this->view->locations = $this->Imports->distinct_locations();
 		$this->view->events = $this->Imports->filter($options);
-		$this->view->title = 'Importierte Daten';
+		$this->view->title = 'Importierte Einträge [' . count($this->view->events) . ']';
 		$this->view->render('multiimport/archive');
 	}
 
@@ -158,11 +148,24 @@ class MultiImport extends Controller {
 			}
 
 			$text = preg_replace('/[^\S\r\n]+/', ' ', $text); // Remove Multiple Whitespaces
-			return strip_tags($text);
+			$content = strip_tags($text);
 		} 
 		catch (\Exception $e) {
 			return $e->getMessage();
 		}
+
+		$ChatGPT = new ChatGPT();
+		$ChatGPT->jsonMode = true;
+
+		$prompt = $this->prompt['content'];
+		$date = date('d.m.Y', time());
+		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;
+		$prompt = $prompt . $content;
+		
+		$response = $ChatGPT->direct($prompt);
+		$response = json_decode($response,1);
+		return $response['data'];
+
 
 	}
 
@@ -272,7 +275,9 @@ class MultiImport extends Controller {
 
 
 	public function edit($id) {
-		$this->view->event = $this->Imports->get($id);
+		$event = $this->Imports->get($id);
+		if (empty($event)) {throw new \Exception("Eintrag nicht vorhanden", 404);}
+		$this->view->event = $event;
 		$this->view->prompts = $this->Prompts->category('importer');
 		$this->view->render('/multiimport/edit');
 	}
@@ -294,6 +299,16 @@ class MultiImport extends Controller {
 			$this->Imports->delete($id);
 		}
 		echo 'done';
+	}
+
+	public function wipe_db() {
+		$this->Imports->clear_db();
+		$this->view->redirect('/multiimport/archive');
+	}
+
+	public function wipe_old() {
+		$this->Imports->remove_old_entries();
+		$this->view->redirect('/multiimport/archive');
 	}
 
 

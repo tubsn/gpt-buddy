@@ -316,8 +316,12 @@ class ChatGPT
 	}
 
 	private function extract_content_as_json_string($string) {
-		$pattern = '/\{"content":".*?"\}/'; // Extracts the Part which is Valid JSON
-		if (preg_match_all($pattern, $string, $matches)) {return $matches[0];}
+		$pattern = '/\{"content":".*?"\},"log/'; // Extracts the Part which is Valid JSON // Extracts the Part which is Valid JSON
+		if (preg_match_all($pattern, $string, $matches)) {
+			$matches[0] = array_map(function($set) {
+				return trim($set,',"log)');}, $matches[0]);
+			return $matches[0];
+		}
 		return [];
 	}
 
