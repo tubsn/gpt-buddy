@@ -30,4 +30,14 @@ class Image extends Controller {
 		$this->view->render('image-generator/index');
 	}
 
+	public function delete() {
+		if (!Auth::has_right('deleteimage')) {
+			throw new \Exception("Sie haben keine Berechtigung Bilder zu entfernen", 403);
+		}
+		$imagename = $_POST['imagename'] ?? '';
+		if (empty($imagename)) {throw new \Exception("Request Failed", 404);}
+		$success = $this->Images->delete_generated_file($imagename);
+		$this->view->json(['status' => $success]);
+	}
+
 }

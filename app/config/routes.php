@@ -8,28 +8,6 @@ $routes->get('/engines', 'Chat@engines');
 
 $routes->get('/test', 'Chat@external_api_url_test');
 
-$routes->get('/multiimport', 'MultiImport@index');
-$routes->post('/multiimport', 'MultiImport@import');
-$routes->get('/multiimport/archive', 'MultiImport@archive');
-$routes->get('/multiimport/today', 'MultiImport@imported_today');
-
-$routes->get('/multiimport/new', 'MultiImport@new');
-$routes->post('/multiimport/new', 'MultiImport@create');
-$routes->get('/multiimport/{id:\d+}', 'MultiImport@edit');
-$routes->post('/multiimport/{id:\d+}', 'MultiImport@update');
-$routes->get('/multiimport/{id:\d+}/delete', 'MultiImport@delete');
-$routes->post('/multiimport/delete', 'MultiImport@mass_delete');
-$routes->get('/multiimport/wipe_all', 'MultiImport@wipe_db');
-$routes->get('/multiimport/wipe_old', 'MultiImport@wipe_old');
-
-$routes->get('/export/cue', 'Export@cue_congrats');
-
-
-// Namenswahl
-$routes->get('/name', 'Stats@form_name');
-$routes->get('/name/liste', 'Stats@list_name');
-$routes->post('/name', 'Stats@save_name');
-
 // API
 $routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
@@ -49,6 +27,7 @@ $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
 $routes->get('/image', 'Image@index');
 $routes->get('/image/archive', 'Image@archive');
 $routes->post('/image/generate', 'API@generate_image');
+$routes->post('/image/delete', 'Image@delete');
 
 // Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');
@@ -60,6 +39,24 @@ $routes->get('/import/converter', 'Import@converter');
 $routes->get('/import/converter/tts/{fileindex:\d+}', 'Import@transcribe');
 $routes->post('/import/converter', 'Import@converter');
 $routes->post('/import/file', 'Import@file_upload');
+
+// Multiimport
+$routes->get('/multiimport', 'MultiImport@index');
+$routes->post('/multiimport', 'MultiImport@import');
+$routes->get('/multiimport/archive', 'MultiImport@archive');
+$routes->get('/multiimport/today', 'MultiImport@imported_today');
+
+$routes->get('/multiimport/new', 'MultiImport@new');
+$routes->post('/multiimport/new', 'MultiImport@create');
+$routes->get('/multiimport/{id:\d+}', 'MultiImport@edit');
+$routes->post('/multiimport/{id:\d+}', 'MultiImport@update');
+$routes->get('/multiimport/{id:\d+}/delete', 'MultiImport@delete');
+$routes->post('/multiimport/delete', 'MultiImport@mass_delete');
+$routes->get('/multiimport/wipe_all', 'MultiImport@wipe_db');
+$routes->get('/multiimport/wipe_old', 'MultiImport@wipe_old');
+
+$routes->get('/export/cue', 'Export@cue_congrats');
+
 
 // Settings / Prompts
 $routes->get('/settings', 'Settings@index');

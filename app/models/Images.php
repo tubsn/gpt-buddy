@@ -58,4 +58,13 @@ class Images extends Model
 		return trim($prompt);
 	}
 
+	public function delete_generated_file($filename) {
+		$file = $this->internalPath . $filename;
+		if (file_exists($file)) {
+			unlink($file);
+			return true;
+		}
+		return false;
+	}
+
 }
