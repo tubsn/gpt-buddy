@@ -14,6 +14,13 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>25. September 2024 - Bilder löschen Option</h3>
+<p>Im Bildgenerator ist es jetzt möglich Bilder wieder zu entfernen. Dazu muss der Nutzer die Berechtigungsstufe "deleteimage" erhalten.</p>
+
+<h3>13. September 2024 - Multi Option Importer</h3>
+<p>Die Multi Import funktion ermöglicht es ungeordnete Datensammlungen mit hilfe eines Prompts zu sortieren und in eine Datenbank zur späteren weiterverwendung zu importieren. Dabei können Texte, Bilder, oder Screenshots als Datengrundlage importiert werden.</p>
+<p>Es handelt sich hier um ein sehr spezifisches Feature, welches nicht out of the Box Funktioniert. Bei Interesse gern Rückfragen.</p>
+
 <h3>18. Mai 2024 - GPT-4o Model</h3>
 <p>Für alle Anfragen im GPT-4-Modus wird jetzt standardmäßig das GPT-4o (Omni) Modell verwendet. Es ist günstiger und schneller als die bisherigen GPT-4-Modelle. Aktueller Wissensstand des Modells ist Oktober 2023.</p>
 <p>Außerdem wurde die maximale Token-Beschränkung für die Ausgabe deaktiviert. Sie liegt jetzt immer bei 4096 Tokens, dem aktuellen Standard für alle neueren Modelle sowie GPT-3.5.</p>
