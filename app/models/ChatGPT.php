@@ -4,6 +4,7 @@ namespace app\models;
 use Orhanerday\OpenAi\OpenAi;
 use app\models\Prompts;
 use app\models\Conversations;
+use app\models\OpenAiVision;
 
 use flundr\utility\Log;
 use League\CommonMark\CommonMarkConverter;
@@ -103,7 +104,7 @@ class ChatGPT
 		if (!empty($this->payload)) {
 			$question = [
 				['type' => 'text', 'text' => $question],
-				['type' => 'image_url', 'image_url' => ['url' => PAGEURL . $this->payload]],
+				['type' => 'image_url', 'image_url' => ['url' => $this->prepare_image_for_vision($this->payload)]],
 			];
 		};
 
@@ -111,6 +112,15 @@ class ChatGPT
 		$this->count_tokens();
 		$this->save_conversation();
 
+	}
+
+	public function prepare_image_for_vision($imagePath) {
+		$visionData = PAGEURL . $imagePath;
+		if (defined('USEBASE64VISION') && USEBASE64VISION) {
+			$vision = new OpenAiVision();
+			$visionData = $vision->file_to_base64(PUBLICFOLDER . $this->payload);
+		}
+		return $visionData;
 	}
 
 	private function add($message, $role = 'user') {
