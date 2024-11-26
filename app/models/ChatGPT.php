@@ -4,7 +4,7 @@ namespace app\models;
 use Orhanerday\OpenAi\OpenAi;
 use app\models\Prompts;
 use app\models\Conversations;
-use app\models\OpenAiVision;
+use app\models\OpenAIVision;
 
 use flundr\utility\Log;
 use League\CommonMark\CommonMarkConverter;
