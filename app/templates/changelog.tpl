@@ -15,7 +15,7 @@
 <hr>
 
 <h3>8. Januar 2025 - Text To Speech</h3>
-<p>Es gibt jetzt die Möglichkeit den Ein- oder Ausgabetext als gesprochenes Audio wiederzugeben (TTS). Dazu steht aktuell das Open AI Whisper model mit verschiedenen Sprechern zur verfügung.</p>
+<p>Es gibt jetzt die Möglichkeit den Ein- oder Ausgabetext als gesprochenes Audio wiederzugeben (TTS). Dazu steht aktuell das Open AI Whisper Model mit verschiedenen Sprechern zur Verfügung.</p>
 
 
 <h3>25. September 2024 - Bilder löschen Option</h3>
