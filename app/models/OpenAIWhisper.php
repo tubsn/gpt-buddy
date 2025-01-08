@@ -38,4 +38,32 @@ class OpenAIWhisper
 
 	}
 
+	public function tts($input, $voice = 'nova') {
+		
+		$voice = strtolower($voice);
+		$availableVoices = ['echo', 'fable', 'onyx', 'nova', 'shimmer'];
+		if (!in_array($voice, $availableVoices)) {
+			throw new \Exception("$voice is not Available as Voice");
+		}
+
+		$open_ai = new OpenAi(CHATGPTKEY);
+		$result = $open_ai->tts([
+			'model' => 'tts-1', // tts-1-hd
+			'input' => $input,
+			'voice' => $voice,
+		]);
+
+		$filename = date('Y-m-d-H-i') . '-' . bin2hex(random_bytes(4)) . '.mp3';
+		$folder = 'audio'. DIRECTORY_SEPARATOR . 'tts' . DIRECTORY_SEPARATOR;
+
+		$path = PUBLICFOLDER . $folder;
+		if (!is_dir($path)) {mkdir($path, 0777, true);}
+
+		$file = $path . $filename;
+		file_put_contents($file, $result);
+
+		return '/' . str_replace('\\', '/', $folder . $filename);
+
+	}
+
 }

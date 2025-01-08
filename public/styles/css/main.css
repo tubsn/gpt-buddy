@@ -132,17 +132,19 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 .io-textarea ol li, .io-textarea ul li {margin-bottom:0.4em;}
 .user-input button.light {float:right; position:relative; top:10px;}
 
-/* File / Copy Button */
-.copy-button, .file-button {cursor:pointer; position: absolute; right:0em; top:-1em; font-size: 0.7em; padding:0.4em 0.4em 0 0.4em;
+
+
+
+.float-button {cursor:pointer; position: absolute; right:0em; top:-1em; font-size: 0.7em; padding:0.4em 0.4em 0 0.4em;
 text-align:center; background-color:white; border-radius:0.3em; border: 1px solid #c8c8c8}
 
-.copy-button img, .file-button img {width:22px; position:relative; top:2px;}
-.copy-button span, .file-button span {display:none; position:relative; bottom:2px; left:1px}
-.copy-button:hover span, .file-button:hover span {display:inline-block;}
-.copy-button:active, .file-button:active {background-color:#ccc}
+.float-button img {width:22px; position:relative; top:2px;}
+.float-button span {display:none; position:relative; bottom:2px; left:1px}
+.float-button:hover span {display:inline-block;}
+.float-button:active {background-color:#ccc}
 
+.speech-button {right:2.8em;}
 .file-button img.cloud {width:20px; top:3px}
-
 
 /* Image Generator */
 .image-generator {display:grid; grid-gap:2em; grid-row-gap:0em; grid-template-columns: 1fr 6fr 2fr; margin-bottom:0;}

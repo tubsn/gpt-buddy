@@ -29,6 +29,11 @@ $routes->get('/image/archive', 'Image@archive');
 $routes->post('/image/generate', 'API@generate_image');
 $routes->post('/image/delete', 'Image@delete');
 
+// TTS
+$routes->get('/tts', 'TextToSpeech@index');
+$routes->post('/tts', 'TextToSpeech@index');
+$routes->post('/tts/generate', 'TextToSpeech@generate');
+
 // Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');
 $routes->get('/import/article/{portal}/{id:\d+}', 'Import@article');

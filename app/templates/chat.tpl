@@ -74,7 +74,10 @@
 			<img :src="payload">
 		</figure>
 
-		<div class="file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span></div>
+		<div class="float-button speech-button" title="Text to Speech" @click="createTTS"><img src="/styles/img/icon-volume.svg"> <span>Text to Speech</span></div>
+
+
+		<div class="float-button file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span></div>
 		<input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 
 		<label>Eingabe:
@@ -90,7 +93,9 @@
 
 	<section class="gpt-output">
 
-		<div class="copy-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"> <span>Inhalt kopieren</span></div>
+		<div class="float-button speech-button" title="Text to Speech" @click="createTTS"><img src="/styles/img/icon-volume.svg"> <span>Text to Speech</span></div>
+
+		<div class="float-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"> <span>Inhalt kopieren</span></div>
 
 		<label v-if="markdown == true" class="no-select">Ausgabe:</label>
 		<div v-if="markdown == true" v-html="output" class="io-textarea io-output-div" placeholder=""></div>

@@ -273,6 +273,35 @@ methods: {
 
 	},
 
+	createTTS(event) {
+
+		const container = event.target.parentElement.parentElement
+		let text = ''
+
+		if (container.classList.contains('user-input')) {text = this.input}
+		else {text = this.output}
+
+		// HTML has to be striped
+		const HTMLcleaner = document.createElement('div');
+		HTMLcleaner.innerHTML = text;
+		text = HTMLcleaner.textContent || HTMLcleaner.innerText || '';
+
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = '/tts';
+
+		const data = { input: text};
+		for (const key in data) {
+			const input = document.createElement('input');
+			input.type = 'hidden'; input.name = key; input.value = data[key];
+			form.appendChild(input);
+		}
+
+		document.body.appendChild(form);
+		form.submit();
+
+	},
+
 	async fetchConversation() {
 		if (!this.conversationID) {return}
 		if (this.conversationID === 'undefined') {return}

@@ -14,6 +14,10 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>8. Januar 2025 - Text To Speech</h3>
+<p>Es gibt jetzt die Möglichkeit den Ein- oder Ausgabetext als gesprochenes Audio wiederzugeben (TTS). Dazu steht aktuell das Open AI Whisper model mit verschiedenen Sprechern zur verfügung.</p>
+
+
 <h3>25. September 2024 - Bilder löschen Option</h3>
 <p>Im Bildgenerator ist es jetzt möglich Bilder wieder zu entfernen. Dazu muss der Nutzer die Berechtigungsstufe "deleteimage" erhalten.</p>
 
