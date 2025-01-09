@@ -7,9 +7,18 @@ Hier lassen sich Grunddaten zum Unternehmen wie z.B. Audiencedaten hinterlegen, 
 
 <form class="form-container" method="post" action="">
 
-<label>Knowledge Bezeichnung:
-	<input name="title" type="text" placeholder="Der Name wird als im Callback Aufruf verwendet">
-</label>
+<div class="grid-3-col">
+	<label>Knowledge Bezeichnung:
+		<input name="title" type="text" placeholder="Der Name wird als im Callback Aufruf verwendet">
+	</label>
+
+	<label>Import URL:
+		<input name="url" type="text" placeholder="Webseite von der Daten importiert werden können">
+	</label>
+	<label>Import CSS-Selektor:
+		<input name="selector" type="text" placeholder="z.B. main-container oder article.main">
+	</label>		
+</div>
 
 <label>Beschreibung:
 	<textarea name="description" type="text" placeholder="Optionale Infos zu den Angaben"></textarea>

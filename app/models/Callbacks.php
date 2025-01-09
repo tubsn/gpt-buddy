@@ -4,6 +4,7 @@ namespace app\models;
 use \flundr\database\SQLdb;
 use \flundr\mvc\Model;
 use \app\models\Knowledge;
+use \app\models\Scrape;
 
 class Callbacks
 {
@@ -28,6 +29,12 @@ class Callbacks
 		$knowledge = $knowledge[0] ?? [];
 		
 		if (empty($knowledge)) {return $prompt;}
+
+		if ($knowledge['url']) {
+			$Scrape = new Scrape();
+			$import = $Scrape->by_class_plain($knowledge['url'], $knowledge['selector']);
+			$knowledge['content'] = $knowledge['content'] . "\n" . $import;			
+		}
 		
 		$prompt['content'] = $knowledge['content'] . "\n" . $prompt['content'];
 		return $prompt;

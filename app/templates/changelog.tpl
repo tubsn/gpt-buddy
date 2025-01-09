@@ -14,6 +14,11 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>9. Januar 2025 - URL Import für Knowledgebases</h3>
+<p>Für die Knowledgebases steht jetzt ein generischer URL Import zur vergfügung, welcher über den Webserver URLs einlesen kann, und dessen inhalte nach selbst definierten CSS Selektoren filtern kann. Dadurch sind z.B. Anwendungszwecke wie automatisches Einlesen von aktuellen Pressemeldungen möglich.</p>
+<p>Der Nutzer kann dann per Promt fragen zu diesen Pressemeldungen stellen, Zusammenfassungen für Newsletter erstellen, kritische Nachrichten filtern usw.</p>
+
+
 <h3>8. Januar 2025 - Text To Speech</h3>
 <p>Es gibt jetzt die Möglichkeit den Ein- oder Ausgabetext als gesprochenes Audio wiederzugeben (TTS). Dazu steht aktuell das Open AI Whisper Model mit verschiedenen Sprechern zur Verfügung.</p>
 

@@ -16,7 +16,7 @@ class Settings extends Controller {
 
 		$this->view('DefaultLayout');
 		$this->view->title = 'Settings';
-		$this->models('Prompts,Knowledge');
+		$this->models('Prompts,Knowledge,Scrape');
 	}
 
 	public function user_can_see_config() {
@@ -170,6 +170,13 @@ class Settings extends Controller {
 		$knowledge = $this->Knowledge->get($id);
 		$this->view->knowledge = $knowledge;
 		if (!$this->view->knowledge) {throw new \Exception("Knowledge not Found", 404);}
+
+		$import = null;
+		if ($knowledge['url']) {
+			$import = $this->Scrape->by_class_plain($knowledge['url'], $knowledge['selector']);
+		}
+
+		$this->view->import = $import;
 		$this->view->render('admin/edit-knowledge');
 	}
 
