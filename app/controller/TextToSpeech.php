@@ -21,13 +21,10 @@ class TextToSpeech extends Controller {
 	}
 
 	public function generate() {
-
-		//$this->view->json(['status' => 'ok', 'audio' => '/audio/tts/2025-01-08-12-00-1e7d1e7a.mp3']); 
-		//return;
-
 		$text = $_POST['text'] ?? null;
 		$voice = $_POST['voice'] ?? null;
-		$file = $this->OpenAIWhisper->tts($text, $voice);
+		$hd = $_POST['quality'] ?? null;
+		$file = $this->OpenAIWhisper->tts($text, $voice, $hd);
 		$this->view->json(['status' => 'ok', 'audio' => $file]); 
 	}
 

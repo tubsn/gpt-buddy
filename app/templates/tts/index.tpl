@@ -30,11 +30,20 @@
 	</label>
 </div>
 
+<div class="box parameters">
+	<label>Qualität:
+	<select v-model="quality" data-name="quality">
+		<option value="0">Normale Qualität</option>
+		<option value="1">Hohe Qualität</option>
+	</select>
+	</label>
+</div>
+
 </div>
 
 <div class="box">
 <label>Eingabe:
-<textarea v-model="input" ref="inputarea" class="large" placeholder="Bitte hier den Text einfügen, welcher als Audio ausgegeben werden soll"
+<textarea v-model="input" ref="inputarea" class="large" placeholder="Bitte hier den Text einfügen, welcher als Audio ausgegeben werden soll" style="margin-bottom:1em"
 data-initial-value="<?=$input ?? ''?>"
 ></textarea>
 </label>

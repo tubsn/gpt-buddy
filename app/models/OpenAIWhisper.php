@@ -38,7 +38,7 @@ class OpenAIWhisper
 
 	}
 
-	public function tts($input, $voice = 'nova') {
+	public function tts($input, $voice = 'nova', $hd = false) {
 		
 		$voice = strtolower($voice);
 		$availableVoices = ['echo', 'fable', 'onyx', 'nova', 'shimmer'];
@@ -46,9 +46,12 @@ class OpenAIWhisper
 			throw new \Exception("$voice is not Available as Voice");
 		}
 
+		$model = 'tts-1';
+		if ($hd) {$model = 'tts-1-hd';}
+
 		$open_ai = new OpenAi(CHATGPTKEY);
 		$result = $open_ai->tts([
-			'model' => 'tts-1', // tts-1-hd
+			'model' => $model,
 			'input' => $input,
 			'voice' => $voice,
 		]);

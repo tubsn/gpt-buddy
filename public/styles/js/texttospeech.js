@@ -3,14 +3,15 @@ const textToSpeechApp = Vue.createApp({
 		loading: false,
 		ttsmodel: '',
 		voice: '',
+		quality: '',
 		input: '',
 		audiofile: '',
 		errorMessage: '',
 	}},
 
 	watch: {
-		voice(content,old) {
-		localStorage.voice = content},
+		voice(content,old) {localStorage.voice = content},
+		quality(content,old) {localStorage.quality = content},
 	},
 
 	mounted: function() {
@@ -39,6 +40,7 @@ const textToSpeechApp = Vue.createApp({
 
 		getPresets() {
 			if (localStorage.voice) {this.voice = localStorage.voice}
+			if (localStorage.quality) {this.quality = localStorage.quality}
 		},
 
 		reset() {
@@ -57,20 +59,27 @@ const textToSpeechApp = Vue.createApp({
 			let formData = new FormData()
 			formData.append('text', this.input)
 			formData.append('voice', this.voice)
+			formData.append('quality', this.quality)
 
 			this.loading = true
 			let response = await fetch('/tts/generate', {method: 'POST', body: formData})
 			
 			if (!response.ok || response.status != 200) {
 				console.error (await response.text())
-				this.errorMessage('TTS Error' , response.status);
+				this.errorMessage = `TTS Error: ${response.status}`;
 				this.loading = false
 				return
 			}
 
-			let json = await response.json()
-			this.audiofile = json.audio
-			this.loading = false
+			try {
+				let json = await response.json();
+				this.audiofile = json.audio;
+				this.loading = false;
+			} catch (error) {
+				this.errorMessage = `Server Response: ${error}`;				
+				this.loading = false;
+			}
+
 		},
 
 	}, // End Methods

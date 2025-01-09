@@ -138,7 +138,7 @@ padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%;
 .float-button {cursor:pointer; position: absolute; right:0em; top:-1em; font-size: 0.7em; padding:0.4em 0.4em 0 0.4em;
 text-align:center; background-color:white; border-radius:0.3em; border: 1px solid #c8c8c8}
 
-.float-button img {width:22px; position:relative; top:2px;}
+.float-button img {width:22px; max-height:20px; position:relative; top:2px;}
 .float-button span {display:none; position:relative; bottom:2px; left:1px}
 .float-button:hover span {display:inline-block;}
 .float-button:active {background-color:#ccc}
