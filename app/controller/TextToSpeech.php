@@ -11,7 +11,7 @@ class TextToSpeech extends Controller {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
 		$this->view->js = '/styles/js/texttospeech.js';
-		$this->view->title = 'Text to Speech';
+		$this->view->title = APP_NAME . ' | Text to Speech';
 		$this->models('OpenAIWhisper');
 	}
 
