@@ -20,6 +20,7 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 		<tr>
 			<th>ID</th>
 			<th>Title</th>
+			<th>URL</th>
 			<th>Beschreibung</th>
 			<th>zuletzt editiert</th>
 			<th style="text-align: right;">Löschen</th>
@@ -28,7 +29,9 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 		<tr>
 			<td><?=$knowledge['id']?></td>
 			<td><a href="/settings/knowledge/<?=$knowledge['id']?>"><?=$knowledge['title']?></td>
-			<td><?=$knowledge['description']?></td>
+			<td class="text-center"><?php if ($knowledge['url']): ?><small>✔</small><?php else: ?>-<?php endif ?></td>
+			<td><?php if (empty($knowledge['description'])): ?>-<?php endif ?>
+			<?=$knowledge['description'] ?? '...'?></td>
 			<td><?=$knowledge['edited']?></td>
 			<td class="text-right">
 				<span id="dialog-delete-<?=$knowledge['id']?>" class="icon-trashcan"></span>
