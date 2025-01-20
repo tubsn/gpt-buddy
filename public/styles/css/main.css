@@ -108,6 +108,7 @@ background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:ob
 
 .options {margin-bottom:1em; display:flex; gap:1em; justify-content:start; align-items:flex-start;}
 .options select {max-width: 400px;}
+@media only screen and (max-width: 960px) {.options select {max-width:140px;}}
 
 .promptlist .inactive {background-color:#dfdfdf}
 
@@ -145,6 +146,8 @@ text-align:center; background-color:white; border-radius:0.3em; border: 1px soli
 
 .speech-button {right:2.8em;}
 .file-button img.cloud {width:20px; top:3px}
+
+
 
 /* Image Generator */
 .image-generator {display:grid; grid-gap:2em; grid-row-gap:0em; grid-template-columns: 1fr 6fr 2fr; margin-bottom:0;}
@@ -216,11 +219,14 @@ table.fancy th {background-color: var(--primary);}
 @media only screen and (max-width: 768px) {.show-mobile{display:block;} .hide-mobile{display:none;}}
 
 @media only screen and (max-width: 768px) {
-	.io-textarea {height:120px}
-	.user-input {margin-bottom: .6em; border-bottom: 1px dashed #6a6a6a; padding-bottom: 1.2em; display: flex; flex-direction: column;}
-	.del-historie {align-self:center;}
+	.io-textarea {height:140px}
+	.user-input .io-textarea {height:92px}
+	.user-input {margin-bottom: 1.3em; padding-bottom: 1.2em; display: flex; flex-direction: column;}
+	.del-historie {align-self:center; margin-bottom:0.4em; font-size:0.8em; align-self:normal}
 	.options {margin-bottom:0.5em;}
 	.send-mobile-btn {position:relative; top:5px;}
+	h1 {font-size:1.2em;}
+	.float-button {top:-1.4em;}
 }
 
 /* Form Grids */
@@ -320,8 +326,13 @@ table.fancy tr:hover {background-color: var(--grey);}
 
 
 /* Auth */
-.auth-layout {max-width:700px; margin:0 auto; margin-top:6em; padding: 2em 3em 1em 3em; background: #e8e8e8; border-radius:0.5em;}
+.auth-layout {max-width:700px; margin:0 auto; margin-top:6em; margin-bottom:3em; padding: 2em 3em 1em 3em; background: #e8e8e8; border-radius:0.5em;}
 .auth-layout.user-table {max-width:90%;}
+@media only screen and (max-width: 960px) {
+	.auth-layout {margin-top:3em;}
+	.auth-login a {white-space:nowrap;}
+	.auth-login button {margin-bottom:1em;}
+}
 
 
 /* Searchbox */
