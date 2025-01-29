@@ -45,6 +45,8 @@ class Settings extends Controller {
 		}
 
 		$categories = array_group_by('category', $prompts);
+		ksort($categories);
+
 		$this->view->categories = $categories;
 
 		$stats = $this->Prompts->most_hits();
@@ -95,6 +97,7 @@ class Settings extends Controller {
 		if (!$this->view->prompt) {throw new \Exception("Prompt not Found", 404);}
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');
+		asort($categories);
 
 		if (!Auth::has_right('chatgpt')) {
 			$usersCategories = $this->editable_rights();
@@ -109,6 +112,7 @@ class Settings extends Controller {
 	public function new() {
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');		
+		asort($categories);
 
 		if (!Auth::has_right('chatgpt')) {
 			$usersCategories = $this->editable_rights();
