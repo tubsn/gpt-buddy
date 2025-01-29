@@ -20,7 +20,7 @@ class ChatGPT
 
 	public $models = [
 		'default' => 'gpt-4o-mini',
-		'gpt4' => 'gpt-4o',
+		'gpt4' => 'chatgpt-4o-latest',
 	];
 
 	public $forceGPT4 = false;
@@ -93,6 +93,13 @@ class ChatGPT
 			$prompt = $this->prompts->get_and_track($this->promptID);
 
 			if ($prompt) {$this->add($prompt['content'], 'system');}
+
+			if ($prompt['knowledges']) {
+				foreach ($prompt['knowledges'] as $knowledge) {
+					$this->add($knowledge, 'system');
+				}
+			}
+
 			if (isset($prompt['format']) && $prompt['format']) {
 				$this->add('Nutze Markdown für Formatierungen', 'system');
 			}

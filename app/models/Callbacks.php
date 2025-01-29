@@ -16,30 +16,8 @@ class Callbacks
 		if ($callback == 'current-date') {return $this->current_date($prompt);}
 		if ($callback == 'current-time') {return $this->current_time($prompt);}
 
-		if ($this->in_knowledgebase($callback)) {
-			return $this->apply_knowledgebase($prompt, $callback);
-		}
-
 		return $prompt;
 	}
-
-	private function apply_knowledgebase($prompt) {
-		$knowledgebase = new Knowledge();
-		$knowledge = $knowledgebase->search($prompt['callback'], 'title');
-		$knowledge = $knowledge[0] ?? [];
-		
-		if (empty($knowledge)) {return $prompt;}
-
-		if ($knowledge['url']) {
-			$Scrape = new Scrape();
-			$import = $Scrape->by_class_plain($knowledge['url'], $knowledge['selector']);
-			$knowledge['content'] = $knowledge['content'] . "\n" . $import;			
-		}
-		
-		$prompt['content'] = $knowledge['content'] . "\n" . $prompt['content'];
-		return $prompt;
-	}
-
 
 	private function current_date($prompt) {
 		$date = date('d.m.Y', time());

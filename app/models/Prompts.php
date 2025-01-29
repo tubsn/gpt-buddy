@@ -4,6 +4,7 @@ namespace app\models;
 use \flundr\database\SQLdb;
 use \flundr\mvc\Model;
 use app\models\Callbacks;
+use app\models\Knowledge;
 
 class Prompts extends Model
 {
@@ -19,6 +20,7 @@ class Prompts extends Model
 		if ($id == 'unbiased') {return;}
 		$prompt = $this->get($id);
 		$prompt = $this->apply_callback($prompt);
+		$prompt = $this->apply_knowledge($prompt);	
 		$this->increase_hits($id);
 		return $prompt;
 	}
@@ -131,6 +133,12 @@ class Prompts extends Model
 		if (!isset($prompt['callback'])) {return $prompt;}
 		$callbacks = new Callbacks();
 		return $callbacks->run($prompt['callback'], $prompt);
+	}
+
+	public function apply_knowledge($prompt) {
+		if (!isset($prompt['callback'])) {return $prompt;}
+		$knowledgebase = new Knowledge();
+		return $knowledgebase->run($prompt['callback'], $prompt);
 	}
 
 	private function increase_hits($id) {

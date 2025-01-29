@@ -21,7 +21,9 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 		<label>Kategorie:
 			<select name="category" >
+				<?php if ($prompt['category'] != 'alle'): ?>
 				<option value="alle">Alle</option>
+				<?php endif ?>
 				<?php if ($prompt['category']): ?>
 				<option value="<?=$prompt['category']?>" selected><?=ucfirst($prompt['category'])?></option>
 				<?php endif ?>
@@ -94,9 +96,10 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	</label>
 
 	<label>Callback / Knowledgebase:
-		<input name="callback" type="text" placeholder="Funktionsname eingeben" value="<?=$prompt['callback'] ?? null?>">
+		<input name="callback" type="text" placeholder="Funktionsname oder Knowledgebase Titel eingeben" value="<?=$prompt['callback'] ?? null?>">
 	</label>
-
+	<small>(mehrere Knowledgebases durch Komma trennen)</small>
+	
 	</fieldset>
 </div>
 </fieldset>

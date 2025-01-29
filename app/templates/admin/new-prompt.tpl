@@ -79,8 +79,9 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	</label>
 
 	<label>Callback / Knowledgebase:
-		<input name="callback" type="text" placeholder="z.B. current-date">
+		<input name="callback" type="text" placeholder="Funktionsname oder Knowledgebase Titel eingeben">
 	</label>
+	<small>(mehrere Knowledgebases durch Komma trennen)</small>	
 	
 	</fieldset>
 </div>

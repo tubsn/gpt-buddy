@@ -14,6 +14,10 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>29. Januar 2025 - Multiple Knowledgebases</h3>
+<p>Es ist jetzt möglich in einem Prompt gleich mehrere Knowledgebases zu verknüpfen. Diese werden einfach Komma getrennt aufgelistet z.B. "Userneedinfos, Polizeimeldungen".</p>
+<p>Dadurch ist es möglich mehrere URL Quellen gleichzeitig anzuzapfen (Achtung: hier es kann schnell etwas länger dauern, da die Webseiten zur Laufzeit gecrawled werden müssen).</p>
+
 <h3>9. Januar 2025 - URL Import für Knowledgebases</h3>
 <p>Für die Knowledgebases steht jetzt ein generischer URL Import zur vergfügung, welcher über den Webserver URLs einlesen kann, und dessen inhalte nach selbst definierten CSS Selektoren filtern kann. Dadurch sind z.B. Anwendungszwecke wie automatisches Einlesen von aktuellen Pressemeldungen möglich.</p>
 <p>Der Nutzer kann dann per Promt fragen zu diesen Pressemeldungen stellen, Zusammenfassungen für Newsletter erstellen, kritische Nachrichten filtern usw.</p>
