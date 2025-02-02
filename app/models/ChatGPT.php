@@ -94,7 +94,7 @@ class ChatGPT
 
 			if ($prompt) {$this->add($prompt['content'], 'system');}
 
-			if ($prompt['knowledges']) {
+			if ($prompt['knowledges'] ?? null) {
 				foreach ($prompt['knowledges'] as $knowledge) {
 					$this->add($knowledge, 'system');
 				}
