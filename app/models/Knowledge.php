@@ -56,7 +56,7 @@ class Knowledge extends Model
 	public function distinct() {
 		$table = $this->db->table;
 		$SQLstatement = $this->db->connection->prepare(
-			"SELECT distinct title FROM $table"
+			"SELECT distinct title FROM $table ORDER BY title"
 		);
 
 		$SQLstatement->execute();

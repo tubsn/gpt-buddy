@@ -104,6 +104,7 @@ class Settings extends Controller {
 			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
 		}
 
+		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
 		$this->view->render('admin/edit-prompt');
 	}
@@ -119,6 +120,7 @@ class Settings extends Controller {
 			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
 		}
 
+		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
 		$this->view->selectedCategory = $_GET['category'] ?? null;
 		$this->view->render('admin/new-prompt');
