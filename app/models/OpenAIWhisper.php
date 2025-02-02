@@ -41,7 +41,8 @@ class OpenAIWhisper
 	public function tts($input, $voice = 'nova', $hd = false) {
 		
 		$voice = strtolower($voice);
-		$availableVoices = ['echo', 'fable', 'onyx', 'nova', 'shimmer'];
+		$availableVoices = ['alloy', 'ash', 'coral', 'echo',
+		 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
 		if (!in_array($voice, $availableVoices)) {
 			throw new \Exception("$voice is not Available as Voice");
 		}

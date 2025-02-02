@@ -13,11 +13,17 @@
 <div class="box parameters">
 	<label>TTS Voice:
 	<select v-model="voice" data-name="voice">
-		<option>Echo</option>
-		<option>Fable</option>
-		<option>Onyx</option>
-		<option>Nova</option>
-		<option>Shimmer</option>
+		<option value="nova">Nova - Frau, Lebenig, Sympathisch</option>
+		<option value="shimmer">Shimmer - Frau, Ruhig, Nachrichtlich</option>
+		<option value="fable">Fable - Neutral, Nachrichtlich</option>		
+		<option value="echo">Echo - Mann, Ruhig</option>
+		<option value="onyx">Onyx - Mann, Gelangweilt</option>
+		<optgroup label="US-Akzent">
+			<option value="coral">Coral - Frau, Nachrichtlich, Akzent</option>		
+			<option value="alloy">Alloy - Frau, Neutral, Akzent</option>		
+			<option value="ash">Ash - Mann, Ausdrucksvoll, Akzent</option>		
+			<option value="sage">Sage - Frau, Aufgeregt, Akzent</option>
+		</optgroup>
 	</select>
 	</label>
 </div>
