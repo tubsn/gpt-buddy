@@ -21,10 +21,12 @@ class ChatGPT
 	public $models = [
 		'default' => 'gpt-4o-mini',
 		'gpt4' => 'chatgpt-4o-latest',
+		'reason' => 'o3-mini',
 	];
 
 	public $forceGPT4 = false;
 	public $jsonMode = false;
+	public $reasoningEffort = 'low';
 
 	public $conversationID;
 	public $promptID;
@@ -198,13 +200,20 @@ class ChatGPT
 		$open_ai = new OpenAi(CHATGPTKEY);
 		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
-		$chat = $open_ai->chat([
+		$options = [
 			'model' => $model,
 			'messages' => $this->conversation,
-			'temperature' => $this->float_temperature(), // has to be valid floatvalue
 			'response_format' => $responseFormat,
 			// 'max_tokens' => 4096, 
-		]);
+		];
+
+		if (str_contains($model, 'o3-')) {
+			$options['reasoning_effort'] = $this->reasoningEffort;
+		} else {
+			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
+		}
+
+		$chat = $open_ai->chat($options);
 
 		$chat = json_decode($chat); // response is in Json
 		if (isset($chat->error->message)) {throw new \Exception("Direct GPT-API Error: " . $chat->error->message, 400);}
@@ -231,12 +240,20 @@ class ChatGPT
 		$options = [
 			'model' => $model,
 			'messages' => $this->conversation,
-			'temperature' => $this->float_temperature(), // has to be valid floatvalue
-			// 'max_tokens' => 4096, 
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
 			'stream' => true,
 		];
+
+		if (str_contains($model, 'o3-')) {
+			$options['reasoning_effort'] = $this->reasoningEffort;
+			$options['stream'] = false;
+			$chat = $open_ai->chat($options);			
+			$this->stream_to_direct($chat);
+			exit;				
+		}
+
+		$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
 
 		$open_ai->chat($options, function ($curl_info, $data) {
 			//Log::write($data);
@@ -250,6 +267,28 @@ class ChatGPT
 		$this->save_conversation();
 
 	}
+
+	private function stream_to_direct($chat) {
+
+		$chat = json_decode($chat);
+
+		if (isset($chat->error->message)) {
+			$this->error_to_stream($chat->error->message);
+		}
+
+		$message = $chat->choices[0]->message->content;
+		$this->add($message, 'assistant');
+		$message = json_encode($message);
+
+		echo 'data: ' . $message . "\n\n";
+		echo str_pad('',4096)."\n";
+		echo "event: stop\n";
+		echo "data: stopped\n\n";
+		echo str_pad('',4096)."\n";
+
+		$this->save_conversation();
+	}
+
 
 	private function float_temperature() {
 		$temp = $this->temperature;

@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>2. Februar 2025 - o3-Modell Vorbereitungen</h3>
+<p>Das Reasoning Modell o3 ist jetzt in den Varianten o3 und o3-mini Verfügbar und kann als Modell eingesetzt werden. Achtung: Die neuen Modelle unterstützen keine Chat Streaming funktion.</p>
+
 <h3>29. Januar 2025 - Multiple Knowledgebases</h3>
 <p>Es ist jetzt möglich in einem Prompt gleich mehrere Knowledgebases zu verknüpfen. Diese werden einfach Komma getrennt aufgelistet z.B. "Userneedinfos, Polizeimeldungen".</p>
 <p>Dadurch ist es möglich mehrere URL Quellen gleichzeitig anzuzapfen (Achtung: hier es kann schnell etwas länger dauern, da die Webseiten zur Laufzeit gecrawled werden müssen).</p>
