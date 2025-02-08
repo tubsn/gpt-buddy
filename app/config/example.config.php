@@ -4,6 +4,16 @@ define('APP_NAME', 'GPT-Buddy'); // Name des Programmes
 define('CHART_COLOR', '#1d5e55'); // Farbwert in Statistiken
 
 
+// Hier werden die Verfügbaren Modelle Konfiguriert.
+// 'apiname' ist der Name der OpenAI Modelle. Description und der Keyname sind frei wählbar.
+define('AIMODELS', [
+	'GPT-4o' 		=> ['apiname' => 'gpt-4o', 'description' => 'standard Model, gut, günstig'],
+	'GPT-4o-mini' 	=> ['apiname' => 'gpt-4o-mini', 'description' => 'am günstigsten, wenig Wissen'],
+	'o3-Mini-Low'	=> ['apiname' => 'o3-mini', 'description' => 'bessere Logik, langsamer'],
+	'o3-Mini-High'	=> ['apiname' => 'o3-mini', 'description' => 'beste Logik, sehr langsam', 'reasoning' => 'high'],
+]);
+
+
 // Hier wird der Standard Prompt hinterlegt, dieser kann im Mandantenmodus 
 // je nach Portal unterschiedlich eingestellt werden
 $prompt = 'Du bist ein KI-Assistent names GPT-Buddy, Du arbeitest bei einer deutschen Tageszeitung. Deine Aufgabe ist es den Redakteuren den Redaktionsalltag zu erleichtern';
