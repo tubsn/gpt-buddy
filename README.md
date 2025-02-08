@@ -4,17 +4,20 @@ Prompt Management System for Interaction with the ChatGPT API
 ![Buddypreview](buddy.jpg)
 
 ## Latest News
-Important Information for the Prompt Temperatures Update from 2023-12-17  
-The Update requires a new field in the prompt database called "temperatures", varchar(64) and null.  
+Added realtime Data Injection into Prompts via URL Imports.
+For the latest Model Selector Update it´s neccesary to add a new Database field (model). Please Contact me for Help.
 As always before updating: rember to save your config.php, custom.css, main-nav.tpl and faq.tpl!!!
 
 ## Features
 Configurable Prompt Database including lots of examples  
-Interactive Text generation based on predefined prompts with ChatGPT  
-Fileuploads with Audiotranscribtion based on OpenAI Whisper  
+Interactive text generation based on predefined prompts with ChatGPT  
+URL Scraping to inject Realtime information into our Prompts (e.g. Weather or Traffic data)
+Image Detection features (Open AI Vision)
+Fileuploads with Audiotranscribtion based on OpenAI Whisper
+Text to Speech capeability
 AI Image generation via Dall-E3  
 Integrated User- and Rights-Management System  
-Detailed prompt usage statistics to identify workflows for your Company  
+Prompt usage statistics to identify workflows for your Company  
 
 ## Demonstration
 For Demonstration purposes please contact stuff@artmessengers.de  
