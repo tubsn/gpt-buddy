@@ -108,9 +108,11 @@ class ChatGPT
 			if (isset($prompt['format']) && $prompt['format']) {
 				$this->add('Nutze Markdown für Formatierungen', 'system');
 			}
+
 			if (isset($prompt['temperature'])) {
 				$this->temperature = $prompt['temperature'];
 			}
+
 		}
 
 		if (!empty($this->payload)) {
@@ -189,13 +191,7 @@ class ChatGPT
 		if ($systemPrompt) {$this->add($systemPrompt, 'system');}
 
 		$this->add($question);
-		$model = $this->models['default'];
-
 		$this->count_tokens($this->conversation);
-
-		if ($this->forceGPT4) {
-			$model = $this->models['gpt4'];
-		}
 
 		$responseFormat = ['type' => 'text'];
 		if ($this->jsonMode) {$responseFormat = ['type' => 'json_object'];}
@@ -204,13 +200,13 @@ class ChatGPT
 		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
 		$options = [
-			'model' => $model,
+			'model' => $this->model,
 			'messages' => $this->conversation,
 			'response_format' => $responseFormat,
 			// 'max_tokens' => 4096, 
 		];
 
-		if (str_contains($model, 'o3-')) {
+		if (str_contains($this->model, 'o3-')) {
 			$options['reasoning_effort'] = $this->reasoning;
 		} else {
 			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
