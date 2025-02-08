@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>6. Februar 2025 - Modell Auswahlbox</h3>
+<p>Die GPT4 aktivieren funktion wurde durch eine Model-Auswahl-Box ersetzt. Es ist somit möglich zwischen mehreren Modellen hin und her zu wechseln. Die verfügbaren Modelle können über die config.php hinterlegt werden. Ein Beispiel dazu findet sich ab sofort in der example.config.php</p>
+
 <h3>2. Februar 2025 - o3-Modell Vorbereitungen</h3>
 <p>Das Reasoning Modell o3 ist jetzt in den Varianten o3 und o3-mini Verfügbar und kann als Modell eingesetzt werden. Achtung: Die neuen Modelle unterstützen keine Chat Streaming funktion.</p>
 

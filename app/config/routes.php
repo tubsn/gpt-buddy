@@ -6,13 +6,10 @@ $routes->get('/faq', 'Chat@faq');
 $routes->get('/changelog', 'Chat@changelog');
 $routes->get('/engines', 'Chat@engines');
 
-$routes->get('/test', 'Chat@external_api_url_test');
-
 // API
 $routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
-$routes->get('/stream/{id}', 'API@stream');
-$routes->get('/stream/force4/{id}', 'API@stream_force_gpt4');
+$routes->get('/stream/{model}/{id}', 'API@stream');
 $routes->get('/prompts', 'API@prompts');
 $routes->get('/prompts/{id}', 'API@prompt');
 $routes->get('/admin/apitoken', 'API@create_bearer_token');

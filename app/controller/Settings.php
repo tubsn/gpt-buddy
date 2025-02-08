@@ -104,6 +104,7 @@ class Settings extends Controller {
 			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
 		}
 
+		$this->view->aimodels = AIMODELS ?? [];
 		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
 		$this->view->render('admin/edit-prompt');
@@ -120,6 +121,7 @@ class Settings extends Controller {
 			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
 		}
 
+		$this->view->aimodels = AIMODELS ?? [];
 		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
 		$this->view->selectedCategory = $_GET['category'] ?? null;
@@ -135,6 +137,7 @@ class Settings extends Controller {
 	public function save($id) {
 		$this->Prompts->update_with_history($_POST, $id);
 		$category = $_POST['category'];
+		if ($this->view->referer = 'archiv') {$this->view->back();}
 		if ($category == 'alle') {$category = '';}
 		$backlink = '/' . $category . '#' . $id;
 		$this->view->redirect($backlink);

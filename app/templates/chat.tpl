@@ -11,7 +11,7 @@
 <p v-if="description" v-html="'Hinweis: ' + description"></p>
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>
 
-<form method="post" @submit.prevent="ask" action="" ref="form" class="form-container" :class="{'advanced-model' : gpt4}">
+<form method="post" @submit.prevent="ask" action="" ref="form" class="form-container" :class="{'advanced-model' : advancedModel}">
 
 <p v-if="error" v-cloak class="error-message" v-html="error"></p>
 
@@ -29,7 +29,7 @@
 			<?php endif ?>
 			<?php foreach ($prompts as $prompt): ?>
 			<?php if ($prompt['direct']) {continue;} ?>	
-			<option value="<?=$prompt['id']?>" data-description="<?=$prompt['description'] ?? ''?>" data-advanced="<?=$prompt['advanced'] ?? ''?>"><?=$prompt['title']?></option>
+			<option value="<?=$prompt['id']?>" data-description="<?=$prompt['description'] ?? ''?>" data-advanced="<?=$prompt['advanced'] ?? ''?>" data-model="<?=$prompt['model'] ?? ''?>"><?=$prompt['title']?></option>
 			<?php endforeach ?>
 		</select>
 		</label>
@@ -56,14 +56,28 @@
 	</div>
 
 	<div class="meta-options hide-mobile">
+	
+		<div class="force-gpt4" style="font-size:0.8em">
+
+		<div style="align-items:center; display:flex; gap:0.4em; white-space: nowrap; margin-bottom:0.1em;">KI-Model:
+		<select ref="modelpicker" v-model="model" @change="setModelSettings($event); setUserSelectedModel($event)">
+			<?php foreach ($aimodels as $speakingname => $modeldata): ?>
+			<option data-description="<?=$modeldata['description']?>"><?=$speakingname?></option>	
+			<?php endforeach ?>
+		</select>
+		</div>
+		<p>{{ modelDescription }}</p>
+		</div>
+
+		<!--
 		<div class="force-gpt4">
 			<label><input v-model="gpt4" type="checkbox"> GPT-4o aktivieren
 			</label>
 			<p v-if="gpt4">Antworten genauer, <br/>Kosten höher.</p>
 		</div>
+		-->
 	</div>
-
-	<!--<button class="show-mobile send-mobile-btn" type="submit" @click.prevent="ask" :disabled="loading">Senden</button>	-->
+	
 </div>
 
 

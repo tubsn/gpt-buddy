@@ -13,6 +13,7 @@ class Chat extends Controller {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
 		$this->view->title = 'ChatGPT Assistent';
+		$this->view->aimodels = AIMODELS ?? []; 
 		$this->models('ChatGPT,Conversations,Prompts,OpenAIImage');
 	}
 

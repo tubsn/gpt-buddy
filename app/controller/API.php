@@ -13,8 +13,15 @@ class API extends Controller {
 		header('Access-Control-Allow-Origin: *');		
 	}
 
-	public function stream($id, $force4 = false) {
-		if ($force4) {$this->ChatGPT->forceGPT4 = true;}
+	public function stream($model, $id) {
+
+		$apimodel = AIMODELS[$model]['apiname'] ?? AIMODELS[0]['apiname'] ?? 'gpt-4o';
+		$this->ChatGPT->model = $apimodel;
+
+		if (isset(AIMODELS[$model]['reasoning'])) {
+			$this->ChatGPT->reasoning = AIMODELS[$model]['reasoning'];
+		}
+
 		header('Content-type: text/event-stream');
 		header('Cache-Control: no-cache');
 		$response = $this->ChatGPT->stream($id);
@@ -33,11 +40,6 @@ class API extends Controller {
 			$this->view->json(['error' => 'GPT-Error: ' . $e->getMessage()]);
 		}
 
-	}
-
-
-	public function stream_force_gpt4($id) {
-		$this->stream($id, true);
 	}
 
 	public function ping() {echo 'pong';}

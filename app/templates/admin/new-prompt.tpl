@@ -46,7 +46,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 	<fieldset>	
 
-	<label>Prompt Sichtbar:
+	<label>Sichtbarkeit:
 		<select name="inactive" >
 			<option value="0" selected>aktiv</option>
 			<option value="1">gesperrt</option>
@@ -60,6 +60,19 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
+	<label>Model erzwingen:
+		<select name="model">
+			<option value="0">Standard Model</option>
+			<?php foreach ($aimodels as $modelName => $modelMeta): ?>
+			<option><?=$modelName?></option>
+			<?php endforeach ?>
+		</select>
+	</label>
+
+	<label>Temperatur:
+		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7">
+	</label>
+
 	<label>Direktprompt:
 		<select name="direct" >
 			<option value="0" selected>nein</option>
@@ -67,16 +80,14 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
+	<!--
 	<label>GPT4 erzwingen:
 		<select name="advanced" >
 			<option value="0" selected>nein</option>
 			<option value="1">ja</option>
 		</select>
 	</label>
-
-	<label>Temperatur:
-		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7">
-	</label>
+	-->
 
 	<label>Callback / Knowledgebase:
 		<input list="knowledges" name="callback" type="text" placeholder="Funktionsname oder Knowledgebase Titel eingeben">

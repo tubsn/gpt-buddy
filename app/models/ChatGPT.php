@@ -17,16 +17,13 @@ class ChatGPT
 	private $api;
 	private $prompts;
 	private $conversations;
+	private $models = AIMODELS;
 
-	public $models = [
-		'default' => 'gpt-4o-mini',
-		'gpt4' => 'chatgpt-4o-latest',
-		'reason' => 'o3-mini',
-	];
+	public $model = AIMODELS[0] ?? 'gpt-4o';
 
 	public $forceGPT4 = false;
 	public $jsonMode = false;
-	public $reasoningEffort = 'low';
+	public $reasoning = 'low';
 
 	public $conversationID;
 	public $promptID;
@@ -44,6 +41,7 @@ class ChatGPT
 	public function __construct() {
 		$this->prompts = new Prompts;
 		$this->conversations = new Conversations;
+
 	}
 
 	public function ask($question, $options = null) {
@@ -76,6 +74,11 @@ class ChatGPT
 		if ($this->directPromptID) {
 			$prompt = $this->prompts->get_and_track($this->directPromptID);
 			if ($prompt) {$question = $prompt['content'];}
+			if ($prompt['knowledges'] ?? null) {
+				foreach ($prompt['knowledges'] as $knowledge) {
+					$this->add($knowledge, 'system');
+				}
+			}			
 		}
 
 		if (empty($question)) {$this->error = 'Keine Frage übermittelt'; return;}
@@ -208,7 +211,7 @@ class ChatGPT
 		];
 
 		if (str_contains($model, 'o3-')) {
-			$options['reasoning_effort'] = $this->reasoningEffort;
+			$options['reasoning_effort'] = $this->reasoning;
 		} else {
 			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
 		}
@@ -224,29 +227,22 @@ class ChatGPT
 
 	// Streamed GPT Response
 	public function stream($id) {
-
 		$this->load_conversation($id);
 		$this->count_tokens();
-
-		$model = $this->models['default'];
-
-		if ($this->forceGPT4) {
-			$model = $this->models['gpt4'];
-		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
 		$options = [
-			'model' => $model,
+			'model' => $this->model,
 			'messages' => $this->conversation,
 			'frequency_penalty' => 0,
 			'presence_penalty' => 0,
 			'stream' => true,
 		];
 
-		if (str_contains($model, 'o3-')) {
-			$options['reasoning_effort'] = $this->reasoningEffort;
+		if (str_contains($this->model, 'o3-')) {
+			$options['reasoning_effort'] = $this->reasoning;
 			$options['stream'] = false;
 			$chat = $open_ai->chat($options);			
 			$this->stream_to_direct($chat);

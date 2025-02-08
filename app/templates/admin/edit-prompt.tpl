@@ -69,10 +69,24 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
+	<label>Model erzwingen:
+		<select name="model">
+			<option value="0">Standard Model</option>
+			<?php if ($prompt['model']): ?>
+			<option selected><?=$prompt['model']?></option>
+			<?php endif ?>
+			<?php foreach ($aimodels as $modelName => $modelMeta): ?>
+			<?php if ($prompt['model'] == $modelName) {continue;} ?>
+			<option><?=$modelName?></option>
+			<?php endforeach ?>
+		</select>
+	</label>
+
 	<label>Temperatur:
 		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
 	</label>
 
+	<!--
 	<label>GPT4 erzwingen:
 		<select name="advanced" >
 			<option value="0">nein</option>
@@ -83,6 +97,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			<?php endif ?>
 		</select>
 	</label>
+	-->
 
 	<label>Direktprompt:
 		<select name="direct" >

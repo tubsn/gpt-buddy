@@ -10,6 +10,9 @@ data() {
 		portal: null,
 		gpt4: false,
 		gpt4forced: false,
+		model: '',
+		userSelectedModel: '',
+		modelDescription: '',
 		input: '',
 		output: '',
 		payload: '',
@@ -47,6 +50,9 @@ computed: {
 		return this.input.length
 	},
 
+	advancedModel() {
+		if (this.model.includes('o3')) {return true;}
+	}
 },
 
 watch: {
@@ -60,6 +66,8 @@ watch: {
 	conversationID(value) {sessionStorage.conversationID = value},
 	action(value) {sessionStorage.action = value},
 	markdown(value) {sessionStorage.markdown = value},
+	model(value) {localStorage.model = value},
+	userSelectedModel(value) {localStorage.userSelectedModel = value},
 },
 
 mounted() {
@@ -69,6 +77,7 @@ mounted() {
 	this.autoSelectBox()
 	this.getHistory()
 	this.setPromptSettings()
+	this.preselectModelBox()
 	this.preselectActionByHash()
 	this.initCopyPaste()
 },
@@ -112,6 +121,54 @@ methods: {
 		this.action = selectbox.children[0].value || 'general'
 	},
 
+	preselectModelBox() {
+		if (!this.$refs.modelpicker) {return}
+		let selectbox = this.$refs.modelpicker
+		let options = [...selectbox].map(el => el.value);
+		if (options.includes(this.model)) {
+			selectbox.value = this.model
+			this.setModelSettings(selectbox.selectedOptions[0])
+			return
+		}
+		this.setModelSettings(selectbox[0])
+	},
+
+	setModelSettings(options) {
+
+		if (!options) {
+			let selectbox = this.$refs.modelpicker
+			this.setModelSettings(selectbox[0])
+			return
+		}
+		let selectedOption = options.target?.selectedOptions[0] ?? options
+		this.modelDescription = selectedOption.dataset.description
+		this.model = selectedOption.value
+	},
+
+
+	detectBestValidModel(modelname) {
+		// This is important, to select a Model based on prompt settings
+		// and if no model is defined swap back to the default model
+		if (modelname) {
+			let modelpicker = this.$refs.modelpicker
+			let options = [...modelpicker].map(el => el.value)
+		
+			if (options.includes(modelname)) {
+				modelpicker.value = modelname
+				this.setModelSettings(modelpicker.selectedOptions[0])
+			}
+		} else {
+			this.setModelSettings(this.$refs.modelpicker[this.userSelectedModel ?? 0])
+		}
+
+	},
+
+
+	setUserSelectedModel(event) {
+		let selectBox = event.target
+		this.userSelectedModel = selectBox.selectedIndex
+	},
+
 	preselectActionByHash() {
 
 		if (!this.$refs.selectElement) {return}
@@ -125,18 +182,13 @@ methods: {
 					this.action = hash
 					selectbox.value = hash
 					this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')					
-					let advancedMode = selectbox.options[selectbox.selectedIndex].getAttribute('data-advanced') || false
-					if (advancedMode == true) {
-						this.gpt4 = true
-						this.gpt4forced = true
-					}					
+					this.detectBestValidModel(selectbox.options[selectbox.selectedIndex].getAttribute('data-model'))
 				}
 			}
 
 		})
 
 	},
-
 
 	uploadFile(event) {
 
@@ -207,33 +259,27 @@ methods: {
 		if (!this.$refs.selectElement) {return ''}
 
 		let selectbox = this.$refs.selectElement
-		let advancedMode = false
-
 		this.description = selectbox.options[0].getAttribute('data-description')
-		advancedMode = selectbox.options[0].getAttribute('data-advanced') || advancedMode
 
-		if (selectbox.options[selectbox.selectedIndex]) {
-			this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')
-			advancedMode = selectbox.options[selectbox.selectedIndex].getAttribute('data-advanced') || advancedMode
+		let selectedOption = selectbox.options[selectbox.selectedIndex]
+		if (selectedOption) {
+
+			// shall only happen when something is actively selected
 			if (selectbox.value != 'default') {
-				window.location.hash = selectbox.value;	
+				window.location.hash = selectbox.value
+			} else {
+				window.location.hash = ''
+				history.replaceState(null, null, window.location.pathname)
 			}
+
+			this.description = selectedOption.getAttribute('data-description')
+			this.detectBestValidModel(selectedOption.getAttribute('data-model'))
+
 		}
 		
-		// Swaps back to 3.5 if the prompt doesnet force gpt4
-		if (this.gpt4forced) {
-			this.gpt4 = false
-			this.gpt4forced = false
-		}
-
-		if (advancedMode == true) {
-			this.gpt4 = true
-			this.gpt4forced = true
-		}
-	
 		if (sessionStorage.action != 'undefined') {
 			if (sessionStorage.action != this.action) {
-					this.wipeHistory() 
+				this.wipeHistory() 
 			}
 		}
 
@@ -267,6 +313,8 @@ methods: {
 		if (localStorage.gpt4 == 'true') {this.gpt4 = true}
 		else {this.gpt4 = false}
 
+		if (localStorage.model) {this.model = localStorage.model}
+		if (localStorage.userSelectedModel) {this.userSelectedModel = localStorage.userSelectedModel}
 		if (localStorage.resolution) {this.resolution = localStorage.resolution}
 		if (localStorage.quality) {this.quality = localStorage.quality}
 		if (localStorage.style) {this.style = localStorage.style}
@@ -366,22 +414,16 @@ methods: {
 		});
 	},
 
-
 	async importArticle(event) {
 
 		this.loading = true
 		let value = event.target.value || null;
 		if (!value) {this.input = ''; this.loading = false; return}
 
-		let id = value.match(/-(\d{8}).html/);
-		if (id) {id = id[1]}
-		else {id = value}
+		let formData = new FormData()
+		formData.append('url', value)
 
-		let portal = 'LR'
-		if (value.includes('moz.de')) {portal = 'MOZ'}
-		if (value.includes('swp.de')) {portal = 'SWP'}
-
-		let response = await fetch('/import/article/' + portal + '/' + id)
+		let response = await fetch('/import/article', {method: "POST", body: formData})
 		if (!response.ok) {this.input = 'URL ungültig oder Artikel nicht gefunden'; this.loading = false; return}
 
 		let json = await response.json()
@@ -436,11 +478,9 @@ methods: {
 		this.markdown = false
 
 		let apiurl = await this.bestServer()
+		let modelpath = encodeURI(this.model) + '/'
 
-		let gpt4path = ''
-		if (this.gpt4) {gpt4path = 'force4/'}
-
-		this.eventSource = new EventSource(apiurl + '/stream/' + gpt4path + conversionID);
+		this.eventSource = new EventSource(apiurl + '/stream/' + modelpath + conversionID);
 
 		this.eventSource.addEventListener('message', (event) => {
 			this.output += JSON.parse(event.data)
