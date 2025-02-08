@@ -13,7 +13,7 @@ class Import extends Controller {
 		$this->models('Scrape,RSS_Adapter,Json_Adapter,LiveTickerAdapter,FileReader');
 	}
 
-	public function article($portal, $id) {
+	public function article($id) {
 
 		$content = $this->Json_Adapter->get_by_id($id);
 
