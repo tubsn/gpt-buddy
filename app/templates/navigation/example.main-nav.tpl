@@ -48,8 +48,13 @@
 		<li class="hide-mobile"><a href="/faq">KI-Leitfaden</a></li>
 
 
-		<?php if (auth_rights('chatgpt')): ?>
-		<li><a href="/settings">Konfiguration</a></li>
+		<?php if (auth_rights('chatgpt') || auth_rights('viewconfig')): ?>
+		<li><a href="/settings">Konfiguration</a>
+			<ul class="dropdown rightmenu" aria-label="submenu">
+				<li><a href="/settings">Prompts</a>
+				<li><a href="/settings/knowledge">Knowledgebases</a></li>
+			</ul>
+		</li>
 		<?php endif; ?>
 
 
