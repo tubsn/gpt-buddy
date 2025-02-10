@@ -19,22 +19,6 @@ class Settings extends Controller {
 		$this->models('Prompts,Knowledge,Scrape');
 	}
 
-	public function user_can_see_config() {
-		$configureableCategories = $this->editable_rights();
-		if (count($configureableCategories) > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public function editable_rights() {
-		$usersCategories = explode_and_trim(',', auth('rights'));
-		$categories = array_keys(CATEGORIES);
-		$categories = array_filter($categories, fn ($category) => in_array($category, $usersCategories));
-		return $categories;
-	}
-
-
 	public function index() {
 
 		$prompts = $this->Prompts->list_all();
@@ -99,6 +83,10 @@ class Settings extends Controller {
 		$categories = array_filter($categories, fn ($set) => $set != 'user');
 		asort($categories);
 
+		$postProcessCategories = array_keys(array_filter(CATEGORIES, fn($set) => isset($set['postProcess']) && $set['postProcess']));
+		$postProcessPrompts = array_column($this->Prompts->in_categories($postProcessCategories), 'title', 'id');
+		$this->view->postProcessPrompts = $postProcessPrompts;
+
 		if (!Auth::has_right('chatgpt')) {
 			$usersCategories = $this->editable_rights();
 			$categories = array_filter($categories, fn ($set) => in_array($set, $usersCategories));
@@ -115,6 +103,10 @@ class Settings extends Controller {
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');		
 		asort($categories);
+
+		$postProcessCategories = array_keys(array_filter(CATEGORIES, fn($set) => isset($set['postProcess']) && $set['postProcess']));
+		$postProcessPrompts = array_column($this->Prompts->in_categories($postProcessCategories), 'title', 'id');
+		$this->view->postProcessPrompts = $postProcessPrompts;
 
 		if (!Auth::has_right('chatgpt')) {
 			$usersCategories = $this->editable_rights();
@@ -157,8 +149,6 @@ class Settings extends Controller {
 		$this->view->redirect('/settings');
 	}
 
-
-
 	public function knowledges() {
 		$this->view->knowledges = $this->Knowledge->all();
 		$this->view->title = 'Knowledge Informationen';
@@ -199,7 +189,20 @@ class Settings extends Controller {
 		$this->view->redirect('/settings/knowledge');
 	}
 
+	public function user_can_see_config() {
+		$configureableCategories = $this->editable_rights();
+		if (count($configureableCategories) > 0) {
+			return true;
+		}
+		return false;
+	}
 
+	public function editable_rights() {
+		$usersCategories = explode_and_trim(',', auth('rights'));
+		$categories = array_keys(CATEGORIES);
+		$categories = array_filter($categories, fn ($category) => in_array($category, $usersCategories));
+		return $categories;
+	}
 
 
 }

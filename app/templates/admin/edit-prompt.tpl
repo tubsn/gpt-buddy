@@ -110,15 +110,26 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Callback / Knowledgebase:
-		<input list="knowledges" name="callback" type="text" placeholder="Funktionsname oder Knowledgebase Titel eingeben" value="<?=$prompt['callback'] ?? null?>">
+
+	<label>Nachbearbeitungs PromptID:
+		<input list="postprocessprompts" name="postprocess" type="text" placeholder="PromptID auswählen" value="<?=$prompt['postprocess'] ?? null?>">
+		<datalist id="postprocessprompts">
+			<?php foreach ($postProcessPrompts as $postProcessPromptID => $postProcessPrompt): ?>
+				<option value="<?=$postProcessPromptID?>"><?=$postProcessPrompt?> [ID: <?=$postProcessPromptID?>]</option>
+			<?php endforeach ?>
+		</datalist>
+	</label>
+
+
+	<label>Knowledgebases <small>(mehrere durch Komma trennen):</small>
+		<input list="knowledges" name="callback" type="text" placeholder="Callback oder Knowledgebase Titel eingeben" value="<?=$prompt['callback'] ?? null?>">
 		<datalist id="knowledges">
 			<?php foreach ($knowledges as $knowledge): ?>
 				<option><?=$knowledge?></option>
 			<?php endforeach ?>
 		</datalist>
 	</label>
-	<small>(mehrere Knowledgebases durch Komma trennen)</small>
+	<small></small>
 	</fieldset>
 </div>
 </fieldset>

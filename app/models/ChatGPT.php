@@ -95,25 +95,8 @@ class ChatGPT
 		}
 
 		if (!$this->conversationID && $this->promptID) {
-			$prompt = $this->prompts->get_and_track($this->promptID);
-
-			if ($prompt) {$this->add($prompt['content'], 'system');}
-
-			if ($prompt['knowledges'] ?? null) {
-				foreach ($prompt['knowledges'] as $knowledge) {
-					$this->add($knowledge, 'system');
-				}
-			}
-
-			if (isset($prompt['format']) && $prompt['format']) {
-				$this->add('Nutze Markdown für Formatierungen', 'system');
-			}
-
-			if (isset($prompt['temperature'])) {
-				$this->temperature = $prompt['temperature'];
-			}
-
-		}
+			$this->prompt_processing($question);
+		}		
 
 		if (!empty($this->payload)) {
 			$question = [
@@ -128,6 +111,47 @@ class ChatGPT
 
 	}
 
+
+	private function prompt_processing($question) {
+
+		$prompt = $this->prompts->get_and_track($this->promptID);
+
+		if ($prompt) {$this->add($prompt['content'], 'system');}
+
+		if (isset($prompt['format']) && $prompt['format']) {
+			$this->add('Nutze Markdown für Formatierungen', 'system');
+		}
+
+		if (isset($prompt['temperature'])) {
+			$this->temperature = $prompt['temperature'];
+		}
+
+		if (isset($prompt['postprocess']) && !empty($prompt['postprocess'])) {
+
+			$systemMessage = null;				
+			if ($prompt['knowledges']) {$systemMessage = implode("\n", $prompt['knowledges']);}
+
+			$firstResponse = $this->direct($question, $systemMessage);
+			$this->add($firstResponse, 'assistant');
+
+			$postProcessPrompt = $this->prompts->get_and_track($prompt['postprocess']);
+			if ($postProcessPrompt) {
+				$question = $postProcessPrompt['content'];
+			}
+
+			// Knowledgebases should not be processed twice with postprocess Prompts
+			unset($prompt['knowledges']); 
+		}
+
+		if ($prompt['knowledges'] ?? null) {
+			foreach ($prompt['knowledges'] as $knowledge) {
+				$this->add($knowledge, 'system');
+			}
+		}
+
+	}
+
+
 	public function prepare_image_for_vision($imagePath) {
 		$visionData = PAGEURL . $imagePath;
 		if (defined('USEBASE64VISION') && USEBASE64VISION) {
@@ -137,10 +161,18 @@ class ChatGPT
 		return $visionData;
 	}
 
-	private function add($message, $role = 'user') {
-		$allowedRoles = ['user', 'system', 'assistant'];
+	private function add($message, $role = 'user', $prepend = false) {
+		$allowedRoles = ['user', 'system', 'assistant', 'developer'];
 		if (!in_array($role, $allowedRoles)) {throw new \Exception("Role not allowed", 404);}
+		if ($prepend) {
+			array_unshift($this->conversation, ['role' => $role, 'content' => $message]);
+			return;
+		}
 		array_push($this->conversation, ['role' => $role, 'content' => $message]);
+	}
+
+	private function prepend($message, $role = 'user') {
+		$this->add($message, $role, true);
 	}
 
 	private function save_conversation() {
@@ -188,7 +220,7 @@ class ChatGPT
 	// Direct GPT Question with Static Response as Json
 	public function direct($question, $systemPrompt = null) {
 
-		if ($systemPrompt) {$this->add($systemPrompt, 'system');}
+		if ($systemPrompt) {$this->prepend($systemPrompt, 'system');}
 
 		$this->add($question);
 		$this->count_tokens($this->conversation);

@@ -41,6 +41,21 @@ class Prompts extends Model
 
 	}
 
+	public function in_categories($categories = []) {
+		if (empty($categories)) {return [];}
+		$table = $this->db->table;
+
+		$categorieNames = implode(',', array_fill(0, count($categories), '?'));
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT * FROM $table WHERE `category` IN ($categorieNames)
+			 AND (inactive IS NULL OR inactive = '0') ORDER BY `title`"
+		);
+
+		$SQLstatement->execute($categories);
+		$output = $SQLstatement->fetchAll();
+		return $output;
+	}
+
 	public function user_prompts($userID) {
 
 		$table = $this->db->table;

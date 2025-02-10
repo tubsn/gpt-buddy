@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>10. Februar 2025 - Nachbearbeitungs Prompts - Chain of Thought</h3>
+<p>Mit hilfe eines Nachbearbeitungs Prompts können zwei Promptaktionen in Reihe geschalten werden. Es wird zunächst der eigentliche Hauptprompt auf die Usereingabe angewandt. Das daraus resultierende Ergebnis wird anschließen durch den zweiten (Nachbearbeitungs-)Prompt verfeinert. Der User erhält als Ausgabe nur das verfeinerte Ergebnis. Dadurch können "Chain of Thought" Ketten aufgebaut werden.</p>
+
 <h3>6. Februar 2025 - Modell Auswahlbox</h3>
 <p>Die GPT4 aktivieren funktion wurde durch eine Model-Auswahl-Box ersetzt. Es ist somit möglich zwischen mehreren Modellen hin und her zu wechseln. Die verfügbaren Modelle können über die config.php hinterlegt werden. Ein Beispiel dazu findet sich ab sofort in der example.config.php</p>
 
@@ -31,7 +34,6 @@
 
 <h3>8. Januar 2025 - Text To Speech</h3>
 <p>Es gibt jetzt die Möglichkeit den Ein- oder Ausgabetext als gesprochenes Audio wiederzugeben (TTS). Dazu steht aktuell das Open AI Whisper Model mit verschiedenen Sprechern zur Verfügung.</p>
-
 
 <h3>25. September 2024 - Bilder löschen Option</h3>
 <p>Im Bildgenerator ist es jetzt möglich Bilder wieder zu entfernen. Dazu muss der Nutzer die Berechtigungsstufe "deleteimage" erhalten.</p>
