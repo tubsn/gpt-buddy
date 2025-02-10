@@ -95,7 +95,8 @@ class ChatGPT
 		}
 
 		if (!$this->conversationID && $this->promptID) {
-			$this->prompt_processing($question);
+			// Note: it´s possible that the Question is altered here
+			$question = $this->prompt_processing($question);
 		}		
 
 		if (!empty($this->payload)) {
@@ -140,7 +141,8 @@ class ChatGPT
 			}
 
 			// Knowledgebases should not be processed twice with postprocess Prompts
-			unset($prompt['knowledges']); 
+			unset($prompt['knowledges']);
+
 		}
 
 		if ($prompt['knowledges'] ?? null) {
@@ -148,6 +150,8 @@ class ChatGPT
 				$this->add($knowledge, 'system');
 			}
 		}
+
+		return $question;
 
 	}
 
