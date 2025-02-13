@@ -117,6 +117,8 @@ class ChatGPT
 
 		$prompt = $this->prompts->get_and_track($this->promptID);
 
+		if (empty($prompt['content'])) {echo 'Achtung: Prompt hat keinen Inhalt'; die;}
+
 		if ($prompt) {$this->add($prompt['content'], 'system');}
 
 		if (isset($prompt['format']) && $prompt['format']) {
