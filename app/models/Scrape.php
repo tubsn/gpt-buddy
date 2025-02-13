@@ -21,6 +21,8 @@ class Scrape
 			return $e->getMessage();
 		}
 		
+		if (empty($htmlData)) {return 'Kein Inhalt erkannt';}
+
 		$doc = new DOMDocument();
 		$doc->loadHTML($htmlData);
 		$xpath = new DOMXPath($doc);
