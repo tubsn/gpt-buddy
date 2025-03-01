@@ -261,6 +261,7 @@ class ChatGPT
 
 	// Streamed GPT Response
 	public function stream($id) {
+
 		$this->load_conversation($id);
 		$this->count_tokens();
 
@@ -275,15 +276,18 @@ class ChatGPT
 			'stream' => true,
 		];
 
-		if (str_contains($this->model, 'o3-')) {
+		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-')) {
 			$options['reasoning_effort'] = $this->reasoning;
-			$options['stream'] = false;
-			$chat = $open_ai->chat($options);			
-			$this->stream_to_direct($chat);
-			exit;				
-		}
+			
+			// Seems like Streaming is now supportet but I´ll keep that option here
+			//$options['stream'] = false;
+			//$chat = $open_ai->chat($options);			
+			//$this->stream_to_direct($chat);
+			//exit;				
 
-		$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
+		} else {
+			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
+		}
 
 		$open_ai->chat($options, function ($curl_info, $data) {
 			//Log::write($data);
@@ -344,6 +348,7 @@ class ChatGPT
 
 		$pattern = '/"message": "(.*?)",\s+"type": "(.*?)"/';
 		preg_match($pattern, $raw, $matches);
+
 		$message = $matches[1];
 		$type = $matches[2];
 
@@ -373,7 +378,7 @@ class ChatGPT
 		// extract only the Content in the Stream 
 		// which sadly isn't always a perfect json :/
 		$content = $this->extract_content_as_json_string($raw);
-		
+
 		foreach ($content as $str) {
 
 			$array = json_decode($str,1);
@@ -402,7 +407,8 @@ class ChatGPT
 	}
 
 	private function extract_content_as_json_string($string) {
-		$pattern = '/\{"content":".*?"\},"log/'; // Extracts the Part which is Valid JSON // Extracts the Part which is Valid JSON
+		// Alternative Pattern '/\{"content":".*?"\},"log/'; 
+		$pattern = '/\{"content":"(.*?)"\}/'; // Extracts the Part which is Valid JSON // Extracts the Part which is Valid JSON
 		if (preg_match_all($pattern, $string, $matches)) {
 			$matches[0] = array_map(function($set) {
 				return trim($set,',"log)');}, $matches[0]);
