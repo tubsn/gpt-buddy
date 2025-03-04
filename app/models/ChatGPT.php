@@ -407,8 +407,13 @@ class ChatGPT
 	}
 
 	private function extract_content_as_json_string($string) {
-		// Alternative Pattern '/\{"content":".*?"\},"log/'; 
-		$pattern = '/\{"content":"(.*?)"\}/'; // Extracts the Part which is Valid JSON // Extracts the Part which is Valid JSON
+
+		// Extracts the Part which is Valid JSON // Extracts the Part which is Valid JSON
+		$pattern = '/\{"content":"(.*?)"\}/'; 
+		if (str_contains($this->model, 'gpt-4')) {
+			$pattern = '/\{"content":".*?"\},"log/'; // GPT 4 stream sometimes breaks the pattern
+		}
+
 		if (preg_match_all($pattern, $string, $matches)) {
 			$matches[0] = array_map(function($set) {
 				return trim($set,',"log)');}, $matches[0]);
