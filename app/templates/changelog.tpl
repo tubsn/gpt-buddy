@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>01. März 2025 - Reasoning Modelle mit Streaming</h3>
+<p>Die Streaming Funktion bei Reasoning Modellen o3-Mini, o1 usw. funktioniert jetzt. Ebenso steht das Model 4.5 zur Auswahl.</p>
+
 <h3>10. Februar 2025 - Nachbearbeitungs-Prompts - Chain of Thought</h3>
 <p>Mit Hilfe eines Nachbearbeitungs-Prompts können zwei Promptaktionen in Reihe geschaltet werden. Es wird zunächst der eigentliche Hauptprompt auf die Usereingabe angewandt. Das daraus resultierende Ergebnis wird anschließend durch den zweiten (Nachbearbeitungs-)Prompt verfeinert. Der User erhält als Ausgabe nur das verfeinerte Ergebnis. Dadurch können "Chain of Thought"-Ketten aufgebaut werden.</p>
 
