@@ -14,6 +14,10 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+
+<h3>12. März 2025 - Kontrollprompt</h3>
+<p>Es gibt jetzt eine zusätzliche Möglichkeit nach der Usereingabe einen Kurzen Kontrollprompt als Systemprompt zu aktivieren. Dazu in den Prompteinstellungen ein sogenannter Kontrollprompt aktiviert werden. Anders als beim Nachbearbeitungsprompt wird kein zweiter Aufruf an die KI gesendet, sondern das Gespräch durch einen "verstärkten" Zusatz erweitert.</p>
+
 <h3>01. März 2025 - Reasoning Modelle mit Streaming</h3>
 <p>Die Streaming Funktion bei Reasoning Modellen o3-Mini, o1 usw. funktioniert jetzt. Ebenso steht das Model 4.5 zur Auswahl.</p>
 

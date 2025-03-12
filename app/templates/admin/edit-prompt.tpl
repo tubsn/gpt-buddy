@@ -47,6 +47,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 <div>
 
 	<fieldset>
+	<div class="grid-2-col">
 	<label>Sichtbarkeit:
 		<select name="inactive" >
 			<option value="0">aktiv</option>
@@ -57,6 +58,18 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			<?php endif ?>
 		</select>
 	</label>
+
+	<label>Direktprompt:
+		<select name="direct" >
+			<option value="0">nein</option>
+			<?php if ($prompt['direct']): ?>
+			<option value="1" selected>Ja</option>
+			<?php else: ?>
+			<option value="1">ja</option>
+			<?php endif ?>
+		</select>
+	</label>
+	</div>
 
 	<label>Formatierung:
 		<select name="format" >
@@ -99,17 +112,9 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	</label>
 	-->
 
-	<label>Direktprompt:
-		<select name="direct" >
-			<option value="0">nein</option>
-			<?php if ($prompt['direct']): ?>
-			<option value="1" selected>Ja</option>
-			<?php else: ?>
-			<option value="1">ja</option>
-			<?php endif ?>
-		</select>
+	<label>Kontrollprompt:
+		<input name="afterthought" type="text" placeholder="Zusatzprompt nach Usereingabe" value="<?=$prompt['afterthought'] ?? null?>">
 	</label>
-
 
 	<label>Nachbearbeitungs PromptID:
 		<input list="postprocessprompts" name="postprocess" type="text" placeholder="PromptID auswählen" value="<?=$prompt['postprocess'] ?? null?>">

@@ -46,12 +46,22 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 	<fieldset>	
 
+	<div class="grid-2-col">
 	<label>Sichtbarkeit:
 		<select name="inactive" >
 			<option value="0" selected>aktiv</option>
 			<option value="1">gesperrt</option>
 		</select>
 	</label>
+
+	<label>Direktprompt:
+		<select name="direct" >
+			<option value="0" selected>nein</option>
+			<option value="1">Ja</option>
+		</select>
+	</label>
+	</div>
+
 
 	<label>Formatierung:
 		<select name="format" >
@@ -73,13 +83,6 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7">
 	</label>
 
-	<label>Direktprompt:
-		<select name="direct" >
-			<option value="0" selected>nein</option>
-			<option value="1">Ja</option>
-		</select>
-	</label>
-
 	<!--
 	<label>GPT4 erzwingen:
 		<select name="advanced" >
@@ -88,6 +91,10 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 	-->
+
+	<label>Kontrollprompt:
+		<input name="afterthought" type="text" placeholder="Zusatzprompt nach Usereingabe">
+	</label>
 
 	<label>Nachbearbeitungs PromptID:
 		<input list="postprocessprompts" name="postprocess" type="text" placeholder="PromptID auswählen">
