@@ -13,9 +13,10 @@ class Import extends Controller {
 		$this->models('Scrape,RSS_Adapter,Json_Adapter,LiveTickerAdapter,FileReader');
 	}
 
-	public function article($id) {
+	public function article() {
 
-		$content = $this->Json_Adapter->get_by_id($id);
+		$url = $_POST['url'];
+		$content = $this->Json_Adapter->get_by_url($url);
 
 		if (is_null($content)) {
 			$this->view->json(['content' => 'keine Artikeldaten gefunden']);

@@ -33,7 +33,7 @@ $routes->post('/tts/generate', 'TextToSpeech@generate');
 
 // Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');
-$routes->get('/import/article/{id:\d+}', 'Import@article');
+$routes->post('/import/article/', 'Import@article');
 $routes->get('/import/pdf', 'Import@pdf');
 $routes->get('/import/splitter', 'Import@splitter');
 $routes->post('/import/splitter', 'Import@splitter');
