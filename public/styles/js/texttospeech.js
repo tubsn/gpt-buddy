@@ -3,7 +3,7 @@ const textToSpeechApp = Vue.createApp({
 		loading: false,
 		ttsmodel: '',
 		voice: '',
-		quality: '',
+		audioquality: '',
 		input: '',
 		audiofile: '',
 		errorMessage: '',
@@ -11,7 +11,7 @@ const textToSpeechApp = Vue.createApp({
 
 	watch: {
 		voice(content,old) {localStorage.voice = content},
-		quality(content,old) {localStorage.quality = content},
+		audioquality(content,old) {localStorage.audioquality = content},
 	},
 
 	mounted: function() {
@@ -40,7 +40,7 @@ const textToSpeechApp = Vue.createApp({
 
 		getPresets() {
 			if (localStorage.voice) {this.voice = localStorage.voice}
-			if (localStorage.quality) {this.quality = localStorage.quality}
+			if (localStorage.audioquality) {this.audioquality = localStorage.audioquality}
 		},
 
 		reset() {
@@ -59,7 +59,7 @@ const textToSpeechApp = Vue.createApp({
 			let formData = new FormData()
 			formData.append('text', this.input)
 			formData.append('voice', this.voice)
-			formData.append('quality', this.quality)
+			formData.append('quality', this.audioquality)
 
 			this.loading = true
 			let response = await fetch('/tts/generate', {method: 'POST', body: formData})

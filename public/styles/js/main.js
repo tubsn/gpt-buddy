@@ -315,9 +315,9 @@ methods: {
 
 		if (localStorage.model) {this.model = localStorage.model}
 		if (localStorage.userSelectedModel) {this.userSelectedModel = localStorage.userSelectedModel}
-		if (localStorage.resolution) {this.resolution = localStorage.resolution}
-		if (localStorage.quality) {this.quality = localStorage.quality}
-		if (localStorage.style) {this.style = localStorage.style}
+		if (localStorage.resolution && localStorage.resolution != 0) {this.resolution = localStorage.resolution}
+		if (localStorage.quality && localStorage.quality != 0) {this.quality = localStorage.quality}
+		if (localStorage.style && localStorage.style != 0) {this.style = localStorage.style}
 
 	},
 

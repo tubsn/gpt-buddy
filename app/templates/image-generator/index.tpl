@@ -20,8 +20,10 @@ Bitte sparsam mit dem Bildgenerator umgehen.<br>Die Generierung kostet zwischen 
 <?=$pager?>
 </div>
 
+<?php if ($lastimages): ?>
 <main class="gallery-container">
 <?php include tpl('image-generator/gallery');?>
 </main>
+<?php endif ?>
 
 <?=$pager?>

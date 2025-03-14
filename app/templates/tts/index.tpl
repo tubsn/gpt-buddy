@@ -38,7 +38,7 @@
 
 <div class="box parameters">
 	<label>Qualität:
-	<select v-model="quality" data-name="quality">
+	<select v-model="audioquality" data-name="audioquality">
 		<option value="0">Normale Qualität</option>
 		<option value="1">Hohe Qualität</option>
 	</select>
