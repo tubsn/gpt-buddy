@@ -33,6 +33,7 @@ class ChatGPT
 	
 	public $conversation = []; // Message History
 	public $payload = null;
+	public $afterthought = null;
 	public $temperature = 0.7;
 	public $stream = true;
 	public $tokens = 0;
@@ -107,6 +108,11 @@ class ChatGPT
 		};
 
 		$this->add($question, 'user');
+
+		if ($this->afterthought) {
+			$this->add($this->afterthought, 'system');
+		}
+
 		$this->count_tokens();
 		$this->save_conversation();
 
@@ -123,6 +129,10 @@ class ChatGPT
 
 		if (isset($prompt['format']) && $prompt['format']) {
 			$this->add('Nutze Markdown für Formatierungen', 'system');
+		}
+
+		if (isset($prompt['afterthought']) && $prompt['afterthought']) {
+			$this->afterthought = $prompt['afterthought'];
 		}
 
 		if (isset($prompt['temperature'])) {
