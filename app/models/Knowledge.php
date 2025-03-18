@@ -37,7 +37,7 @@ class Knowledge extends Model
 
 	private function apply_knowledgebase($knowledgeTitle) {
 
-		$knowledge = $this->search($knowledgeTitle, 'title');
+		$knowledge = $this->exact_search($knowledgeTitle, 'title');
 		$knowledge = $knowledge[0] ?? [];
 		
 		if (empty($knowledge)) {return null;}
