@@ -121,6 +121,7 @@ class ChatGPT
 
 	private function prompt_processing($question) {
 
+		if ($this->promptID == 'unbiased') {return $question;}
 		$prompt = $this->prompts->get_and_track($this->promptID);
 
 		if (empty($prompt['content'])) {echo 'Achtung: Prompt hat keinen Inhalt'; die;}
