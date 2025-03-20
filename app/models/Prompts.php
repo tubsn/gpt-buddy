@@ -25,6 +25,21 @@ class Prompts extends Model
 		return $prompt;
 	}
 
+	public function get_flat_content($id) {
+
+		$prompt = $this->get($id);
+		$prompt = $this->apply_callback($prompt);
+		$prompt = $this->apply_knowledge($prompt);
+		
+		$content = [];
+		$content[0] = $prompt['content'];
+		$content = array_merge($content, $prompt['knowledges']);
+		$content = implode("\n\n", $content);
+		$content = $content . "\n\n" . $prompt['afterthought'];
+
+		return $content;
+	}
+
 	public function category($category = '') {
 
 		if ($category == 'user') {return $this->user_prompts(auth('id'));}
