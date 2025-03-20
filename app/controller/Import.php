@@ -113,6 +113,26 @@ class Import extends Controller {
 
 	}
 
+	public function delete_converted_files() {
+		$this->clear_converted_files();
+		$this->view->redirect('/import/converter');
+	}
+
+	private function clear_converted_files() {
+		$urlpath = 'audio/converter/';
+		array_map('unlink', array_filter((array) glob($urlpath.'*')));
+	}
+
+	public function delete_splitted_files() {
+		$this->clear_splitted_files();
+		$this->view->redirect('/import/splitter');
+	}
+
+	private function clear_splitted_files() {
+		$urlpath = 'audio/splitter/';
+		array_map('unlink', array_filter((array) glob($urlpath.'*')));
+	}
+
 	public function transcribe($fileindex) {
 
 		Session::unset('tts');

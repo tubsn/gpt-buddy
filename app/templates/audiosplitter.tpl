@@ -7,16 +7,23 @@
 <hr>
 
 <form action="" method="post" enctype="multipart/form-data">
-<input type="file" name="audio">
-<button type="submit">Datei aufteilen</button>
+<input type="file" name="audio" style="max-width:600px">
+
+<button type="submit" class="mt button">Datei aufteilen</button>
+
 </form>
 
 <hr>
 
+<?php if ($files): ?>
+<div class="box">
 <h3>zuletzt gesplittet</h3>
 <?php foreach ($files as $file): ?>
 <a target="_blank" href="/<?=$urlpath?><?=$file?>"><?=$file?></a><br>
 <?php endforeach ?>
+<a href="/import/splitter/delete" class="mt button light danger">alle Dateien löschen</a>
+</div>
+<?php endif ?>
 
 
 </main>

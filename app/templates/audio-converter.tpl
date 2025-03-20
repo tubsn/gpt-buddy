@@ -2,6 +2,7 @@
 
 
 <div class="fright">
+<?php if ($files): ?><a href="/import/converter/delete" class="button grey danger">Alle Dateien Löschen</a>&nbsp;<?php endif ?>	
 <fl-upload id="attachment-upload" destination="">[+] Neue Audiodatei hochladen</fl-upload>
 </div>
 
