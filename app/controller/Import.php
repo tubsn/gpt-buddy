@@ -46,7 +46,9 @@ class Import extends Controller {
 
 		$files = [];
 
-		$ff = FFMPEGPATH ?? 'ffmpeg'; // command to open ffmpeg
+		$ff = 'ffmpeg';
+		if (defined('FFMPEGPATH')) {$ff = FFMPEGPATH;}
+		
 		$urlpath = 'audio/splitter/';
 		$outDir = PUBLICFOLDER . $urlpath;
 
