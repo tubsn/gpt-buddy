@@ -129,7 +129,7 @@ class Settings extends Controller {
 	public function save($id) {
 		$this->Prompts->update_with_history($_POST, $id);
 		$category = $_POST['category'];
-		if ($this->view->referer = 'archiv') {$this->view->back();}
+		if ($this->view->referer() == '/archiv' || $this->view->referer() == '/settings') {$this->view->back();}
 		if ($category == 'alle') {$category = '';}
 		$backlink = '/' . $category . '#' . $id;
 		$this->view->redirect($backlink);
