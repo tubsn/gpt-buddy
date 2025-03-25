@@ -140,6 +140,8 @@ class Settings extends Controller {
 		$this->view->prompt = $prompt;
 		$categories = array_keys(CATEGORIES);
 		$categories = array_filter($categories, fn ($set) => $set != 'user');
+		$this->view->aimodels = AIMODELS ?? [];
+		$this->view->knowledges = $this->Knowledge->distinct();		
 		$this->view->categories = $categories;
 		$this->view->render('admin/edit-prompt');
 	}
