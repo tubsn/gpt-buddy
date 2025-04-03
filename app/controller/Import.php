@@ -56,6 +56,7 @@ class Import extends Controller {
 			$tmp_file = $_FILES['audio']['tmp_name'];
 			$filename = pathinfo($_FILES['audio']['name'], PATHINFO_FILENAME);
 			$extension = pathinfo($_FILES['audio']['name'], PATHINFO_EXTENSION);
+			$filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename);
 
 			$in = $tmp_file;
 			if (!file_exists($outDir)) {mkdir($outDir, 0777, true);}
