@@ -26,8 +26,6 @@ class FileReader
 
 		if ($file['size'] > 1024 * 1024 * 25) {return 'Achtung: Datei zu groß';}
 
-		//dd($file);
-
 		$filepath = $file['tmp_name'];
 		$type = $this->detect_type($file);
 

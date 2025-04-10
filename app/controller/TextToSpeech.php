@@ -12,7 +12,7 @@ class TextToSpeech extends Controller {
 		$this->view('DefaultLayout');
 		$this->view->js = '/styles/js/texttospeech.js';
 		$this->view->title = APP_NAME . ' | Text to Speech';
-		$this->models('OpenAIWhisper');
+		$this->models('OpenAIWhisper,OpenAiAudio');
 	}
 
 	public function index() {
@@ -23,8 +23,9 @@ class TextToSpeech extends Controller {
 	public function generate() {
 		$text = $_POST['text'] ?? null;
 		$voice = $_POST['voice'] ?? null;
-		$hd = $_POST['quality'] ?? null;
-		$file = $this->OpenAIWhisper->tts($text, $voice, $hd);
+		$model = $_POST['model'] ?? null;
+		$instructions = $_POST['instructions'] ?? null;
+		$file = $this->OpenAIWhisper->tts($text, $voice, $model, $instructions);
 		$this->view->json(['status' => 'ok', 'audio' => $file]); 
 	}
 

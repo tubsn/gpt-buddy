@@ -31,17 +31,16 @@
 <div class="box parameters">
 	<label>TTS Model:
 	<select v-model="ttsmodel" data-name="ttsmodel">
-		<option>Open AI Whisper</option>
+		<option>gpt-4o-mini-tts</option>
+		<option>tts-1</option>
+		<option>tts-1-hd</option>
 	</select>
 	</label>
 </div>
 
 <div class="box parameters">
-	<label>Qualität:
-	<select v-model="audioquality" data-name="audioquality">
-		<option value="0">Normale Qualität</option>
-		<option value="1">Hohe Qualität</option>
-	</select>
+	<label>Instruktionen:
+	<input v-model="instructions" placeholder="z.B. Angaben zur Stimmlage" type="text">
 	</label>
 </div>
 

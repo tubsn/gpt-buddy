@@ -38,24 +38,33 @@ class OpenAIWhisper
 
 	}
 
-	public function tts($input, $voice = 'nova', $hd = false) {
+	public function tts($input, $voice = 'nova', $model = 'tts-1', $instructions = null) {
 		
 		$voice = strtolower($voice);
 		$availableVoices = ['alloy', 'ash', 'coral', 'echo',
 		 'fable', 'onyx', 'nova', 'sage', 'shimmer'];
 		if (!in_array($voice, $availableVoices)) {
-			throw new \Exception("$voice is not Available as Voice");
+			throw new \Exception("$voice is not available as Voice");
 		}
 
-		$model = 'tts-1';
-		if ($hd) {$model = 'tts-1-hd';}
+		$availableModels = ['tts-1', 'tts-1-hd', 'gpt-4o-mini-tts'];
+		if (!in_array($model, $availableModels)) {
+			throw new \Exception("$model is not available as Model");
+		}
 
-		$open_ai = new OpenAi(CHATGPTKEY);
-		$result = $open_ai->tts([
+		$options = [
 			'model' => $model,
 			'input' => $input,
 			'voice' => $voice,
-		]);
+		];
+
+		if (!empty($instructions)) {
+			$instructions = strip_tags($instructions);
+			$options['instructions'] = $instructions;
+		}
+
+		$open_ai = new OpenAi(CHATGPTKEY);
+		$result = $open_ai->tts($options);
 
 		$filename = date('Y-m-d-H-i') . '-' . bin2hex(random_bytes(4)) . '.mp3';
 		$folder = 'audio'. DIRECTORY_SEPARATOR . 'tts' . DIRECTORY_SEPARATOR;
