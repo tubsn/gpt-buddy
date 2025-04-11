@@ -287,21 +287,23 @@ class ChatGPT
 			'stream' => true,
 		];
 
+		if (str_contains($this->model, '-search')) {
+			// Streaming not Supported for search
+			$options['stream'] = false;
+			unset($options['frequency_penalty'], $options['presence_penalty']);
+			$chat = $open_ai->chat($options);			
+			$this->stream_to_direct($chat);
+			exit;	
+		}
+
 		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-')) {
 			$options['reasoning_effort'] = $this->reasoning;
-			
-			// Seems like Streaming is now supportet but I´ll keep that option here
-			//$options['stream'] = false;
-			//$chat = $open_ai->chat($options);			
-			//$this->stream_to_direct($chat);
-			//exit;				
-
 		} else {
 			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
 		}
 
 		$open_ai->chat($options, function ($curl_info, $data) {
-			//Log::write($data);
+			Log::write($data);
 			if ($this->handle_GPT_Stream_Api_errors($data)) {return 0;}
 			$this->handle_stream_set($data);
 			return strlen($data);
@@ -346,6 +348,8 @@ class ChatGPT
 
 	private function handle_GPT_Stream_Api_errors($raw) {
 		//$this->error_to_stream($raw);
+
+		//dd($raw);
 
 		$json = json_decode($raw);
 		if (isset($json->error->message)) {
