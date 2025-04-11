@@ -8,6 +8,12 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 
 <main class="auth-layout user-table" style="margin-bottom:2em; margin-top:2em;">
 
+<?php if (count($users) > 9): ?>
+<div class="fright">
+	<a class="button mt" href="/admin/new">Neuen User anlegen</a>
+</div>
+<?php endif ?>
+
 	<h1><?=$page['title'] ?? 'User-Profiles'?></h1>
 
 	<table class="fancy wide">
