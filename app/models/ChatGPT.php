@@ -303,7 +303,7 @@ class ChatGPT
 		}
 
 		$open_ai->chat($options, function ($curl_info, $data) {
-			Log::write($data);
+			//Log::write($data);
 			if ($this->handle_GPT_Stream_Api_errors($data)) {return 0;}
 			$this->handle_stream_set($data);
 			return strlen($data);
