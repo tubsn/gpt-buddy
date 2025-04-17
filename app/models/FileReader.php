@@ -24,7 +24,7 @@ class FileReader
 			$file = $this->get_meta($file);
 		}
 
-		if ($file['size'] > 1024 * 1024 * 25) {return 'Achtung: Datei zu groß';}
+		if ($file['size'] > 1024 * 1024 * 100) {return 'Achtung: Datei zu groß';}
 
 		$filepath = $file['tmp_name'];
 		$type = $this->detect_type($file);
@@ -58,6 +58,7 @@ class FileReader
 			case 'audio/mpeg': return 'audio'; break;
 			case 'audio/mp4': return 'audio'; break;
 			case 'audio/x-m4a': return 'audio'; break;
+			case 'audio/wav': return 'audio'; break;
 			case 'application/postscript': return 'eps'; break;
 			case 'application/x-zip-compressed': return 'zip'; break;
 			case 'application/zip': return 'zip'; break;
@@ -129,8 +130,15 @@ class FileReader
 		$file_name = basename($_FILES['file']['name']);
 		$c_file = curl_file_create($tmp_file, $_FILES['file']['type'], $file_name);
 
-		$tts = new OpenAIWhisper();
-		$output = $tts->transcribe($c_file);
+		if (defined('FFMPEGPATH')) {
+			$ChunkWhisper = new ChunkWhisper();
+			$output = $ChunkWhisper->transcribe($tmp_file, PUBLICFOLDER . 'audio\chunkwhisper');
+		}
+
+		else {
+			$tts = new OpenAIWhisper();
+			$output = $tts->transcribe($c_file);
+		}
 
 		return $output;
 

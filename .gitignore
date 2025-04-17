@@ -5,7 +5,7 @@
 /app/templates/navigation/main-nav.tpl
 /app/templates/faq.tpl
 /public/storage
-/public/audio
+/public/audio*
 /public/generated
 /public/uploads
 /public/visionupload
