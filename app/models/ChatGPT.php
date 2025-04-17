@@ -255,7 +255,7 @@ class ChatGPT
 			// 'max_tokens' => 4096, 
 		];
 
-		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o4-')) {
+		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
 			$options['reasoning_effort'] = $this->reasoning;
 		} else {
 			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
@@ -296,7 +296,7 @@ class ChatGPT
 			exit;	
 		}
 
-		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-')) {
+		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
 			$options['reasoning_effort'] = $this->reasoning;
 		} else {
 			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
