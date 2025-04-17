@@ -7,14 +7,28 @@ class ChunkWhisper
 	private $openAiApiKey;
 	private $ffmpegPath;
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->openAiApiKey = CHATGPTKEY;
 		$this->ffmpegPath = FFMPEGPATH;
 	}
 
-	public function compressAudio($inputFile, $outputFile)
-	{
+	public function transcribe($inputFile, $tmpDir, $language = 'de') {
+		$compressedFile = $tmpDir . DIRECTORY_SEPARATOR . 'compressed.ogg';
+		if (!$this->compressAudio($inputFile, $compressedFile)) {
+			return 'Audio-Komprimierung fehlgeschlagen'; die;
+		}
+		$chunks = $this->splitAudio($compressedFile, $tmpDir . DIRECTORY_SEPARATOR . 'chunks');
+		if (!$chunks) {
+			return 'Audio-Splitting fehlgeschlagen'; die;
+		}
+		$result = '';
+		foreach ($chunks as $chunk) {
+			$result .= $this->transcribeChunk($chunk, $language) . ' ' . "\n\n";
+		}
+		return trim($result);
+	}
+
+	public function compressAudio($inputFile, $outputFile) {
 
 		$outputDir = dirname($outputFile);
 		if (!is_dir($outputDir)) {mkdir($outputDir, 0777, true);}
@@ -31,15 +45,18 @@ class ChunkWhisper
 		return $returnVar === 0;
 	}
 
-	public function splitAudio($inputFile, $chunkDir, $chunkSizeMB = 15)
-	{
+	public function splitAudio($inputFile, $chunkDir, $chunkSizeMB = 15) {
 		if (!is_dir($chunkDir)) {
 			mkdir($chunkDir, 0777, true);
 		}
 
+		$fileSize = filesize($inputFile);
+		if ($fileSize <= ($chunkSizeMB * 1024 * 1024)) {
+			return [$inputFile];
+		}
+
 		$duration = $this->getAudioDuration($inputFile);
 		if ($duration === false) return false;
-
 
 		$fileSize = filesize($inputFile);
 		$numChunks = ceil($fileSize / ($chunkSizeMB * 1024 * 1024));
@@ -48,7 +65,7 @@ class ChunkWhisper
 		$chunkFiles = [];
 		for ($i = 0; $i < $numChunks; $i++) {
 			$start = $i * $chunkDuration;
-			$chunkFile = $chunkDir . '/chunk_' . $i . '.ogg';
+			$chunkFile = $chunkDir . DIRECTORY_SEPARATOR . 'chunk_' . $i . '.ogg';
 			$cmd = sprintf(
 				'%s -y -i %s -ss %d -t %d -c copy %s',
 				escapeshellcmd($this->ffmpegPath),
@@ -64,8 +81,7 @@ class ChunkWhisper
 		return $chunkFiles;
 	}
 
-	private function getAudioDuration($file)
-	{
+	private function getAudioDuration($file) {
 		$cmd = sprintf(
 			'%s -i %s 2>&1',
 			escapeshellcmd($this->ffmpegPath),
@@ -79,8 +95,7 @@ class ChunkWhisper
 		return false;
 	}
 
-	public function transcribeChunk($chunkFile, $language = 'de')
-	{
+	public function transcribeChunk($chunkFile, $language = 'de') {
 		$ch = curl_init();
 		$postFields = [
 			'file' => new \CURLFile($chunkFile, 'audio/ogg', basename($chunkFile)),
@@ -101,20 +116,4 @@ class ChunkWhisper
 		return $data['text'] ?? '';
 	}
 
-	public function transcribe($inputFile, $tmpDir, $language = 'de')
-	{
-		$compressedFile = $tmpDir . '\compressed.ogg';
-		if (!$this->compressAudio($inputFile, $compressedFile)) {
-			return 'Audio-Komprimierung fehlgeschlagen'; die;
-		}
-		$chunks = $this->splitAudio($compressedFile, $tmpDir . '\chunks');
-		if (!$chunks) {
-			return 'Audio-Splitting fehlgeschlagen'; die;
-		}
-		$result = '';
-		foreach ($chunks as $chunk) {
-			$result .= $this->transcribeChunk($chunk, $language) . ' ' . "\n\n";
-		}
-		return trim($result);
-	}
 }

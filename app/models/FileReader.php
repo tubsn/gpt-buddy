@@ -132,7 +132,7 @@ class FileReader
 
 		if (defined('FFMPEGPATH')) {
 			$ChunkWhisper = new ChunkWhisper();
-			$output = $ChunkWhisper->transcribe($tmp_file, PUBLICFOLDER . 'audio\chunkwhisper');
+			$output = $ChunkWhisper->transcribe($tmp_file, PUBLICFOLDER . 'audio' . DIRECTORY_SEPARATOR . 'chunkwhisper');
 		}
 
 		else {
