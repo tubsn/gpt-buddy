@@ -364,8 +364,13 @@ class ChatGPT
 		$pattern = '/"message": "(.*?)",\s+"type": "(.*?)"/';
 		preg_match($pattern, $raw, $matches);
 
+		if (!isset($matches[1])) {
+			$pattern = '/"message": "([^"]*)/';
+			preg_match($pattern, $raw, $matches);
+		}
+
 		$message = $matches[1];
-		$type = $matches[2];
+		$type = $matches[2] ?? null;
 
 		$error = $type . ' | ' . $message;
 		$this->error_to_stream($error);
