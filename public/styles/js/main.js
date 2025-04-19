@@ -51,7 +51,7 @@ computed: {
 	},
 
 	advancedModel() {
-		if (this.model.includes('o3')) {return true;}
+		if (this.model.includes('o3') || this.model.includes('o4')) {return true;}
 	}
 },
 

@@ -19,7 +19,7 @@ class ChatGPT
 	private $conversations;
 	private $models = AIMODELS;
 
-	public $model = AIMODELS[0] ?? 'gpt-4o';
+	public $model = AIMODELS[0] ?? 'gpt-4.1';
 
 	public $forceGPT4 = false;
 	public $jsonMode = false;
@@ -252,13 +252,16 @@ class ChatGPT
 			'model' => $this->model,
 			'messages' => $this->conversation,
 			'response_format' => $responseFormat,
-			// 'max_tokens' => 4096, 
 		];
 
+		// Reasoning Models need Reasoning
 		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
 			$options['reasoning_effort'] = $this->reasoning;
-		} else {
-			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
+		}
+
+		// Normal Models need Temperature
+		if (str_contains($this->model, 'GPT-4')) {
+			$options['temperature'] = $this->float_temperature();
 		}
 
 		$chat = $open_ai->chat($options);
@@ -282,24 +285,25 @@ class ChatGPT
 		$options = [
 			'model' => $this->model,
 			'messages' => $this->conversation,
-			'frequency_penalty' => 0,
-			'presence_penalty' => 0,
 			'stream' => true,
 		];
 
-		if (str_contains($this->model, '-search')) {
-			// Streaming not Supported for search
+		// Reasoning Models need Reasoning
+		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
+			$options['reasoning_effort'] = $this->reasoning;
+		}
+
+		// Normal Models need Temperature
+		if (str_contains($this->model, 'GPT-4')) {
+			$options['temperature'] = $this->float_temperature();
+		}
+
+		// Streaming not Supported for some Models
+		if (str_contains($this->model, '-search') || $this->model == 'o3') {
 			$options['stream'] = false;
-			unset($options['frequency_penalty'], $options['presence_penalty']);
 			$chat = $open_ai->chat($options);			
 			$this->stream_to_direct($chat);
 			exit;	
-		}
-
-		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
-			$options['reasoning_effort'] = $this->reasoning;
-		} else {
-			$options['temperature'] = $this->float_temperature(); // has to be valid floatvalue
 		}
 
 		$open_ai->chat($options, function ($curl_info, $data) {

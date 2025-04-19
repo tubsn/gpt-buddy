@@ -15,6 +15,15 @@
 <hr>
 
 
+<h3>19. April 2025 - Aufräumarbeiten im Edit Prompt UI</h3>
+<p>Für Nachbearbeitungsprompts steht jetzt mehr Platz zur Verfügung.</p>
+
+<h3>16. April 2025 - Integration neuer Reasoning und Audio Modelle sowie GPT-4.1</h3>
+<p>Für die Integration der o3 und o4 Reasoning Modelle mussten anpassungen an Streaming, Reasoning und Temperature Einstellungen vorgenommen werden. Achtung: Das o3 Streaming funktioniert nur, nach vorheriger Freischaltung als Organisation auf der OpenAI Seite.</p>
+
+<h3>7. April 2025 - Integration von Search Model</h3>
+<p>Mit dem Search Model gpt-4o-search ist es jetzt möglich direkt Livedaten aus dem Internet zu beziehen und die Ki auch zu aktuellen Themengebieten zu nutzen. Das Search Model greift dazu nach Eingabe des Nutzers automatisch auf eine interne OpenAI Suchmaschine zu und sammelt Informationen zum gestellten Thema.</p>
+
 <h3>12. März 2025 - Kontrollprompt</h3>
 <p>Es gibt jetzt eine zusätzliche Möglichkeit nach der Usereingabe einen Kurzen Kontrollprompt als Systemprompt zu aktivieren. Dazu in den Prompteinstellungen ein sogenannter Kontrollprompt aktiviert werden. Anders als beim Nachbearbeitungsprompt wird kein zweiter Aufruf an die KI gesendet, sondern das Gespräch durch einen "verstärkten" Zusatz erweitert.</p>
 
