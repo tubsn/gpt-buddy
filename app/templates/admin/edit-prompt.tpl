@@ -71,6 +71,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	</label>
 	</div>
 
+	<div class="grid-2-col">
 	<label>Formatierung:
 		<select name="format" >
 			<option value="0">keine Formatierung</option>
@@ -81,6 +82,12 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			<?php endif ?>
 		</select>
 	</label>
+
+	<label>Temperatur:
+		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
+	</label>
+	</div>
+
 
 	<label>Model erzwingen:
 		<select name="model">
@@ -95,25 +102,8 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Temperatur:
-		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
-	</label>
-
-	<!--
-	<label>GPT4 erzwingen:
-		<select name="advanced" >
-			<option value="0">nein</option>
-			<?php if ($prompt['advanced']): ?>
-			<option value="1" selected>Ja</option>
-			<?php else: ?>
-			<option value="1">ja</option>
-			<?php endif ?>
-		</select>
-	</label>
-	-->
-
 	<label>Kontrollprompt:
-		<input name="afterthought" type="text" placeholder="Zusatzprompt nach Usereingabe" value="<?=$prompt['afterthought'] ?? null?>">
+		<textarea style="height:118px" name="afterthought" placeholder="Zusatzprompt nach Usereingabe"><?=$prompt['afterthought'] ?? null?></textarea>
 	</label>
 
 	<label>Nachbearbeitungs PromptID:

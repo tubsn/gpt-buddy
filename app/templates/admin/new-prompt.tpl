@@ -62,13 +62,19 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 	</label>
 	</div>
 
-
+	<div class="grid-2-col">
 	<label>Formatierung:
 		<select name="format" >
 			<option value="0">keine Formatierung</option>
 			<option value="1" selected>Formatierung aktiv</option>
 		</select>
 	</label>
+
+	<label>Temperatur:
+		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7">
+	</label>
+
+	</div>
 
 	<label>Model erzwingen:
 		<select name="model">
@@ -79,21 +85,8 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Temperatur:
-		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7">
-	</label>
-
-	<!--
-	<label>GPT4 erzwingen:
-		<select name="advanced" >
-			<option value="0" selected>nein</option>
-			<option value="1">ja</option>
-		</select>
-	</label>
-	-->
-
 	<label>Kontrollprompt:
-		<input name="afterthought" type="text" placeholder="Zusatzprompt nach Usereingabe">
+		<textarea style="height:118px" name="afterthought" placeholder="Zusatzprompt nach Usereingabe"></textarea>
 	</label>
 
 	<label>Nachbearbeitungs PromptID:
