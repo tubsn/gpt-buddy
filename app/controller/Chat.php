@@ -75,7 +75,8 @@ class Chat extends Controller {
 		$funfact = $cache->get();
 		if (empty($funfact)) {
 			$date = date('d.F');
-			$question = 'Mach einen lustigen Witz zum heutigen Tag ('.$date.'). Maximal 30 Wörter. Orientiere dich am Humor von Dave Chappelle. Themenbereich Naturwissenschaft';
+			$question = 'Mach einen lustigen Witz zum heutigen Tag ('.$date.'). Maximal 30 Wörter. Orientiere dich am Humor von Bully Herbig (nicht erwähnen). Themenbereich Naturwissenschaft';
+			$this->ChatGPT->model = 'gpt-4.1-mini';
 			$funfact = $this->ChatGPT->direct($question);
 			$cache->save($funfact);
 		}
