@@ -132,13 +132,22 @@
 <details v-if="history" :open="historyExpanded">
 	<summary @click.self.prevent="historyExpanded = !historyExpanded">Chatverlauf einblenden</summary>
 	<table class="fancy history wide">
-		<tr :class="entry.role.toLowerCase()" v-for="entry in history"> 
+		<tr :class="entry.role.toLowerCase()" v-for="entry,index in history"> 
 			<td class="ucfirst">{{entry.role}}</td>
 			<td><pre @click="copyToInput">{{filterInstructions(entry.content)}}</pre></td>
+			<td class="text-right nowrap">
+				<span @click="copyHistoryToClipboard(index)" title="Eintrag kopieren">
+				<img class="icon-copy" src="/styles/img/copy-icon.svg">
+				</span>&nbsp;<!--<span @click="editHistory(index)" title="Eintrag editieren">
+				<img class="icon-edit-history" src="/styles/flundr/img/icon-edit.svg">
+				</span>&nbsp;--><span @click="removeHistoryEntry(index)" title="Eintrag löschen">
+				<img class="icon-delete" src="/styles/flundr/img/icon-delete-black.svg">
+				</span>
+			</td>
 		</tr>
 	</table>
 
-	<div class="text-right small">
+	<div class="small">
 	<button class="button light" type="button" @click="copyHistoryToClipboard">Chatverlauf kopieren</button>
 	<!--&ensp;<a class="button light" target="_blank" :href="'/conversation/' + conversationID">Chatverlauf teilen</a>-->
 	</div>

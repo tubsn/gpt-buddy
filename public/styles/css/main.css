@@ -64,6 +64,7 @@ hr.large {margin:3em 0;}
 hr.black {border-color:#000}
 .button-group {display:flex; gap:0.5em;}
 .mtsmall {margin-top:0.2em;}
+.nowrap {white-space:nowrap;}
 
 .primary-highlight, .secondary-highlight {display:inline-block; padding:0.1em .2em; background-color: var(--primary-highlight); border-radius:0.5em;}
 .secondary-highlight {background-color: #dfdfdf}
@@ -210,7 +211,7 @@ ul.pager li a.disabled {background:#ececec; color:#b1b1b1;}
 /* Tables */
 /*table tr.system, table tr.system:nth-child(2n) {background-color:#ececec;}
 table tr.system:hover, table tr.system:nth-child(2n):hover {color:inherit}*/
-table tr.system pre {max-height: 72px; overflow-y: auto;}
+table tr.system pre {max-height: 118px; overflow-y: auto;}
 table.fancy th {background-color: var(--primary);}
 
 
@@ -269,6 +270,14 @@ table.fancy th {background-color: var(--primary);}
 /* Icons */
 .icon-delete {opacity:0.2; position:relative;top:4px; cursor:pointer; width:20px; transition: width 0.1s;}
 .icon-delete:hover {opacity: 0.6;}
+
+.icon-edit-history {opacity:0.25; position:relative;top:2px; cursor:pointer; width:20px; transition: width 0.1s;}
+.icon-edit-history:hover {opacity: 0.8;}
+
+.icon-copy {opacity:0.5; position:relative;top:4px; cursor:pointer; width:20px; transition: width 0.1s;}
+.icon-copy:hover {opacity: 0.8;}
+
+
 .icon-edit {opacity:0.2; position:relative;top:2px; width:23px;}
 button .icon-delete {opacity: 0.4; top:2px;}
 

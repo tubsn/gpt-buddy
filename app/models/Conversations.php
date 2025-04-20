@@ -92,6 +92,13 @@ class Conversations
 		$this->update($data, $id);
 	}
 
+	public function remove_entry($id, $index) {
+		$data = $this->get($id);
+		unset($data['conversation'][$index]);
+		$this->update($data, $id);
+	}
+
+
 	private function generate_id($length = 6) {
 		$bytes = random_bytes($length);
 		return bin2hex($bytes);

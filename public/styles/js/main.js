@@ -360,8 +360,14 @@ methods: {
 		this.history = json
 	},
 
-	copyHistoryToClipboard() {
+	copyHistoryToClipboard(index) {
 		let historyData = JSON.parse(JSON.stringify(this.history));
+
+		if (index) {
+			navigator.clipboard.writeText(historyData[index].content)
+			return			
+		}
+
 		let history = '';
 		historyData.forEach(entry => {
 			history = history + `[${entry.role}] ${entry.content}\n\n`
@@ -568,6 +574,16 @@ methods: {
 		let json = await response.json()
 		this.history = json
 
+	},
+
+	async removeHistoryEntry(index) {
+
+		if (!this.conversationID) {return}
+		let response = await fetch('/conversation/' + this.conversationID + '/pop/' + index)
+		if (!response.ok) {return}
+
+		let json = await response.json()
+		this.history = json
 	},
 
 	initCopyPaste() {
