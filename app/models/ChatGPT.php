@@ -132,6 +132,11 @@ class ChatGPT
 			$this->add('Nutze Markdown für Formatierungen', 'system');
 		}
 
+		if (isset($prompt['withdate']) && $prompt['withdate']) {
+			$now = date('Y-m-d H:i');
+			$this->add('Heute ist der ' . $now, 'system');
+		}
+
 		if (isset($prompt['afterthought']) && $prompt['afterthought']) {
 			$this->afterthought = $prompt['afterthought'];
 		}

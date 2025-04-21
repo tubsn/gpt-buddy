@@ -14,7 +14,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 <fieldset class="grid-2-wide">
 <div>
-	<fieldset class="grid-2-col">
+	<fieldset class="grid-3-front-wide">
 		<label>Name:
 			<input name="title" type="text" placeholder="sichtbarer Name" value="<?=$prompt['title'] ?? null?>">
 		</label>
@@ -33,6 +33,18 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 				<?php endforeach ?>
 			</select>
 		</label>
+
+		<label>Direktprompt:
+			<select name="direct" >
+				<option value="0">nein</option>
+				<?php if ($prompt['direct']): ?>
+				<option value="1" selected>Ja</option>
+				<?php else: ?>
+				<option value="1">ja</option>
+				<?php endif ?>
+			</select>
+		</label>
+
 	</fieldset>
 
 	<label>Hilfetext:
@@ -59,19 +71,6 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</select>
 	</label>
 
-	<label>Direktprompt:
-		<select name="direct" >
-			<option value="0">nein</option>
-			<?php if ($prompt['direct']): ?>
-			<option value="1" selected>Ja</option>
-			<?php else: ?>
-			<option value="1">ja</option>
-			<?php endif ?>
-		</select>
-	</label>
-	</div>
-
-	<div class="grid-2-col">
 	<label>Formatierung:
 		<select name="format" >
 			<option value="0">keine Formatierung</option>
@@ -79,6 +78,21 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			<option value="1" selected>Formatierung aktiv</option>
 			<?php else: ?>
 			<option value="1">Formatierung aktiv</option>
+			<?php endif ?>
+		</select>
+	</label>
+
+
+	</div>
+
+	<div class="grid-2-col">
+	<label>Datum im Prompt:
+		<select name="withdate" >
+			<option value="0">nein</option>
+			<?php if ($prompt['withdate']): ?>
+			<option value="1" selected>Ja</option>
+			<?php else: ?>
+			<option value="1">ja</option>
 			<?php endif ?>
 		</select>
 	</label>
