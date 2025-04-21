@@ -14,6 +14,11 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>21. April 2025 - Zufallsgenerator und Datum in Prompts und Eingaben</h3>
+<p>Im Prompting steht jetzt eine einfache Templatesprache mit 3fach Mustache-Logik {{{ TOKEN }}} zur Verfügung.
+Daruch lassen sich z.B. über {{{ rot | grün | blau }}} Per Zufall entweder rot, grün oder blau ausgeben.
+Desweiteren Lässt sich mit {{{ now }}} der aktuelle Zeitpunkt als Y-m-d H:i einfügen oder mit {{{ date bzw. time }}} nur Datum oder Uhrzeit anzeigen. Falls weitere Tokens für euch nützlich sind, sagt bescheid.</p>
+
 
 <h3>19. April 2025 - Aufräumarbeiten im Edit Prompt UI</h3>
 <p>Für Nachbearbeitungsprompts steht jetzt mehr Platz zur Verfügung.</p>

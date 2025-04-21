@@ -20,7 +20,8 @@ class Prompts extends Model
 		if ($id == 'unbiased') {return;}
 		$prompt = $this->get($id);
 		$prompt = $this->apply_callback($prompt);
-		$prompt = $this->apply_knowledge($prompt);	
+		$prompt = $this->apply_knowledge($prompt);
+		$prompt = $this->apply_post_processing($prompt);		
 		$this->increase_hits($id);
 		return $prompt;
 	}
@@ -30,6 +31,7 @@ class Prompts extends Model
 		$prompt = $this->get($id);
 		$prompt = $this->apply_callback($prompt);
 		$prompt = $this->apply_knowledge($prompt);
+		$prompt = $this->apply_post_processing($prompt);		
 		
 		$content = [];
 		$content[0] = $prompt['content'];
@@ -169,6 +171,45 @@ class Prompts extends Model
 		if (!isset($prompt['callback'])) {return $prompt;}
 		$knowledgebase = new Knowledge();
 		return $knowledgebase->run($prompt['callback'], $prompt);
+	}
+
+	public function apply_post_processing($prompt) {
+		$prompt['content'] = $this->replace_random_tokens($prompt['content']);
+		$prompt['content'] = $this->replace_tokens($prompt['content']);
+		return $prompt;
+	}
+
+	public function replace_random_tokens($content) {
+		$pattern = '/\{\{\{\s*([^}|]+(?:\|[^}]+)+)\s*\}\}\}/';
+		if (preg_match($pattern, $content)) {
+			$content = preg_replace_callback($pattern, function($matches) {
+				$options = explode('|', $matches[1]);
+				$options = array_map('trim', $options);
+				return $options[array_rand($options)];
+			}, $content);
+		}
+
+		return $content;
+	}
+
+	public function replace_tokens($content) {
+		$pattern = '/\{\{\{\s*([a-zA-Z_]+)\s*\}\}\}/';
+		if (preg_match($pattern, $content)) {
+			$content = preg_replace_callback($pattern, function($matches) {
+				switch (strtolower($matches[1])) {
+					case 'time': return date('H:i');
+					case 'zeit': return date('H:i');
+					case 'uhrzeit': return date('H:i');
+					case 'date': return date('Y-m-d');
+					case 'datum': return date('Y-m-d');
+					case 'today': return date('Y-m-d');
+					case 'heute': return date('Y-m-d');
+					case 'now': return date('Y-m-d H:i');
+					default: return $matches[0];
+				}
+			}, $content);
+		}
+		return $content;
 	}
 
 	private function increase_hits($id) {

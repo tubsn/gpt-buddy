@@ -3,9 +3,8 @@
 <h1>Prompt editieren: <?=$prompt['title']?></h1>
 <p><b>Hinweise:</b>
 Die besten Ergebnisse erhälst du mit einfachen aber detaillierten Instruktionen. <b>Unterteile komplexe Aufgaben in einzelne Arbeitsschritte!</b><br>
-Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll. Prompts mit Formatierungen verbrauchen geringfügig mehr Tokens.<br>
-Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gleicher Frage immer die selbe Antwort. Hohe Werte eignen sich z.B. für Brainstorming. 
-</p>
+Füge Beispiele ein wie dein gewünschtes Ergebnis aussehen soll.
+Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gleicher Frage immer die selbe Antwort. Hohe Werte eignen sich z.B. für Brainstorming. Du kannst mit {{{ rot | grün }}} <b>einen Zufallsgenerator</b> nutzen oder Tokens wie: {{{date}}} {{{time}}} {{{now}}} <b>Datum und Uhrzeit</b> bzw. beides einfügen.</p>
 
 <form class="form-container" method="post" action="">
 	<?php if (isset($prompt['hits'])): ?>
@@ -144,6 +143,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 </fieldset>
 
 	<fieldset>
+
 		<?php if ($prompt['history']): ?>
 		<details>
 			<summary>Prompt Historie anzeigen</summary>
@@ -158,7 +158,6 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 		</details>
 		<?php endif ?>
 	</fieldset>
-
 
 	<button class="submit">Angaben speichern</button>&ensp;
 	<a class="button light" href="/settings">zurück zur Übersicht</a>

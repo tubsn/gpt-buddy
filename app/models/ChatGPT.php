@@ -169,6 +169,10 @@ class ChatGPT
 			}
 		}
 
+		// Replace {{{ Tripple Mustache }}} logic in Input
+		$question = $this->prompts->replace_random_tokens($question);
+		$question = $this->prompts->replace_tokens($question);
+
 		return $question;
 
 	}
