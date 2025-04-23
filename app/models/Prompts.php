@@ -176,6 +176,7 @@ class Prompts extends Model
 	public function apply_post_processing($prompt) {
 		$prompt['content'] = $this->replace_random_tokens($prompt['content']);
 		$prompt['content'] = $this->replace_tokens($prompt['content']);
+		$prompt['content'] = $this->replace_ignore_tokens($prompt['content']);
 		return $prompt;
 	}
 
@@ -189,6 +190,11 @@ class Prompts extends Model
 			}, $content);
 		}
 
+		return $content;
+	}
+
+	public function replace_ignore_tokens($content) {
+		$content = preg_replace('/\{\{\{\#.*?\#\}\}\}/s', '', $content);
 		return $content;
 	}
 
