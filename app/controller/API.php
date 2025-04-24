@@ -46,18 +46,20 @@ class API extends Controller {
 
 
 	public function prompt($id) {
-		$jwt = new JWTAuth;
-		$jwt->authenticate_via_header();
-
-		$prompt = $this->Prompts->get($id);
+		if (!Auth::logged_in() && !Auth::valid_ip()) {
+			$jwt = new JWTAuth;
+			$jwt->authenticate_via_header();
+		}
+		$prompt = $this->Prompts->get_for_api($id);
 		if (empty($prompt)) {throw new \Exception("Prompt not Found", 404);}
 		echo $this->view->json($prompt);
 	}
 
 	public function prompts() {
-		$jwt = new JWTAuth;
-		$jwt->authenticate_via_header();
-		
+		if (!Auth::logged_in() && !Auth::valid_ip()) {
+			$jwt = new JWTAuth;
+			$jwt->authenticate_via_header();
+		}
 		$prompts = $this->Prompts->all();
 		if (empty($prompts)) {throw new \Exception("No Prompts Found", 404);}
 		echo $this->view->json($prompts);

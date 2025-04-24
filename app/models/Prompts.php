@@ -14,16 +14,24 @@ class Prompts extends Model
 		$this->db->table = 'prompts';
 		$this->db->orderby = 'title';
 	}
-
-	public function get_and_track($id = null) {
+	
+	public function get_and_track($id = null, $tracking = true) {
 		if ($id == 'default') {return ['content' => DEFAULTPROMPT];}
 		if ($id == 'unbiased') {return;}
 		$prompt = $this->get($id);
+		if (empty($prompt)) {throw new \Exception("Prompt not Found", 404);}
+		
 		$prompt = $this->apply_callback($prompt);
 		$prompt = $this->apply_knowledge($prompt);
-		$prompt = $this->apply_post_processing($prompt);		
-		$this->increase_hits($id);
+		$prompt = $this->apply_post_processing($prompt);	
+		if ($tracking) {$this->increase_hits($id);}
 		return $prompt;
+	}
+
+	public function get_for_api($id = null) {
+		$prompt =  $this->get_and_track($id, false);
+		unset($prompt['history']);
+		return $prompt; 
 	}
 
 	public function get_flat_content($id) {
