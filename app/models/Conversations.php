@@ -95,6 +95,7 @@ class Conversations
 	public function remove_entry($id, $index) {
 		$data = $this->get($id);
 		unset($data['conversation'][$index]);
+		$data['conversation'] = array_values($data['conversation']); // OpenAI Requires sequential indexes 
 		$this->update($data, $id);
 	}
 

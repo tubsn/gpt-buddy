@@ -363,9 +363,9 @@ methods: {
 	copyHistoryToClipboard(index) {
 		let historyData = JSON.parse(JSON.stringify(this.history));
 
-		if (index) {
+		if (!index.target) {
 			navigator.clipboard.writeText(historyData[index].content)
-			return			
+			return	
 		}
 
 		let history = '';
@@ -374,6 +374,20 @@ methods: {
 		}) 
 		navigator.clipboard.writeText(history);
 	},
+
+	copyHistoryResultToClipboard() {
+		let historyData = JSON.parse(JSON.stringify(this.history));
+
+		let history = '';
+		historyData.forEach(entry => {
+			if (entry.role == 'assistant') {
+				history = history + `${entry.content}\n\n`
+			}
+		}) 
+		navigator.clipboard.writeText(history);
+	},
+
+
 
 	copyOutputToClipboard() {
 		let element = document.querySelector('.gpt-output .io-textarea')
@@ -583,6 +597,7 @@ methods: {
 		if (!response.ok) {return}
 
 		let json = await response.json()
+
 		this.history = json
 	},
 
