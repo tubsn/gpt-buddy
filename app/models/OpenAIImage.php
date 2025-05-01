@@ -11,27 +11,41 @@ class OpenAIImage
 
 	public function fetch($prompt, $options = null) {
 
-		$resolution = '1792x1024';
-		$quality = 'standard';
-		$style = 'vivid';
+		$resolution = '1536x1024';
+		$quality = 'medium';
+		$background = 'auto';
+		$image = '';
 
 		if ($options) {
 			if (isset($options['resolution'])) {$resolution = $options['resolution'] ?? $resolution;}
 			if (isset($options['quality'])) {$quality = $options['quality'] ?? $quality;}
-			if (isset($options['style'])) {$style = $options['style'] ?? $style;}
+			if (isset($options['background'])) {$background = $options['background'] ?? $background;}
+			if (isset($options['image'])) {$image = $options['image'] ?? $image;}
 		}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 
-		$complete = $open_ai->image([
-			'model' => 'dall-e-3',
+		$generatorOptions = [
+			'model' => 'gpt-image-1',
 			'prompt' => $prompt,
 			'n' => 1, // Number of Images
 			'quality' => $quality,
-			'style' => $style,
+			'moderation' => 'low',
+			'background' => $background,
 			'size' => $resolution,
-			'response_format' => 'b64_json',
-		]);
+		];
+
+		if ($image) {
+
+			$image = $this->sanitize_image_url($image);
+			//dd($image);
+
+			$generatorOptions['image'] = curl_file_create($image, 'image/jpeg');
+
+			$complete = $open_ai->imageEdit($generatorOptions);
+		} else {
+			$complete = $open_ai->image($generatorOptions);
+		}
 
 		$out = json_decode($complete,1);
 
@@ -44,6 +58,17 @@ class OpenAIImage
 
 	}
 
+	private function sanitize_image_url($url) {
+		if (!preg_match('~^https?://~', $url)) {
+			return PUBLICFOLDER . ltrim($url, '/');
+		}
+
+		if (strpos($url, '.localhost') !== false) {
+			$parsed = parse_url($url, PHP_URL_PATH);
+			return PUBLICFOLDER . ltrim($parsed, '/');
+		}
+		return $url;
+	}
 
 	private function save_file($base64SJson, $prompt) {
 		$imagedata = base64_decode($base64SJson);

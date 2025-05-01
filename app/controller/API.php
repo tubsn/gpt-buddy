@@ -31,7 +31,8 @@ class API extends Controller {
 		$prompt = $_POST['question'];
 		$options['resolution'] = $_POST['resolution'] ?? null;
 		$options['quality'] = $_POST['quality'] ?? null;
-		$options['style'] = $_POST['style'] ?? null;
+		$options['background'] = $_POST['background'] ?? null;
+		$options['image'] = $_POST['image'] ?? null;
 		
 		try {
 			$output = $this->OpenAIImage->fetch($prompt, $options);

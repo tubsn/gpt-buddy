@@ -187,7 +187,7 @@ class ChatGPT
 		return $visionData;
 	}
 
-	private function add($message, $role = 'user', $prepend = false) {
+	public function add($message, $role = 'user', $prepend = false) {
 		$allowedRoles = ['user', 'system', 'assistant', 'developer'];
 		if (!in_array($role, $allowedRoles)) {throw new \Exception("Role not allowed", 404);}
 		if ($prepend) {
@@ -244,11 +244,11 @@ class ChatGPT
 	}
 
 	// Direct GPT Question with Static Response as Json
-	public function direct($question, $systemPrompt = null) {
+	public function direct($question = null, $systemPrompt = null) {
 
 		if ($systemPrompt) {$this->prepend($systemPrompt, 'system');}
+		if ($question) {$this->add($question);}
 
-		$this->add($question);
 		$this->count_tokens($this->conversation);
 
 		$responseFormat = ['type' => 'text'];
@@ -308,7 +308,7 @@ class ChatGPT
 		}
 
 		// Streaming not Supported for some Models
-		if (str_contains($this->model, '-search') || $this->model == 'o3') {
+		if (str_contains($this->model, '-search')) {
 			$options['stream'] = false;
 			$chat = $open_ai->chat($options);			
 			$this->stream_to_direct($chat);

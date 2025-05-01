@@ -19,9 +19,10 @@ data() {
 		history: '', // Conversion History
 		historyExpanded: true,
 		conversationID: null,
-		resolution: '1792x1024',
-		quality: 'standard',
-		style: 'vivid',
+		resolution: '1536x1024',
+		quality: 'medium',
+		background: 'auto',
+		image: '',
 		loading: false,
 		eventSource: null,
 		responseSeconds: 0,
@@ -541,6 +542,8 @@ methods: {
 		formData.append('question', this.input)
 		formData.append('resolution', this.resolution)
 		formData.append('quality', this.quality)
+		formData.append('background', this.background)
+		formData.append('image', this.image)
 
 		let response = await fetch(apiurl + '/image/generate', {method: "POST", body: formData})
 		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
@@ -555,6 +558,7 @@ methods: {
 		if (json.error) {this.showError(json.error); return}
 
 		this.output = json
+		this.image = json
 		this.loading = false
 
 	},

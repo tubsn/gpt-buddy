@@ -2,8 +2,11 @@
 
 <fieldset class="image-generator">
 
-<div style="display:flex;  align-items: center;">
-	<button style="flex-grow: 1; height:90%;" @click="generateImage()" tabindex="2" type="button">Bild<br>generieren</button>
+<div style="display:flex; gap:0.5em; align-items: center;">
+	<button style="flex-grow: 1; height:90%;" @click="generateImage()" tabindex="2" type="button">Bild<br>
+
+		{{ image ? 'verbessern' : 'generieren'}}
+	</button>
 <!--	<button style="flex-grow: .3;  height:90%; " class="light mlsmall del-historie" type="button" @click="wipeInput()" :disabled="loading">Eingabe<br>löschen</button>-->
 </div>
 
@@ -13,6 +16,11 @@
 	</label>
 
 
+	<div class="flex" style="gap:0.5em; align-items:baseline">
+	<input  type="text" name="image" v-model="image" placeholder="Um ein bestehendes Bild zu verbessern, Bild auf diese Fläche ziehen!">
+	<button type="button" class="light nowrap" @click="this.image = ''">Verknüpfung aufheben</button>
+	</div>
+
 </div>
 
 <div>
@@ -21,21 +29,23 @@
 
 	<label>Format/Qualität
 	<select tabindex="3" v-model="resolution">
-		<option value="1792x1024">Querformat</option>
-		<option value="1024x1792">Hochformat</option>
+		<option value="1536x1024">Querformat</option>
+		<option value="1024x1536">Hochformat</option>
 		<option value="1024x1024">Quadratisch</option>
 	</select>
 	<select tabindex="4" v-model="quality">
-		<option value="standard">Normale Qualität</option>
-		<option value="hd">Hohe Qualität</option>
+		<option value="low">niedrige Qualität</option>
+		<option value="medium">normale Qualität</option>
+		<option value="high">hohe Qualität</option>
 	</select>
 
 	</label>
 
-	<label>Farbschema
-	<select tabindex="5" v-model="style">
-		<option value="vivid">Belebt und Bunt</option>
-		<option value="natural">Neutral</option>
+	<label>Hintergrund
+	<select tabindex="5" v-model="background">
+		<option value="auto">Auto</option>
+		<option value="transparent">transparent</option>
+		<option value="opaque">gefüllt</option>
 	</select>
 	</label>
 
