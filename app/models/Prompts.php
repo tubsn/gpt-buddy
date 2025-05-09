@@ -106,7 +106,7 @@ class Prompts extends Model
 
 	public function list_all() {
 		$table = $this->db->table;
-		$SQLstatement = $this->db->connection->prepare("SELECT * FROM $table ORDER BY `category`");
+		$SQLstatement = $this->db->connection->prepare("SELECT * FROM $table ORDER BY `category`, `title`");
 		$SQLstatement->execute();
 		$output = $SQLstatement->fetchall();
 		return $output;
