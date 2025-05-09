@@ -14,14 +14,7 @@ class API extends Controller {
 	}
 
 	public function stream($model, $id) {
-
-		$apimodel = AIMODELS[$model]['apiname'] ?? AIMODELS[0]['apiname'] ?? 'gpt-4o';
-		$this->ChatGPT->model = $apimodel;
-
-		if (isset(AIMODELS[$model]['reasoning'])) {
-			$this->ChatGPT->reasoning = AIMODELS[$model]['reasoning'];
-		}
-
+		$this->ChatGPT->model = AIMODELS[$model] ?? 'gpt-4.1';
 		header('Content-type: text/event-stream');
 		header('Cache-Control: no-cache');
 		$response = $this->ChatGPT->stream($id);

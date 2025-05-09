@@ -20,9 +20,11 @@ class ChatGPT
 	private $models = AIMODELS;
 
 	public $model = AIMODELS[0] ?? 'gpt-4.1';
+	private $modelMeta = [];
 
 	public $forceGPT4 = false;
 	public $jsonMode = false;
+	public $azureMode = false;	
 	public $reasoning = 'low';
 
 	public $conversationID;
@@ -69,6 +71,16 @@ class ChatGPT
 		if ($options['payload']) {$this->payload = $options['payload'];}
 	}
 
+	private function resolve_model() {
+		
+		if (!is_array($this->model)) {return;}
+		$this->modelMeta = $this->model;
+
+		$this->model = $this->modelMeta['apiname'] ?? 'gpt-41';
+		$this->reasoning = $this->modelMeta['reasoning'] ?? 'low';
+		if (strtolower($this->modelMeta['provider']) == 'azure') {$this->azureMode = true;}
+
+	}
 
 	private function fetch($question) {
 
@@ -246,6 +258,8 @@ class ChatGPT
 	// Direct GPT Question with Static Response as Json
 	public function direct($question = null, $systemPrompt = null) {
 
+		$this->resolve_model();
+
 		if ($systemPrompt) {$this->prepend($systemPrompt, 'system');}
 		if ($question) {$this->add($question);}
 
@@ -255,7 +269,10 @@ class ChatGPT
 		if ($this->jsonMode) {$responseFormat = ['type' => 'json_object'];}
 
 		$open_ai = new OpenAi(CHATGPTKEY);
-		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
+		if ($this->azureMode == true) {
+			$open_ai = new AzureOpenAIClient($this->modelMeta);
+			$this->model = 'AZURE';
+		}
 
 		$options = [
 			'model' => $this->model,
@@ -285,11 +302,11 @@ class ChatGPT
 	// Streamed GPT Response
 	public function stream($id) {
 
+		$this->resolve_model();
 		$this->load_conversation($id);
 		$this->count_tokens();
 
 		$open_ai = new OpenAi(CHATGPTKEY);
-		if (defined('CHATGPTBASEURL')) {$open_ai->setBaseURL(CHATGPTBASEURL);}
 
 		$options = [
 			'model' => $this->model,
@@ -313,6 +330,11 @@ class ChatGPT
 			$chat = $open_ai->chat($options);			
 			$this->stream_to_direct($chat);
 			exit;	
+		}
+
+		if ($this->azureMode == true) {
+			$open_ai = new AzureOpenAIClient($this->modelMeta);
+			$this->model = 'AZURE';
 		}
 
 		$open_ai->chat($options, function ($curl_info, $data) {
