@@ -29,7 +29,7 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 	<?php foreach ($knowledges as $knowledge): ?>
 	<?php  
 		if ($knowledge['used_by']) {$knowledge['used_by'] = explode(';',$knowledge['used_by']);}
-		else {$knowledge['used_by'] = [];}
+		else {$knowledge['used_by'] = [''];}
 	?>
 		<tr>
 			<td><?=$knowledge['id']?></td>
@@ -38,7 +38,11 @@ width:18px; height:18px; margin-left:0.3em; top:3px; background-image:url('/styl
 			<td><?php if (empty($knowledge['description'])): ?>-<?php endif ?>
 			<?=$knowledge['description'] ?? '...'?></td>
 			<td class="narrow" style="max-width:250px; overflow:hidden; white-space: nowrap;"><?php foreach ($knowledge['used_by'] as $usedBy): ?>
+				<?php if ($usedBy): ?>
 				<small style="background-color:var(--primary-highlight); padding:0px 2px;border-radius:0.2em;"><?=$usedBy?></small>
+				<?php else: ?>
+				-
+				<?php endif ?>
 			<?php endforeach ?></td>
 			<td><?=$knowledge['edited']?></td>
 			<td class="text-right">
