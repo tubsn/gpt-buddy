@@ -51,7 +51,19 @@ class Knowledge extends Model
 		return $knowledge['content'];
 	}
 
-
+	public function list_with_usage() {
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT *,
+			(SELECT GROUP_CONCAT(prompts.title SEPARATOR ';') FROM prompts
+    		WHERE FIND_IN_SET(knowledge.title, REPLACE(TRIM(prompts.callback), ' ', ','))
+  			) AS used_by
+			FROM knowledge"
+		);
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetchall();
+		return $output;
+	}
 
 	public function distinct() {
 		$table = $this->db->table;

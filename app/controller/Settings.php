@@ -152,7 +152,7 @@ class Settings extends Controller {
 	}
 
 	public function knowledges() {
-		$this->view->knowledges = $this->Knowledge->all();
+		$this->view->knowledges = $this->Knowledge->list_with_usage();
 		$this->view->title = 'Knowledge Informationen';
 		$this->view->referer('/settings/knowledge');
 		$this->view->render('admin/list-knowledge');
