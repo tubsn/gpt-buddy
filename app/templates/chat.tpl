@@ -21,7 +21,7 @@
 		<?php if (auth_rights('chatgpt')): ?><a v-if="!isNaN(action)" :href="'/settings/'+action">(Prompt editieren)</a><?php endif ?>
 
 		<select v-model="action" ref="selectElement" name="action" @change="wipeHistory(); setPromptSettings();">
-			<?php if (!$category['hideDefault']): ?>
+			<?php if (!isset($category['hideDefault']) or !$category['hideDefault']): ?>
 			<option value="default">Standard Chat</option>
 			<?php endif ?>
 			<?php if ($category['promptless'] ?? false): ?>
