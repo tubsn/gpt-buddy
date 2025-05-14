@@ -167,9 +167,13 @@ class ChatGPT
 
 			$postProcessPrompt = $this->prompts->get_and_track($prompt['postprocess']);
 			if ($postProcessPrompt) {
+
+				$forcedModel = $postProcessPrompt['model'] ?? null;
+				if ($this->models[$forcedModel]) {
+					$this->model = $this->models[$forcedModel]['apiname'] ?? $this->model;
+				}
 				$question = $postProcessPrompt['content'];
 			}
-
 			// Knowledgebases should not be processed twice with postprocess Prompts
 			unset($prompt['knowledges']);
 
