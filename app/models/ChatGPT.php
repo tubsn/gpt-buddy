@@ -141,7 +141,7 @@ class ChatGPT
 		if ($prompt) {$this->add($prompt['content'], 'system');}
 
 		if (isset($prompt['format']) && $prompt['format']) {
-			$this->add('Nutze Markdown für Formatierungen', 'system');
+			$this->add('Nutze Markdown für Formatierungen ohne den ```markdown hinweis', 'system');
 		}
 
 		if (isset($prompt['withdate']) && $prompt['withdate']) {
