@@ -63,7 +63,15 @@ class API extends Controller {
 		$jwt = new JWTAuth;
 		$remoteAccessURL = null;
 		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
-		$jwt->authenticate_via_header($remoteAccessURL);
+		
+		try {$jwt->authenticate_via_header($remoteAccessURL);}
+		catch (\Exception $e) {
+			$errorMessage = $e->getMessage();
+			$errorCode = $e->getCode();
+			http_response_code($errorCode);
+			$this->view->json($errorMessage);
+			die;
+		}
 
 		$data = $_POST['data'] ?? null;
 
@@ -84,8 +92,11 @@ class API extends Controller {
 			throw new \Exception("Sie haben keine Berechtigung diese Seite aufzurufen", 403);
 		}
 
+		$remoteAccessURL = null;
+		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
+
 		$jwt = new JWTAuth;
-		$token = $jwt->create_token(null, null, '+1year');
+		$token = $jwt->create_token(null, $remoteAccessURL, '+5years');
 		echo ($token);
 	}
 
