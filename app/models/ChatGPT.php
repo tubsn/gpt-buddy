@@ -98,7 +98,7 @@ class ChatGPT
 
 		if ($this->conversationID) {
 			$conversationData = $this->conversations->get($this->conversationID) ?? [];
-			$this->conversation = $conversationData['conversation'];
+			$this->conversation = $conversationData['conversation'] ?? [];
 			
 			if (isset($conversationData['temperature'])) {
 				$this->temperature = $conversationData['temperature'];
