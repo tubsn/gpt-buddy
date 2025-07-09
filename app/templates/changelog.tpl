@@ -14,6 +14,10 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>05. Juni 2025 - Andocken des neuen Bildgenerators</h3>
+<p>Im Bildgenerator steht jetzt das "gpt-image-1"-Modell zur Verfügung. Es verbessert die Qualität der erstellten Bilder erheblich und kann bereits bestehende Bilder weiterbearbeiten. Achtung: Zur Nutzung dieses Modells ist es notwendig, sein Unternehmen bei OpenAI zu authentifizieren (https://platform.openai.com/settings/organization/general).</p>
+
+
 <h3>21. April 2025 - Zufallsgenerator und Datum in Prompts und Eingaben</h3>
 <p>Im Prompting steht jetzt eine einfache Templatesprache mit 3fach Mustache-Logik {{{ TOKEN }}} zur Verfügung.
 Daruch lassen sich z.B. über {{{ rot | grün | blau }}} Per Zufall entweder rot, grün oder blau ausgeben.
