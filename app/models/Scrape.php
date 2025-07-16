@@ -22,6 +22,7 @@ class Scrape
 		}
 		
 		if (empty($htmlData)) {return 'Kein Inhalt erkannt';}
+		if ($this->is_json($htmlData)) {return $htmlData;}
 
 		$doc = new DOMDocument();
 		$doc->loadHTML($htmlData);
@@ -73,12 +74,21 @@ class Scrape
 
 		if (!$this->validate($url)) {throw new Exception("URL to Scrape has Invalid format", );}
 
+		$options = [
+			'headers' => ['Accept-Charset' => 'utf-8']
+		];
+
 		$httpClient = new Client();
-		$response = $httpClient->get($url);
-		$htmlString = (string) $response->getBody();
+		$response = $httpClient->get($url, $options);
+		$htmlString = $response->getBody();
 
 		return $htmlString;
 
+	}
+
+	private function is_json($string) {
+		json_decode($string);
+		return (json_last_error() === JSON_ERROR_NONE);
 	}
 
 	private function validate($url) {
