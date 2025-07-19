@@ -22,7 +22,9 @@ class Scrape
 		}
 		
 		if (empty($htmlData)) {return 'Kein Inhalt erkannt';}
-		if ($this->is_json($htmlData)) {return $htmlData;}
+		if (!$this->is_html($htmlData)) {return $htmlData;}
+
+		$htmlData = $this->force_utf8($htmlData);
 
 		$doc = new DOMDocument();
 		$doc->loadHTML($htmlData);
@@ -66,6 +68,21 @@ class Scrape
 		return $html;
 	}
 
+	private function force_utf8($html) {
+		if (stripos($html, '<meta charset=') === false) {
+			if (stripos($html, '<head>') !== false) {
+				$html = preg_replace(
+					'/<head>/i',
+					'<head><meta charset="UTF-8">',
+					$html,
+					1
+				);
+			}
+			else {$html = '<meta charset="UTF-8">' . $html;}
+		}
+		return $html;
+	}
+
 	private function retrieve_url_data($url) {
 
 		if (!preg_match('/^https?:\/\//', $url)) {
@@ -84,6 +101,10 @@ class Scrape
 
 		return $htmlString;
 
+	}
+
+	private function is_html($string) {
+		return preg_match('/<\s*html.*?>/i', $string) === 1;
 	}
 
 	private function is_json($string) {
