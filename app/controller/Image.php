@@ -9,10 +9,10 @@ use flundr\utility\Pager;
 class Image extends Controller {
 
 	public function __construct() {
-		$this->view('DefaultLayout');
+		$this->view('ImageGeneratorLayout');
 		$this->view->interface = 'default';
 		$this->view->title = 'ChatGPT Assistent';
-		$this->models('ChatGPTApi,Prompts,OpenAIImage,Images');
+		$this->models('ChatGPTApi,Prompts,OpenAIImage,Images,FileReader');
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 	}
 
@@ -28,6 +28,14 @@ class Image extends Controller {
 		$this->view->lastimages = $files;
 		$this->view->title = 'Bildgenerator';
 		$this->view->render('image-generator/index');
+	}
+
+	public function upload_image() {
+
+		$uploadinfo = $this->FileReader->import($_FILES['imagedata']);
+		$array = json_decode($uploadinfo,true);
+		$this->view->json($array);
+
 	}
 
 	public function delete() {

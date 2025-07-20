@@ -17,13 +17,18 @@
 
 
 	<div class="flex" style="gap:0.5em; align-items:baseline">
-	<input  type="text" name="image" v-model="image" placeholder="Um ein bestehendes Bild zu verbessern, Bild auf diese Fläche ziehen!">
-	<button type="button" class="light nowrap" @click="this.image = ''">Verknüpfung aufheben</button>
-	</div>
 
+		<div id="drop-area" class="upload-drop-area" :class="{'loading' : uploading}">
+		<input type="file" id="fileElem" accept="image/*">
+		<input type="text" style="cursor:pointer;" name="image" v-model="image" id="imageUrl" placeholder="Bild hochladen oder auf diese Fläche ziehen zum verbessern.">
+		</div>
+
+<button type="button" class="light nowrap" @click="this.image = ''">Verknüpfung aufheben</button>
+
+
+	</div>
 </div>
 
-<div>
 <div class="image-options">
 
 
@@ -38,7 +43,6 @@
 		<option value="medium">normale Qualität</option>
 		<option value="high">hohe Qualität</option>
 	</select>
-
 	</label>
 
 	<label>Hintergrund
@@ -49,7 +53,7 @@
 	</select>
 	</label>
 
-	</div>
+	<div>
 		<div class="fright small">
 			<span class="ml loading-wrapper" v-if="loading">
 				<div class="loadIndicator"><div></div><div></div><div></div></div> generiere - abbrechen <b>[ESC]</b>
@@ -59,5 +63,7 @@
 		</div>
 	</div>
 </fieldset>
+
+
 
 </form>

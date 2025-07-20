@@ -25,6 +25,7 @@ $routes->get('/conversation/{id}/pop/{index}', 'Chat@remove_conversation_entry')
 $routes->get('/image', 'Image@index');
 $routes->get('/image/archive', 'Image@archive');
 $routes->post('/image/generate', 'API@generate_image');
+$routes->post('/image/upload', 'Image@upload_image');
 $routes->post('/image/delete', 'Image@delete');
 
 // TTS

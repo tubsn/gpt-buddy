@@ -1,4 +1,4 @@
-<main v-cloak id="gptInterface" data-portal="<?=PORTAL?>">
+<main v-cloak id="imageGenerator" data-portal="<?=PORTAL?>">
 <!--
 <div class="fun-fact hide-mobile" style="position:relative; top:-20px;">
 Bitte sparsam mit dem Bildgenerator umgehen.<br>Die Generierung kostet zwischen 4 und 12 Cent

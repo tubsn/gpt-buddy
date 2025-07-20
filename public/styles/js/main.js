@@ -19,10 +19,6 @@ data() {
 		history: '', // Conversion History
 		historyExpanded: true,
 		conversationID: null,
-		resolution: '1536x1024',
-		quality: 'medium',
-		background: 'auto',
-		image: '',
 		loading: false,
 		eventSource: null,
 		responseSeconds: 0,
@@ -523,43 +519,6 @@ methods: {
 				this.removeLastHistoryEntry()
 			}
 		});
-
-	},
-
-	async generateImage() {
-
-		this.loading = true
-		this.resetMetaInfo()
-		this.startClock()
-
-		let apiurl = await this.bestServer()
-
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape") {this.loading = false}
-		});
-
-		let formData = new FormData()
-		formData.append('question', this.input)
-		formData.append('resolution', this.resolution)
-		formData.append('quality', this.quality)
-		formData.append('background', this.background)
-		formData.append('image', this.image)
-
-		let response = await fetch(apiurl + '/image/generate', {method: "POST", body: formData})
-		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
-
-		// Own PHP Errors
-		response = await response.text()
-		let json // no Idea why but it has to be defined first
-		try {json = JSON.parse(response);}
-		catch (error) {this.showError('PHP Error: ' + response); return}
-	
-		// PHP Api Handling Errors
-		if (json.error) {this.showError(json.error); return}
-
-		this.output = json
-		this.image = json
-		this.loading = false
 
 	},
 
