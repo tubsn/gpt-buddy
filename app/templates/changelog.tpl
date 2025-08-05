@@ -14,6 +14,10 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>5. August 2025 - Einführung von Rechtsklick Menu</h3>
+<p>Im Eingabe- sowie im Ausgabebereich steht jetzt ein Dropdown-Menü zur Verfügung, das durch Rechtsklick aktiviert werden kann. Das Menü ist so konzipiert, dass es flexibel erweitert werden kann.</p>
+
+
 <h3>20. Juli 2025 - Uploadfunktion für Bildgenerator</h3>
 <p>Es ist jetzt möglich eigene Bilder für die Bildverbesserung hochzuladen.</p>
 

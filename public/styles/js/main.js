@@ -31,6 +31,10 @@ data() {
 	}
 },
 
+components: {
+	'dropdown': VueDropDown,
+},
+
 computed: {
 	responsetime() {
 		if (this.responseSeconds <= 0) {return ''}
@@ -284,7 +288,8 @@ methods: {
 
 	wipeInput() {
 		this.input = ''
-		this.payload = ''		
+		this.payload = ''
+		this.errormessages = ''
 	},
 
 	wipeHistory() {
@@ -392,6 +397,12 @@ methods: {
 		navigator.clipboard.writeText(text);
 	},
 
+	copyInputToClipboard() {
+		let element = document.querySelector('.user-input .io-textarea')
+		let text = element.innerText || element.value
+		navigator.clipboard.writeText(text);
+	},
+
 	copyToInput(event) {
 		this.input = event.target.innerText
 	},
@@ -455,7 +466,7 @@ methods: {
 		this.loading = true
 		this.resetMetaInfo()
 		this.startClock()
-		let element = event.target
+		let element = event?.target || null
 
 		let formData = new FormData()
 		formData.append('question', this.input)
@@ -463,7 +474,7 @@ methods: {
 		formData.append('action', this.action)
 		formData.append('conversationID', this.conversationID)
 
-		if (element.dataset.directId) {formData.append('directPromptID', element.dataset.directId)}
+		if (element?.dataset.directId) {formData.append('directPromptID', element.dataset.directId)}
 
 		let response = await fetch('/ask', {method: "POST", body: formData})
 		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
@@ -562,6 +573,20 @@ methods: {
 		let json = await response.json()
 
 		this.history = json
+	},
+
+	async redoLastStep() {
+		
+		if (!this.conversationID) {return}
+	
+		let response = await fetch('/conversation/' + this.conversationID + '/pop/lasttwo')
+		if (!response.ok) {return}
+
+		let json = await response.json()
+
+		this.history = json
+		this.ask()
+		
 	},
 
 	initCopyPaste() {

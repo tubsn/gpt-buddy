@@ -19,6 +19,7 @@ class DefaultLayout extends htmlView {
 	public $framework = [
 		'/styles/js/vue34.min.js',
 		'/styles/flundr/components/fl-dialog.js',
+		'/styles/js/dropdown-menu.js',
 		'/styles/js/marked.min.js',
 		'//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js',
 	];

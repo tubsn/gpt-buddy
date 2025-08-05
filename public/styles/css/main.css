@@ -340,6 +340,26 @@ animation: menu-scroll-in 0.1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;}
 @media only screen and (max-width: 960px) {.main-logo {display:none;} }
 
 
+/* Dropdown Popup Menu */
+.dropdown-menu {display:none; position:fixed; font-size:0.8em;}
+.dropdown-menu.open {display:block;}
+
+.dropdown-menu {background-color: var(--grey); padding:0.2em; border-radius:0.2em; border: 1px solid  var(--primary)}
+.dropdown-menu div {padding:.2em .6em; position:relative; cursor:pointer;}
+.dropdown-menu div:hover {background-color:#ffffff99;}
+
+.dropdown-menu {
+box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.dropdown-menu div:after {content:''; display:block; width:100%; position:absolute; left: 0; bottom:-1px; z-index:9}
+.dropdown-menu div:after {border-bottom:1px dashed var(--primary)}
+.dropdown-menu div:last-child {padding-bottom:0.1em}
+.dropdown-menu div:last-child:after {display:none;border:none}
+
+.dropdown-menu div.danger:hover {color:var(--warning); background-color:#ff000022;}
+.dropdown-menu div.highlight:hover {color:var(--primary); background-color:#ffffff;}
+
 /* Table Sort */
 table.js-sortable th {cursor:pointer;}
 table.js-sortable th.dir-u {background-image: linear-gradient(to top, #0d0d0d 0%, #242424 82%, #6dae55 82%, #a7ce80 100%) !important;}

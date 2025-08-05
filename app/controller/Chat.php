@@ -134,6 +134,11 @@ class Chat extends Controller {
 		$this->view->json($this->Conversations->get($id)['conversation']);
 	}
 
+	public function remove_last_conversation_generation($id) {
+		$this->Conversations->remove_last_generation($id);
+		$this->view->json($this->Conversations->get($id)['conversation']);
+	}
+
 	public function remove_conversation_entry($id, $index) {
 		$this->Conversations->remove_entry($id, $index);
 		$this->view->json($this->Conversations->get($id)['conversation']);

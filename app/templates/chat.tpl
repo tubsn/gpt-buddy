@@ -154,5 +154,5 @@
 	</div>
 
 </details>
-
+<?php include tpl('navigation/drop-down-menu')?>
 </main>

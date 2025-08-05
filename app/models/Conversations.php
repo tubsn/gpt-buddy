@@ -92,6 +92,28 @@ class Conversations
 		$this->update($data, $id);
 	}
 
+	public function remove_last_generation($id) {
+		$data = $this->get($id);
+		//array_pop($data['conversation']);
+
+		$conversation = $data['conversation'];
+
+		$lastUser = $lastAssistant = null;
+		foreach (array_reverse($conversation, true) as $k => $v) {
+			if ($lastUser === null && $v['role'] === 'user') $lastUser = $k;
+			if ($lastAssistant === null && $v['role'] === 'assistant') $lastAssistant = $k;
+			if ($lastUser !== null && $lastAssistant !== null) break;
+		}
+		if ($lastUser !== null) unset($conversation[$lastUser]);
+		if ($lastAssistant !== null) unset($conversation[$lastAssistant]);
+		// Optionale Neu-Indexierung
+		$conversation = array_values($conversation);
+
+		$data['conversation'] = $conversation;
+
+		$this->update($data, $id);
+	}
+
 	public function remove_entry($id, $index) {
 		$data = $this->get($id);
 		unset($data['conversation'][$index]);
