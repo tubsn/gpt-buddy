@@ -14,6 +14,7 @@ class Knowledge extends Model
 
 	public function run($knowledgeTitles, $prompt = null) {
 
+		if (empty($knowledgeTitles)) {return $prompt;}
 		$knowledgeTitles = explode_and_trim(',', $knowledgeTitles);
 
 		$content = [];
