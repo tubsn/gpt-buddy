@@ -52,7 +52,7 @@ computed: {
 	},
 
 	advancedModel() {
-		if (this.model.includes('o3') || this.model.includes('o4')) {return true;}
+		if (this.model.toLowerCase().includes('gpt-5') || this.model.includes('o3') || this.model.includes('o4')) {return true;}
 	}
 },
 

@@ -41,6 +41,8 @@ class ChatGPT
 	public $tokens = 0;
 	public $lastResponse;
 
+	private $sseBuffer = '';
+
 	public function __construct() {
 		$this->prompts = new Prompts;
 		$this->conversations = new Conversations;
@@ -319,7 +321,7 @@ class ChatGPT
 		];
 
 		// Reasoning Models need Reasoning
-		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
+		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
 			$options['reasoning_effort'] = $this->reasoning;
 		}
 
@@ -430,39 +432,64 @@ class ChatGPT
 
 
 	private function handle_stream_set($raw) {
+		$this->sseBuffer .= $raw;
 
-		// Stop when Stream sends DONE
-		ignore_user_abort(false);
+		while (($pos = strpos($this->sseBuffer, "\n\n")) !== false) {
+			$event = substr($this->sseBuffer, 0, $pos);
+			$this->sseBuffer = substr($this->sseBuffer, $pos + 2);
 
-		// extract only the Content in the Stream 
-		// which sadly isn't always a perfect json :/
-		$content = $this->extract_content_as_json_string($raw);
+			$lines = preg_split("/\r?\n/", $event);
+			$dataLines = [];
+			foreach ($lines as $line) {
+				if (stripos($line, 'data:') === 0) {
+					$dataLines[] = ltrim(substr($line, 5));
+				}
+			}
+			if (!$dataLines) { continue; }
 
-		foreach ($content as $str) {
+			$payload = implode("\n", $dataLines);
 
-			$array = json_decode($str,1);
-			$content = $array['content'] ?? '';
+			if ($payload === '[DONE]') {
+				echo "event: stop\n";
+				echo "data: stopped\n\n";
+				echo str_pad('',4096)."\n";
+				ob_flush(); flush();
+				return;
+			}
 
-			$this->lastResponse .= $content;
-			$content = json_encode($content);
-		
-			echo 'data: ' . $content . "\n\n";
-			echo str_pad('',4096)."\n";
+			$json = json_decode($payload, true);
+			if ($json === null) {
+				// unvollständiges JSON -> zurück in den Puffer
+				$this->sseBuffer = $payload . "\n\n" . $this->sseBuffer;
+				continue;
+			}
 
-			ob_flush();
-			flush();
+			// OpenAI Chat Completions delta
+			$delta = $json['choices'][0]['delta']['content'] ?? '';
+			// Fallbacks (legacy / Responses API Varianten)
+			if ($delta === '' && isset($json['choices'][0]['text'])) {
+				$delta = $json['choices'][0]['text'];
+			}
+			if ($delta === '' && isset($json['delta'])) {
+				$delta = $json['delta'];
+			}
 
+			if ($delta !== '') {
+				$this->lastResponse .= $delta;
+				echo 'data: ' . json_encode($delta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+				echo str_pad('',4096)."\n";
+				ob_flush(); flush();
+			}
+
+			// Optional: Finish-Reason beachten
+			if (($json['choices'][0]['finish_reason'] ?? null) !== null) {
+				echo "event: stop\n";
+				echo "data: stopped\n\n";
+				echo str_pad('',4096)."\n";
+				ob_flush(); flush();
+				return;
+			}
 		}
-
-		if (str_contains($raw, 'data: [DONE]')) {
-			echo "event: stop\n";
-			echo "data: stopped\n\n";
-			echo str_pad('',4096)."\n";
-			ob_flush();
-			flush();
-			return;
-		}
-
 	}
 
 	private function extract_content_as_json_string($string) {

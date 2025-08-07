@@ -14,6 +14,12 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+
+<h3>8. August 2025 - GPT-5 Model Release</h3>
+<p>Mit GPT-5 steht wieder ein neues Modell zur Verfügung. Es kombiniert Reasoning-Fähigkeiten mit den gewohnten 4.1-Features (sehr genaue Handhabung von System-Prompts) und lässt sich dadurch wunderbar an Bedürfnisse anpassen. Es ist möglich, die Reasoning-Fähigkeiten über reasoning -> minimal auf ein Minimum zu reduzieren und damit eine ähnliche Geschwindigkeit wie GPT4.1 zu erreichen.</p>
+<p>Desweiteren steht ein neuer Verbosity Parameter zur verfügung, um das level an Ausführlichkeit einer Antwort zu steuern. Mehr infos: https://openai.com/index/introducing-gpt-5-for-developers/</p>
+
+
 <h3>5. August 2025 - Einführung von Rechtsklick Menu</h3>
 <p>Im Eingabe- sowie im Ausgabebereich steht jetzt ein Dropdown-Menü zur Verfügung, das durch Rechtsklick aktiviert werden kann. Das Menü ist so konzipiert, dass es flexibel erweitert werden kann.</p>
 
