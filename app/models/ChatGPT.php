@@ -390,19 +390,17 @@ class ChatGPT
 	}
 
 	private function handle_GPT_Stream_Api_errors($raw) {
-		//$this->error_to_stream($raw);
-
-		//dd($raw);
-
 		$json = json_decode($raw);
 		if (isset($json->error->message)) {
 			$error = $json->error->type . ': ' . $json->error->message;
 			$this->error_to_stream($error);
-			return;
+			return true;
 		}
 
-		// If json is corrupted try with regex
-		if (!preg_match('/"error":\s*{/', $raw)) {return;}
+		// Falls JSON kaputt ist, per Regex prüfen
+		if (!preg_match('/"error":\s*{/', $raw)) {
+			return false;
+		}
 
 		$pattern = '/"message": "(.*?)",\s+"type": "(.*?)"/';
 		preg_match($pattern, $raw, $matches);
@@ -412,11 +410,12 @@ class ChatGPT
 			preg_match($pattern, $raw, $matches);
 		}
 
-		$message = $matches[1];
+		$message = $matches[1] ?? 'Unknown error';
 		$type = $matches[2] ?? null;
 
-		$error = $type . ' | ' . $message;
+		$error = ($type ? $type . ' | ' : '') . $message;
 		$this->error_to_stream($error);
+		return true;
 	}
 
 	private function error_to_stream($message) {
@@ -461,17 +460,16 @@ class ChatGPT
 
 			$json = json_decode($payload, true);
 			if ($json === null) {
-				// unvollständiges JSON -> zurück in den Puffer
 				$this->sseBuffer = $payload . "\n\n" . $this->sseBuffer;
 				continue;
 			}
 
-			// OpenAI Chat Completions delta
 			$delta = $json['choices'][0]['delta']['content'] ?? '';
-			// Fallbacks (legacy / Responses API Varianten)
+			
 			if ($delta === '' && isset($json['choices'][0]['text'])) {
 				$delta = $json['choices'][0]['text'];
 			}
+
 			if ($delta === '' && isset($json['delta'])) {
 				$delta = $json['delta'];
 			}
@@ -483,7 +481,6 @@ class ChatGPT
 				ob_flush(); flush();
 			}
 
-			// Optional: Finish-Reason beachten
 			if (($json['choices'][0]['finish_reason'] ?? null) !== null) {
 				echo "event: stop\n";
 				echo "data: stopped\n\n";
@@ -492,22 +489,6 @@ class ChatGPT
 				return;
 			}
 		}
-	}
-
-	private function extract_content_as_json_string($string) {
-
-		// Extracts the Part which is Valid JSON // Extracts the Part which is Valid JSON
-		$pattern = '/\{"content":"(.*?)"\}/'; 
-		if (str_contains($this->model, 'gpt-4')) {
-			$pattern = '/\{"content":".*?"\},"log/'; // GPT 4 stream sometimes breaks the pattern
-		}
-
-		if (preg_match_all($pattern, $string, $matches)) {
-			$matches[0] = array_map(function($set) {
-				return trim($set,',"log)');}, $matches[0]);
-			return $matches[0];
-		}
-		return [];
 	}
 
 	private function count_tokens($messages = null) {
