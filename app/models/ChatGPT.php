@@ -21,6 +21,7 @@ class ChatGPT
 
 	public $model = AIMODELS[0] ?? 'gpt-4.1';
 	private $modelMeta = [];
+	private $isReasoningModel = false;
 
 	public $forceGPT4 = false;
 	public $jsonMode = false;
@@ -79,10 +80,15 @@ class ChatGPT
 		if (!is_array($this->model)) {return;}
 		$this->modelMeta = $this->model;
 
-		$this->model = $this->modelMeta['apiname'] ?? 'gpt-41';
+		$this->model = $this->modelMeta['apiname'] ?? 'gpt-4.1';
+
+		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
+			$this->isReasoningModel = true;
+		}
+
 		$this->reasoning = $this->modelMeta['reasoning'] ?? 'low';
 		$this->verbosity = $this->modelMeta['verbosity'] ?? 'medium';
-		if (strtolower($this->modelMeta['provider']) == 'azure') {$this->azureMode = true;}
+		if (strtolower($this->modelMeta['provider'] ?? '') == 'azure') {$this->azureMode = true;}
 
 	}
 
@@ -288,14 +294,10 @@ class ChatGPT
 			'response_format' => $responseFormat,
 		];
 
-		// Reasoning Models need Reasoning
-		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
+		if ($this->isReasoningModel) {
 			$options['reasoning_effort'] = $this->reasoning;
-			$options['text']['verbosity'] = $this->verbosity;
-		}
-
-		// Normal Models need Temperature
-		if (str_contains($this->model, 'GPT-4')) {
+			$options['verbosity'] = $this->verbosity;
+		} else {
 			$options['temperature'] = $this->float_temperature();
 		}
 
@@ -323,14 +325,10 @@ class ChatGPT
 			'stream' => true,
 		];
 
-		// Reasoning Models need Reasoning
-		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
+		if ($this->isReasoningModel) {
 			$options['reasoning_effort'] = $this->reasoning;
 			$options['verbosity'] = $this->verbosity;
-		}
-
-		// Normal Models need Temperature
-		if (str_contains($this->model, 'GPT-4')) {
+		} else {
 			$options['temperature'] = $this->float_temperature();
 		}
 
