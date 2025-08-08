@@ -26,6 +26,7 @@ class ChatGPT
 	public $jsonMode = false;
 	public $azureMode = false;	
 	public $reasoning = 'low';
+	public $verbosity = 'medium';
 
 	public $conversationID;
 	public $promptID;
@@ -41,7 +42,7 @@ class ChatGPT
 	public $tokens = 0;
 	public $lastResponse;
 
-	private $sseBuffer = '';
+	private $sseBuffer = ''; // Used for streaming
 
 	public function __construct() {
 		$this->prompts = new Prompts;
@@ -80,6 +81,7 @@ class ChatGPT
 
 		$this->model = $this->modelMeta['apiname'] ?? 'gpt-41';
 		$this->reasoning = $this->modelMeta['reasoning'] ?? 'low';
+		$this->verbosity = $this->modelMeta['verbosity'] ?? 'medium';
 		if (strtolower($this->modelMeta['provider']) == 'azure') {$this->azureMode = true;}
 
 	}
@@ -287,8 +289,9 @@ class ChatGPT
 		];
 
 		// Reasoning Models need Reasoning
-		if (str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
+		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
 			$options['reasoning_effort'] = $this->reasoning;
+			$options['text']['verbosity'] = $this->verbosity;
 		}
 
 		// Normal Models need Temperature
@@ -323,6 +326,7 @@ class ChatGPT
 		// Reasoning Models need Reasoning
 		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
 			$options['reasoning_effort'] = $this->reasoning;
+			$options['verbosity'] = $this->verbosity;
 		}
 
 		// Normal Models need Temperature
