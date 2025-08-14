@@ -335,6 +335,7 @@ class ChatGPT
 		// Streaming not Supported for some Models
 		if (str_contains($this->model, '-search')) {
 			$options['stream'] = false;
+			unset($options['temperature']);
 			$chat = $open_ai->chat($options);			
 			$this->stream_to_direct($chat);
 			exit;	
