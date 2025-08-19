@@ -3,6 +3,7 @@ data() {return {
 	input: '',
 	output: '',
 	open: false,
+	userMadeSelection: '',
 }},
 
 template: `<nav class="dropdown-menu" :class="{ open: open }" @click="doStuff">
@@ -21,6 +22,7 @@ methods: {
 		const textarea = document.querySelector(`.${this.menuElement}`);
 		if (textarea) {
 				textarea.addEventListener('contextmenu', (event) => {
+				this.userMadeSelection = window.getSelection().toString();
 				event.preventDefault();
 				this.showMenu(event);
 			});
@@ -54,10 +56,10 @@ methods: {
 
 	copy() {
 		if (this.menuElement.includes('output')) {
-			this.$parent.copyOutputToClipboard()
+			this.$parent.copyOutputToClipboard(this.userMadeSelection)
 			return
 		}
-		this.$parent.copyInputToClipboard()
+		this.$parent.copyInputToClipboard(this.userMadeSelection)
 	},
 
 	delete() {

@@ -391,13 +391,21 @@ methods: {
 
 
 
-	copyOutputToClipboard() {
+	async copyOutputToClipboard(userSelection = null) {
+		if (userSelection) {
+			await navigator.clipboard.writeText(userSelection);
+			return
+		}
 		let element = document.querySelector('.gpt-output .io-textarea')
 		let text = element.innerText || element.value
 		navigator.clipboard.writeText(text);
 	},
 
-	copyInputToClipboard() {
+	async copyInputToClipboard(userSelection = null) {
+		if (userSelection) {
+			await navigator.clipboard.writeText(userSelection);
+			return
+		}		
 		let element = document.querySelector('.user-input .io-textarea')
 		let text = element.innerText || element.value
 		navigator.clipboard.writeText(text);
