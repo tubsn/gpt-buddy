@@ -1,5 +1,6 @@
 <dropdown menu-element="user-input">
 	<div action="copy">Inhalt kopieren</div>
+	<div action="paste">Inhalt einfügen</div>	
 	<div action="redo">Erneut generieren</div>	
 	<div action="delete"><img src="">Eingabe löschen</div>
 </dropdown>

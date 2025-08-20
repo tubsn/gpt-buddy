@@ -62,6 +62,29 @@ methods: {
 		this.$parent.copyInputToClipboard(this.userMadeSelection)
 	},
 
+	async paste() {
+		try {
+			const text = await navigator.clipboard.readText();
+			const textarea = document.querySelector('.io-textarea')
+			const value = textarea.value;
+
+			// Pastes text inbetween current values
+			if (value) {
+				const start = textarea.selectionStart;
+				const end = textarea.selectionEnd;
+				this.$parent.input = value.slice(0, start) + text + value.slice(end);
+				textarea.selectionStart = textarea.selectionEnd = start + text.length;
+				textarea.focus();
+			}
+			else {
+				this.$parent.input = text;
+			}
+
+		} catch (err) {
+			alert('Kein Zugriff auf Zwischenablage möglich. Bitte nutzen sie die STRG+V funktion zum einfügen');
+		}
+	},
+	
 	delete() {
 		if (this.menuElement.includes('output')) {
 			this.$parent.wipeHistory()
