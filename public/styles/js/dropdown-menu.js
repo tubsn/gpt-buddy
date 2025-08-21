@@ -73,8 +73,6 @@ methods: {
 				const start = textarea.selectionStart;
 				const end = textarea.selectionEnd;
 				this.$parent.input = value.slice(0, start) + text + value.slice(end);
-				textarea.selectionStart = textarea.selectionEnd = start + text.length;
-				textarea.focus();
 			}
 			else {
 				this.$parent.input = text;
