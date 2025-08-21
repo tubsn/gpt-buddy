@@ -204,6 +204,19 @@ class Stats extends Model
 	}
 
 	private function reduce_content_length($message) {
+
+		if (is_array($message)) {
+			$texts = [];
+			foreach ($message as $part) {
+				if (is_array($part) && ($part['type'] ?? null) === 'text') {
+					$texts[] = trim((string)($part['text'] ?? ''));
+				}
+			}
+			$message = implode(" ", array_filter($texts));
+		} elseif (!is_string($message)) {
+			$message = (string)$message;
+		}
+		
 		$maxCharacters = 300;
 		if (strlen($message) > $maxCharacters) {
 			$message = mb_substr($message,0,$maxCharacters) . ' ...';		
