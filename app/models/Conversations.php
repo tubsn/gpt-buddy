@@ -36,7 +36,7 @@ class Conversations
 
 	public function get_dialogue($id) {
 		$conversationData = $this->get($id);
-		return $conversationData['conversation'];
+		return $conversationData['conversation'] ?? null;
 	}
 
 	public function list() {
