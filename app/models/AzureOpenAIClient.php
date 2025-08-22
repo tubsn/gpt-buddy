@@ -17,6 +17,42 @@ class AzureOpenAIClient
 		$this->apiURL = $modelMeta['url'];
 	}
 
+	function image($options) {
+		$headers = [
+			"Authorization: Bearer $this->apiKey",
+			"Content-Type: application/json"
+		];
+
+		$ch = curl_init($this->apiURL);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($options));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		return $response;
+	}
+
+	function imageEdit($options) {
+
+		$this->apiURL = str_replace('/generations', '/edits', $this->apiURL);
+		$headers = ["Authorization: Bearer $this->apiKey"];
+
+		$ch = curl_init($this->apiURL);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $options);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		return $response;
+
+	}
+
 	public function chat($options, callable $callback) {
 
 		$ch = curl_init($this->apiURL);
@@ -39,6 +75,5 @@ class AzureOpenAIClient
 		curl_exec($ch);
 		curl_close($ch);
 	}
-
 
 }

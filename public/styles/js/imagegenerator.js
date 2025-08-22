@@ -58,14 +58,6 @@ methods: {
 		Vue.nextTick(() => {this.$refs.autofocusElement.focus()})
 	},
 
-	getHistory() {
-		if (sessionStorage.input) {this.input = sessionStorage.input}
-		if (this.action == sessionStorage.action) {
-			this.conversationID = sessionStorage.conversationID
-			this.fetchConversation()
-		}
-	},
-
 	resetMetaInfo() {
 		this.responseSeconds = 0
 		this.errormessages = ''
@@ -88,7 +80,7 @@ methods: {
 		if (sessionStorage.input) {this.input = sessionStorage.input}
 		if (this.action == sessionStorage.action) {
 			this.conversationID = sessionStorage.conversationID
-			this.fetchConversation()
+			//this.fetchConversation()
 		}
 	},
 

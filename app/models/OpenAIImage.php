@@ -3,6 +3,7 @@
 namespace app\models;
 use Orhanerday\OpenAi\OpenAi;
 use flundr\utility\Session;
+use app\models\AzureOpenAIClient;
 
 class OpenAIImage 
 {
@@ -11,6 +12,7 @@ class OpenAIImage
 
 	public function fetch($prompt, $options = null) {
 
+		$model = 'gpt-image-1';
 		$resolution = '1536x1024';
 		$quality = 'medium';
 		$background = 'auto';
@@ -25,8 +27,15 @@ class OpenAIImage
 
 		$open_ai = new OpenAi(CHATGPTKEY);
 
+		if (defined('VISIONMODEL')) {
+			$key = array_key_first(VISIONMODEL);
+			$modelmeta = VISIONMODEL[$key];
+			$model = $modelmeta['apiname'];
+			$open_ai = new AzureOpenAIClient($modelmeta);
+		}
+
 		$generatorOptions = [
-			'model' => 'gpt-image-1',
+			'model' => $model,
 			'prompt' => $prompt,
 			'n' => 1, // Number of Images
 			'quality' => $quality,
@@ -38,7 +47,6 @@ class OpenAIImage
 		if ($image) {
 
 			$image = $this->sanitize_image_url($image);
-			//dd($image);
 
 			$generatorOptions['image'] = curl_file_create($image, 'image/jpeg');
 
