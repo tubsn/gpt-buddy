@@ -389,10 +389,8 @@ methods: {
 		navigator.clipboard.writeText(history);
 	},
 
-
-
 	async copyOutputToClipboard(userSelection = null) {
-		if (userSelection) {
+		if (typeof userSelection === 'string' && userSelection) {
 			await navigator.clipboard.writeText(userSelection);
 			return
 		}
@@ -402,7 +400,7 @@ methods: {
 	},
 
 	async copyInputToClipboard(userSelection = null) {
-		if (userSelection) {
+		if (typeof userSelection === 'string' && userSelection) {
 			await navigator.clipboard.writeText(userSelection);
 			return
 		}		
