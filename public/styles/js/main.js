@@ -410,7 +410,33 @@ methods: {
 	},
 
 	copyToInput(event) {
-		this.input = event.target.innerText
+		element = event.target
+		if (element == document.activeElement) {return}
+		this.input = element.innerText
+	},
+
+	editHistoryEntry(event) {
+		element = event.target
+		if (!element.isContentEditable) {
+			event.preventDefault()
+			element.setAttribute('contenteditable', 'true');
+			element.focus();
+		}		
+	},
+
+	async updateHistoryEntry(index, event) {
+		if (!this.conversationID) {return}		
+		
+		let element = event.target
+		element.setAttribute('contenteditable', 'false')
+		
+		let content = element.innerText
+		let formData = new FormData()
+		formData.append('entryID', index)
+		formData.append('content', content)
+
+		let response = await fetch('/conversation/' + this.conversationID, {method: "POST", body: formData})
+		if (!response.ok) {return}
 	},
 
 	async bestServer() {

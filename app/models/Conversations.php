@@ -70,7 +70,8 @@ class Conversations
 	public function update($data, $id) {
 		$file = $this->path . $id;
 		$data = json_encode($data);
-		file_put_contents($file, $data);
+		$filesize = file_put_contents($file, $data);
+		return ($filesize > 0) ? true : false;
 	}
 
 	public function delete($id) {
@@ -94,8 +95,6 @@ class Conversations
 
 	public function remove_last_generation($id) {
 		$data = $this->get($id);
-		//array_pop($data['conversation']);
-
 		$conversation = $data['conversation'];
 
 		$lastUser = $lastAssistant = null;
@@ -106,9 +105,8 @@ class Conversations
 		}
 		if ($lastUser !== null) unset($conversation[$lastUser]);
 		if ($lastAssistant !== null) unset($conversation[$lastAssistant]);
-		// Optionale Neu-Indexierung
-		$conversation = array_values($conversation);
 
+		$conversation = array_values($conversation);
 		$data['conversation'] = $conversation;
 
 		$this->update($data, $id);

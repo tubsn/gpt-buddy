@@ -76,6 +76,7 @@ hr.black {border-color:#000}
 .history {font-size: 0.8em; line-height: 120%;}
 table.fancy.history td, table.fancy.history th {padding: 0 20px}
 table.fancy.history pre:hover {cursor:pointer; background-color: var(--primary-highlight)}
+table.fancy.history pre:focus {cursor:inherit; background-color:inherit}
 
 table tr.system, table.fancy tr:nth-child(2n) {background-color:transparent;}
 table.fancy.history tr:hover, table tr.system {background-color:inherit;}

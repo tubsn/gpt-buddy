@@ -16,6 +16,7 @@ $routes->get('/admin/apitoken', 'API@create_bearer_token');
 
 // Conversations
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
+$routes->post('/conversation/{id}', 'Chat@edit_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
 $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
 $routes->get('/conversation/{id}/pop/lasttwo', 'Chat@remove_last_conversation_generation');

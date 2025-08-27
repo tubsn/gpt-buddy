@@ -134,7 +134,7 @@
 	<table class="fancy history wide">
 		<tr :class="entry.role.toLowerCase()" v-for="entry,index in history"> 
 			<td class="ucfirst">{{entry.role}}</td>
-			<td><pre @click="copyToInput">{{filterInstructions(entry.content)}}</pre></td>
+			<td><pre @click.prevent="copyToInput" @contextmenu="editHistoryEntry" @blur="updateHistoryEntry(index,$event)">{{filterInstructions(entry.content)}}</pre></td>
 			<td class="text-right nowrap">
 				<span @click="copyHistoryToClipboard(index)" title="Eintrag kopieren">
 				<img class="icon-copy" src="/styles/img/copy-icon.svg">

@@ -122,6 +122,23 @@ class Chat extends Controller {
 		$this->view->render('conversation');
 	}
 
+	public function edit_conversation($id) {
+		$conversationData = $this->Conversations->get($id);
+		if (empty($conversationData)) {throw new \Exception("Conversation Unavailable", 404);}
+
+		$conversation = $conversationData['conversation'];
+		
+		$entryID = $_POST['entryID'] ?? null;
+		if (is_null($entryID)) {throw new \Exception("Conversation EntryID missing", 404);}
+		$content = $_POST['content'] ?? null;
+
+		// Be aware that this removes possible Arrays e.g. when images were attached
+		$conversation[$entryID]['content'] = $content;
+		$conversationData['conversation'] = $conversation;
+
+		$success = $this->Conversations->update($conversationData, $id);
+		$this->view->json($success);
+	}
 
 	public function get_conversation_json($id) {
 		$conversation = $this->Conversations->get($id);
