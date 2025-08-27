@@ -14,6 +14,11 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>27. August 2025 - Gesprächs Historie manipulieren</h3>
+<p>Es ist jetzt möglich die Historie nachträglich zu verändern und damit den Ki Output "auszutricksen".
+Dazu ganz einfach per Rechtsklick auf einen Verlaufseintrag klicken und dann den Text editieren.
+Der Linksklick kopiert weiterhin den aktuellen Eintrag zurück ins Engabefeld.
+</p>
 
 <h3>8. August 2025 - GPT-5 Model Release</h3>
 <p>Mit GPT-5 steht wieder ein neues Modell zur Verfügung. Es kombiniert Reasoning-Fähigkeiten mit den gewohnten 4.1-Features (sehr genaue Handhabung von System-Prompts) und lässt sich dadurch wunderbar an Bedürfnisse anpassen. Es ist möglich, die Reasoning-Fähigkeiten über reasoning -> minimal auf ein Minimum zu reduzieren und damit eine ähnliche Geschwindigkeit wie GPT4.1 zu erreichen.</p>
