@@ -1,4 +1,16 @@
 <main class="conversation-detail">
+<div class="fright">
+	<a class="button light" href="<?=$id?>/json">Json Anzeigen</a>
+	<a class="button light js-apply" href="">Übernehmen</a>
+</div>
+
+<script>
+document.querySelector('.js-apply').addEventListener('click', async (e) => {
+	e.preventDefault()
+	sessionStorage.conversationID = '<?=$id?>'
+	window.location = '/'
+});
+</script>
 
 <h1 class="text-center"><?=APP_NAME?> | <?=$page['title']?></h1>
 

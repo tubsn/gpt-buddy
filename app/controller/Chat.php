@@ -119,6 +119,7 @@ class Chat extends Controller {
 		if (empty($conversation)) {throw new \Exception("Conversation not Found", 404);}
 		$this->view->title = 'Chat vom ' . date('d.m.Y H:i', $conversation['edited']) . '&thinsp;Uhr';
 		$this->view->conversation = $conversation['conversation'];
+		$this->view->id = $id;
 		$this->view->render('conversation');
 	}
 
