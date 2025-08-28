@@ -556,13 +556,17 @@ methods: {
 			this.stopStream()
 		});
 
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape") {
-				this.stopStream()
-				this.removeLastHistoryEntry()
-			}
-		});
+		document.removeEventListener("keydown", this.stopStreamOnEscape);
+		document.addEventListener("keydown", this.stopStreamOnEscape);
 
+	},
+
+	stopStreamOnEscape(event) {
+		if (event.key === "Escape") {
+			this.stopStream()
+			//await this.fetchConversation()
+			this.removeLastHistoryEntry()
+		}
 	},
 
 	stopStream() {
