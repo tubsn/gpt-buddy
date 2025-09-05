@@ -87,6 +87,24 @@ class Conversations
 		}
 	}
 
+	public function add_entry($content, $id) {
+		$data = $this->get($id);
+		if (empty($data)) {throw new \Exception("Conversation Unavailable", 404);}		
+		$conversation = $data['conversation'];
+		$entry = ['role' => 'system', 'content' => $content];
+		array_push($conversation, $entry);
+		$data['conversation'] = $conversation;
+		$this->update($data, $id);
+		return $data;
+	}
+
+	public function remove_entry($id, $index) {
+		$data = $this->get($id);
+		unset($data['conversation'][$index]);
+		$data['conversation'] = array_values($data['conversation']); // OpenAI Requires sequential indexes 
+		$this->update($data, $id);
+	}
+
 	public function remove_last_entry($id) {
 		$data = $this->get($id);
 		array_pop($data['conversation']);
@@ -111,14 +129,6 @@ class Conversations
 
 		$this->update($data, $id);
 	}
-
-	public function remove_entry($id, $index) {
-		$data = $this->get($id);
-		unset($data['conversation'][$index]);
-		$data['conversation'] = array_values($data['conversation']); // OpenAI Requires sequential indexes 
-		$this->update($data, $id);
-	}
-
 
 	private function generate_id($length = 6) {
 		$bytes = random_bytes($length);

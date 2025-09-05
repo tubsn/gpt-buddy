@@ -611,6 +611,19 @@ methods: {
 		this.history = json
 	},
 
+	async addHistoryEntry() {
+
+		if (!this.conversationID) {return}
+		let response = await fetch('/conversation/' + this.conversationID + '/new')
+		if (!response.ok) {return}
+
+		let json = await response.json()
+
+		this.history = json
+	},
+
+
+
 	async redoLastStep() {
 		
 		if (!this.conversationID) {return}

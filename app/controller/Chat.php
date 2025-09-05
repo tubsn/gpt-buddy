@@ -147,6 +147,11 @@ class Chat extends Controller {
 		$this->view->json($conversation['conversation']);
 	}
 
+	public function add_conversation_entry($id) {
+		$conversation = $this->Conversations->add_entry('Neuer Eintrag (Rechtsklick zum editieren)', $id);
+		$this->view->json($conversation['conversation']);
+	}
+
 	public function remove_last_conversation_entry($id) {
 		$this->Conversations->remove_last_entry($id);
 		$this->view->json($this->Conversations->get($id)['conversation']);

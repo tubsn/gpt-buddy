@@ -150,6 +150,7 @@
 	<div class="small">
 	<button class="button light" type="button" @click="copyHistoryToClipboard">Chatverlauf kopieren</button>
 	<button class="button light" type="button" @click="copyHistoryResultToClipboard">nur Antworten kopieren</button>
+	<button class="button light" type="button" @click="addHistoryEntry">Inhalt einfügen</button>
 	<!--&ensp;<a class="button light" target="_blank" :href="'/conversation/' + conversationID">Chatverlauf teilen</a>-->
 	</div>
 
