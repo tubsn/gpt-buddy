@@ -103,7 +103,7 @@ class Stats extends Controller {
 	}
 
 	public function daily_stats() {
-		$stats = $this->Stats->conversations_by_day(365);
+		$stats = $this->Stats->conversations_by_day(90);
 		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
