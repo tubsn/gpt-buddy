@@ -576,9 +576,15 @@ methods: {
 		marked.use({breaks: true, mangle:false, headerIds: false,});
 		this.chars = this.output.length
 
-		this.output = marked.parse(this.output);
-		Vue.nextTick(() => {hljs.highlightAll();})
-
+		this.output = marked.parse(this.output)
+		Vue.nextTick(() => {
+			hljs.highlightAll();
+			const outputDiv = document.querySelector(".io-output-div")
+			if (outputDiv) {
+				outputDiv.contentEditable = 'true'
+			}
+		})
+		
 		this.loading = false
 		this.stopClock()
 		this.autofocus()
