@@ -216,6 +216,7 @@ class Prompts extends Model
 					case 'uhrzeit': return date('H:i');
 					case 'date': return date('Y-m-d');
 					case 'datum': return date('Y-m-d');
+					case 'weekday': return date('l');
 					case 'today': return date('Y-m-d');
 					case 'heute': return date('Y-m-d');
 					case 'now': return date('Y-m-d H:i');
