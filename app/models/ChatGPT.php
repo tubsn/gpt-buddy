@@ -122,6 +122,11 @@ class ChatGPT
 			$question = $this->prompt_processing($question);
 		}		
 
+		// Replace {{{ Tripple Mustache }}} logic in Input
+		$question = $this->prompts->replace_random_tokens($question);
+		$question = $this->prompts->replace_ignore_tokens($question);
+		$question = $this->prompts->replace_tokens($question);
+
 		if (!empty($this->payload)) {
 			$question = [
 				['type' => 'text', 'text' => $question],
@@ -194,10 +199,6 @@ class ChatGPT
 				$this->add($knowledge, 'system');
 			}
 		}
-
-		// Replace {{{ Tripple Mustache }}} logic in Input
-		$question = $this->prompts->replace_random_tokens($question);
-		$question = $this->prompts->replace_tokens($question);
 
 		return $question;
 
