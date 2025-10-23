@@ -82,6 +82,7 @@
 
 
 <h1>Prompt-Nutzungsstatistik</h1>
+
 <p>Prompts müssen mindestens 10 mal benutzt werden, um hier gelistet zu sein.</p>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -90,10 +91,12 @@
 </div>
 
 
-<div class="chartbox">
+<div class="chartbox mb">
 <?=$usageChart?>
 </div>
 
-
+<div style="margin-top:2em;">
+<a class="button" href="/stats/export/prompts">Prompt-Statistik exportieren</a> <a class="button" href="/stats/export/category">Kategorie-Statistik exportieren</a>
+</div>
 
 </main>

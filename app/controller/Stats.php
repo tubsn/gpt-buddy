@@ -202,5 +202,21 @@ class Stats extends Controller {
 
 	}
 
+	public function export_prompt_stats() {
+		$csv = new \flundr\mvc\views\csvView();
+		$stats = $this->Prompts->most_hits();
+		$csv->title = 'Prompt-Stats-'.date("dmY").'.csv';
+		$csv->export($stats);
+	}
+
+	public function export_category_stats() {
+		$csv = new \flundr\mvc\views\csvView();
+		$stats = $this->Prompts->most_hits_by_type();
+		$csv->title = 'Kategorie-Stats-'.date("dmY").'.csv';
+		$csv->export($stats);
+	}
+
+
+
 
 }

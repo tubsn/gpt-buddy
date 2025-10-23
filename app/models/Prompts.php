@@ -128,7 +128,7 @@ class Prompts extends Model
 
 	public function most_hits() {
 		$table = $this->db->table;
-		$SQLstatement = $this->db->connection->prepare("SELECT hits,title FROM $table WHERE hits >= 10 ");
+		$SQLstatement = $this->db->connection->prepare("SELECT id,hits,title FROM $table WHERE hits >= 10 ");
 		$SQLstatement->execute();
 		$output = $SQLstatement->fetchall();
 		return $output;

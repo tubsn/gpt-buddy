@@ -31,6 +31,13 @@ $routes->post('/image/generate', 'API@generate_image');
 $routes->post('/image/upload', 'Image@upload_image');
 $routes->post('/image/delete', 'Image@delete');
 
+// AgentMode
+$routes->get('/agent', 'ResearchAgent@index');
+$routes->get('/agent/ask', 'ResearchAgent@ask');
+$routes->get('/agent/job/{id}', 'ResearchAgent@job');
+$routes->get('/agent/stream/{id}', 'ResearchAgent@stream');
+
+
 // TTS
 $routes->get('/tts', 'TextToSpeech@index');
 $routes->post('/tts', 'TextToSpeech@index');
@@ -92,6 +99,9 @@ $routes->get('/stats/day', 'Stats@daily_stats');
 $routes->get('/stats/week', 'Stats@weekly_stats');
 $routes->get('/stats/weekday', 'Stats@weekday_stats');
 $routes->get('/stats/import', 'Stats@import_and_summarize');
+$routes->get('/stats/export/prompts', 'Stats@export_prompt_stats');
+$routes->get('/stats/export/category', 'Stats@export_category_stats');
+
 
 // Authentication Routes
 $routes->get('/login', 'Authentication@login');
