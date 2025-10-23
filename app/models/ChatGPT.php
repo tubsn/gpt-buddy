@@ -161,7 +161,10 @@ class ChatGPT
 
 		if (isset($prompt['withdate']) && $prompt['withdate']) {
 			$now = date('Y-m-d H:i');
-			$this->add('Heute ist der ' . $now, 'system');
+			$weekdayMap = ['Monday' => 'Montag', 'Tuesday' => 'Dienstag', 'Wednesday' => 'Mittwoch',
+			  'Thursday' => 'Donnerstag', 'Friday' => 'Freitag', 'Saturday' => 'Samstag', 'Sunday' => 'Sonntag'];
+			$weekday = $weekdayMap[date('l')];
+			$this->add('Heute ist ' . $weekday . ', der ' . $now, 'system');
 		}
 
 		if (isset($prompt['afterthought']) && $prompt['afterthought']) {
