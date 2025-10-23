@@ -100,9 +100,10 @@ class Settings extends Controller {
 	}
 
 	private function get_username($id = null) {
-		if (!$id) {return 'Unbekannt';}
+		if (!$id) {return null;}
 		$userDB = new \flundr\controlpanel\models\User();
 		$username = $userDB->get($id, ['lastname']);
+		if (!$username) {return null;}
 		$username = implode(' ', $username);
 		return $username;
 	}
