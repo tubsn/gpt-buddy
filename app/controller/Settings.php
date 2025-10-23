@@ -95,9 +95,17 @@ class Settings extends Controller {
 		$this->view->aimodels = AIMODELS ?? [];
 		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
+		$this->view->username = $this->get_username($prompt['user'] ?? null);		
 		$this->view->render('admin/edit-prompt');
 	}
 
+	private function get_username($id = null) {
+		if (!$id) {return 'Unbekannt';}
+		$userDB = new \flundr\controlpanel\models\User();
+		$username = $userDB->get($id, ['lastname']);
+		$username = implode(' ', $username);
+		return $username;
+	}
 
 	public function new() {
 		$categories = array_keys(CATEGORIES);

@@ -183,6 +183,11 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 
 </form>
+<?php if (isset($prompt['user'])): ?>
+<small class="fright">
+&ensp;Ersteller: <span title="User ID: <?=$prompt['user']?>"><?=$username?></span>
+</small>
+<?php endif ?>
 
 <?php if (isset($prompt['edited'])): ?>
 <small class="fright">
