@@ -126,7 +126,7 @@ background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:ob
 .io-textarea:focus {outline: 2px solid var(--primary);}
 .io-textarea:disabled {background:#d2d2d2; color:#717171;}
 
-.io-output-div {background-color:white; height: 460px; border-radius: .2em;  overflow-y:auto;
+.io-output-div {background-color:white; height: 460px; border-radius: .2em;  overflow-y:auto; resize: vertical;
 padding: 1em; border: 1px solid #ddd; box-sizing: border-box; line-height: 140%; cursor: text; font-size:0.85em}
 
 .io-output-div.line-break {white-space:pre-line;}
