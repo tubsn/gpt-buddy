@@ -54,7 +54,6 @@ class Stats extends Controller {
 		$this->view->monthly = $conversationsByMonth;		
 		$this->view->monthlyChart = $monthly->create();
 
-
 		$conversationsByDay = $this->Stats->conversations_by_day(14);
 
 		// Anfragen nach Tag
@@ -92,10 +91,14 @@ class Stats extends Controller {
 		$chart->name = 'Rubrik';
 		$chart->template = 'charts/default_pie_chart';
 
+		$prompts = $this->Prompts->all(['hits']);
+		$promptusage = array_sum(array_column($prompts,'hits'));
+
 		$this->view->type = $whiteListesTypes;		
 		$this->view->typeChart = $chart->create();
 
-		$this->view->usage = $this->Stats->count();	
+		$this->view->usage = $this->Stats->count();
+		$this->view->promptusage = $promptusage;
 		$this->view->length = $this->Stats->avglength();	
 
 		$this->view->render('stats');

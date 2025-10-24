@@ -4,6 +4,8 @@
 
 <h1>Ai-Buddy Stats | <span class="primary-highlight"><?=$usage?></span> Gesamtgespräche mit im Schnitt <span class="secondary-highlight"><?=gnum($length,2)?></span> Nachrichten</h1>
 
+<p>Gespräche mit Prompts: <?=gnum($promptusage)?> | Gespräche ohne Prompt / Standard Chat: <?=gnum($usage-$promptusage)?></p>
+
 <section class="box" >
 
 
@@ -39,7 +41,6 @@
 <?=$monthlyChart?>
 </div>
 </figure>
-
 
 </section>
 
