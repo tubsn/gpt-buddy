@@ -90,6 +90,7 @@ table.fancy.history tr:hover, table tr.system {background-color:inherit;}
 border-top:.5em solid #ddd; border-top-left-radius:0;border-top-right-radius:0;}
 .box.highlight {background-color:#ffdfbc; text-align:center;}
 .box.inactive {opacity: 0.4; background-color:#bbb}
+.box .box {border-top: none; padding:1em;}
 
 .fun-fact { float: right; max-width: 700px; font-size: 0.9em; line-height: 130%; text-align: right; position:relative; top:-12px;
 background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:oblique;}
