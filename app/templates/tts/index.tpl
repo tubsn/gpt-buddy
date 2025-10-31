@@ -34,6 +34,7 @@
 		<option>gpt-4o-mini-tts</option>
 		<option>tts-1</option>
 		<option>tts-1-hd</option>
+		<option value="gpt-audio">gpt-audio (Beantwortet Fragen)</option>
 	</select>
 	</label>
 </div>
