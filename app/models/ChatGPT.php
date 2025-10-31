@@ -83,7 +83,10 @@ class ChatGPT
 		$this->model = $this->modelMeta['apiname'] ?? 'gpt-4.1';
 
 		if (str_contains($this->model, 'gpt-5') || str_contains($this->model, 'o3-') || str_contains($this->model, 'o1-') || str_contains($this->model, 'o4-') || $this->model == 'o3') {
-			$this->isReasoningModel = true;
+
+			if (!str_contains($this->model, 'search')) {
+				$this->isReasoningModel = true;
+			}
 		}
 
 		$this->reasoning = $this->modelMeta['reasoning'] ?? 'low';
@@ -176,25 +179,9 @@ class ChatGPT
 		}
 
 		if (isset($prompt['postprocess']) && !empty($prompt['postprocess'])) {
-
-			$systemMessage = null;				
-			if ($prompt['knowledges']) {$systemMessage = implode("\n", $prompt['knowledges']);}
-
-			$firstResponse = $this->direct($question, $systemMessage);
-			$this->add($firstResponse, 'assistant');
-
-			$postProcessPrompt = $this->prompts->get_and_track($prompt['postprocess']);
-			if ($postProcessPrompt) {
-
-				$forcedModel = $postProcessPrompt['model'] ?? null;
-				if ($this->models[$forcedModel]) {
-					$this->model = $this->models[$forcedModel]['apiname'] ?? $this->model;
-				}
-				$question = $postProcessPrompt['content'];
-			}
+			$question = $this->run_postprocess($question, $prompt);
 			// Knowledgebases should not be processed twice with postprocess Prompts
 			unset($prompt['knowledges']);
-
 		}
 
 		if ($prompt['knowledges'] ?? null) {
@@ -205,6 +192,51 @@ class ChatGPT
 
 		return $question;
 
+	}
+
+	public function run_postprocess(string $question, array $initialPrompt): string {
+		$currentPrompt = $initialPrompt;
+		$visitedPromptIds = [];
+		$omitSystemprompt = false;
+
+		while (isset($currentPrompt['postprocess']) && !empty($currentPrompt['postprocess'])) {
+	
+			$systemMessage = null;
+			if (!empty($currentPrompt['knowledges'])) {
+				$systemMessage = implode("\n", $currentPrompt['knowledges']);
+			}
+
+			$firstResponse = $this->direct($question, $systemMessage, $omitSystemprompt);
+			$this->add($firstResponse, 'assistant');
+
+			$omitSystemprompt = true; // prevents adding Multiple Knowledgebases to the top
+
+			$nextPromptId = $currentPrompt['postprocess'];
+
+			// Cycle-Guard
+			if (isset($visitedPromptIds[$nextPromptId])) {break;}
+			$visitedPromptIds[$nextPromptId] = true;
+
+			$postProcessPrompt = $this->prompts->get_and_track($nextPromptId);
+			if (!$postProcessPrompt) {break;}
+
+			$forcedModelKey = $postProcessPrompt['model'] ?? null;
+			if ($forcedModelKey && ($this->models[$forcedModelKey] ?? null)) {
+				$this->model = $this->models[$forcedModelKey]['apiname'] ?? $this->model;
+			}
+
+			$question = $postProcessPrompt['content'] ?? $question;
+
+			if (!empty($postProcessPrompt['knowledges'])) {
+				foreach ($postProcessPrompt['knowledges'] as $knowledgeEntry) {
+					$this->add($knowledgeEntry, 'system');
+				}
+			}
+
+			$currentPrompt = $postProcessPrompt;
+		}
+
+		return $question;
 	}
 
 
@@ -274,11 +306,11 @@ class ChatGPT
 	}
 
 	// Direct GPT Question with Static Response as Json
-	public function direct($question = null, $systemPrompt = null) {
+	public function direct($question = null, $systemPrompt = null, $omitSystemprompt = false) {
 
 		$this->resolve_model();
 
-		if ($systemPrompt) {$this->prepend($systemPrompt, 'system');}
+		if ($systemPrompt && !$omitSystemprompt) {$this->prepend($systemPrompt, 'system');}
 		if ($question) {$this->add($question);}
 
 		$this->count_tokens($this->conversation);
