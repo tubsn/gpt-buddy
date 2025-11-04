@@ -165,6 +165,8 @@ input[type='radio'], input[type='checkbox'] {display:inline; width:auto;}
 textarea {resize: vertical;}
 textarea.large {min-height:220px;}
 
+fl-dialog {display:none;} /* Hide Initially, gets visible when loaded */
+
 /* Buttons */
 form button, .button {background-color:#333; border:none; padding:5px 10px 6px 10px; cursor:pointer; font-size: 1em; font-family: var(--font-body);}
 form button, .button, :link.button, :visited.button {color:white;}
