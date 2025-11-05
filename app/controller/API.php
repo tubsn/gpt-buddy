@@ -79,13 +79,17 @@ class API extends Controller {
 		if (is_numeric($_POST['prompt'] ?? null)) {
 			// When Prompt is an ID -> gather all Prompt Infos in a String
 			$systemPrompt = $this->Prompts->get_flat_content($_POST['prompt']);
+		} else {
+			$promptArray['content'] = $systemPrompt;
+			$promptArray = $this->Prompts->apply_post_processing($promptArray);
+			$systemPrompt = $promptArray['content']; // this has to be a flat string
 		}
 
 		if (empty($data)) {echo $this->ChatGPT->direct($systemPrompt ?? null); die;}
 		echo $this->ChatGPT->direct($data, $systemPrompt ?? null);
 	}
 
-	public function create_bearer_token() {
+	public function create_bearer_token($urlsafe = null) {
 
 		if (!Auth::logged_in()) { Auth::loginpage(); }
 		if (Auth::get('level') != 'Admin') {
@@ -93,11 +97,12 @@ class API extends Controller {
 		}
 
 		$remoteAccessURL = null;
-		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
+		if (defined('DIRECT_ACCESS_URL') && !empty($urlsafe)) {$remoteAccessURL = DIRECT_ACCESS_URL;}
 
 		$jwt = new JWTAuth;
 		$token = $jwt->create_token(null, $remoteAccessURL, '+5years');
 		echo ($token);
 	}
+
 
 }
