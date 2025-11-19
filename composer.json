@@ -1,6 +1,6 @@
 {
     "require": {
-        "flundr/core": "^2.0",
+        "flundr/core": "^2.1.9",
         "orhanerday/open-ai": "^5.1",
         "gioni06/gpt3-tokenizer": "^1.2",
         "league/commonmark": "^2.4",

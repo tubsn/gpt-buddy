@@ -7,6 +7,7 @@ use \app\models\OpenAIWhisper;
 use \flundr\file\Storage;
 use \flundr\utility\Log;
 use \Intervention\Image\ImageManager;
+use \Intervention\Image\Drivers\Gd\Driver;
 
 class FileReader
 {
@@ -81,12 +82,9 @@ class FileReader
 
 		try {
 			// Resize the Image to a max of 2000px
-			$imgmanager = new ImageManager();
-			$img = $imgmanager->make(PUBLICFOLDER . $data['payload']);
-			$img->resize(2000, 2000, function ($constraint) {
-				$constraint->aspectRatio();
-				$constraint->upsize();
-			});
+			$imgmanager = new ImageManager(new Driver());
+			$img = $imgmanager->read(PUBLICFOLDER . $data['payload']);
+			$img->scaleDown(2000, 2000);
 			$img->save(PUBLICFOLDER . $data['payload'], 70, 'jpg');
 		} 
 		catch (\Exception $e) {Log::error($e->getMessage());}
