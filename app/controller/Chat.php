@@ -30,7 +30,7 @@ class Chat extends Controller {
 		$this->view->prompts = array_merge($generalPrompts, $portalPrompts);
 
 		$this->view->title = 'ChatGPT Assistent';
-		$this->view->render('chat');
+		$this->view->render('ui/chat-interface');
 	}
 
 	public function category($category) {
@@ -40,17 +40,35 @@ class Chat extends Controller {
 		$category = strtolower($category);
 		if (!in_array($category, array_keys(CATEGORIES))) {throw new \Exception("Page not Found", 404);}
 
-		$this->view->category = CATEGORIES[$category];
+		$categorySettings = CATEGORIES[$category];
+		$categorySettings['name'] = $category;
+
+		$this->view->category = $categorySettings;
 		$this->view->title = CATEGORIES[$category]['title'] ?? 'ChatGPT Assistent';
-		
+
+		if ($category == 'rag') {
+			$this->view->taglist = $this->read_tags();
+			$this->view->rag = true;
+		}
+
 		$this->view->prompts = $this->Prompts->category($category);
-		$this->view->render('chat');
+		$this->view->render('ui/chat-interface');
 
 	}
 
 	public function external_api_url_test() {
 		$out = $this->ChatGPT->direct('Hi was geht?');
 		dd($out);
+	}
+
+	// Should be Refactored into Model
+	public function read_tags() {
+		$filepath = ROOT . 'cache/tags/taglist.txt';
+		if (!file_exists($filepath)) {return null;}
+		$tagString = file_get_contents($filepath);
+		$tags = unserialize($tagString);
+		unset($tags['Storys'],$tags['S-Nummer']);
+		return array_merge(...array_values($tags));
 	}
 
 

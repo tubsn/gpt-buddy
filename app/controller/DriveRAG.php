@@ -20,19 +20,17 @@ class DriveRAG extends Controller {
 		$this->view->userneedOptions =['Update Me', 'Divert Me', 'Give me Perspective', 'Educate Me', 'Help Me', 'Inspire Me'];	
 		$this->view->length = 'Medium';	
 		$this->view->lengthOptions = ['Kurz','Medium','Lang'];
+		$this->view->timeframe = 'diese Woche';	
+		$this->view->timeframeOptions = ['diese Woche', 'dieser Monat', '3 Monate', 'alles'];
+		$this->view->taglist = $this->read_tags();
 		$this->view->promptOptions = $this->Prompts->category('rag');
-
 		$this->view->articleContentPromptID = 247;
 		$this->view->phrasePromptID = 246;
-
 	}
 
-	public function index() {
-		$this->view->render('driverag/search');
-	}
-
-	public function ragvolo() {
+	public function rag_index() {
 		$Prompts = new Prompts();
+		$this->view->timeframe = null;
 		$this->view->prompt = $this->view->promptOptions[0];
 		$this->view->render('driverag/index');
 	}
@@ -45,7 +43,6 @@ class DriveRAG extends Controller {
 		$articleContentPromptID = $this->view->articleContentPromptID;
 
 		$query = $_POST['query'] ?? null;
-		$cache = new RequestCache($query, 60*60);
 
 		$this->view->promptOptions = $Prompts->category('rag');
 		
@@ -56,14 +53,18 @@ class DriveRAG extends Controller {
 
 		$userneed = $_POST['userneed'] ?? null;
 		if (!in_array($userneed, $this->view->userneedOptions)) {$userneed = $this->view->userneed;}
+		$this->view->length = $userneed;
 
 		$length = $_POST['length'] ?? null;
 		if (!in_array($length, $this->view->lengthOptions)) {$length = $this->view->length;}
+		$this->view->length = $length;
+
+		$timeframe = $_POST['timeframe'] ?? null;
+		if (!in_array($timeframe, $this->view->timeframeOptions)) {$timeframe = $this->view->timeframe;}
 
 		$phrasePrompt = $Prompts->get($phrasePromptID);
-
 		$this->ChatGPT->jsonMode = true;
-		$this->ChatGPT->model = 'gpt-4.1';
+		$this->ChatGPT->model = AIMODELS[$prompt['model']] ?? 'gpt-4.1';
 		$this->ChatGPT->reasoning = 'high';
 
 		$keywords = $this->ChatGPT->direct($query, $phrasePrompt['content']);
@@ -71,32 +72,56 @@ class DriveRAG extends Controller {
 		$json = json_decode($keywords,true);
 		$phrase = $json['phrase'];
 
-		$ragResult = $cache->get();
 
-		if (!$ragResult) {
+		$parameters = [];
+		$ressorts = $_POST['ressorts'] ?? null;
+		if ($ressorts) {$parameters['ressorts'] = $ressorts;}
+		
+		$tags = $_POST['tags'] ?? null;
+		if ($tags) {
+			$tags = explode_and_trim(',', $tags);
+			$parameters['tags'] = $tags;
+		}
 
-			try {
-				$ragResult = $this->DriveRAGApi->search($phrase);
-				$cache->save($ragResult);
-			} catch (\Exception $e) {
-				$this->view->errorMessage = $e->getMessage();
-				$ragResult = [];
-			}
+		$exact = $_POST['exact'] ?? null;
+		if ($exact) {$parameters['exact'] = $exact;}
 
+		$this->view->ressorts = $ressorts;
+		$this->view->tags = $tags;
+		$this->view->exact = $exact ?? false;
+
+		$from = $_POST['from'] ?? null;
+		$to = $_POST['to'] ?? null;
+
+		$this->view->from = $from;
+		$this->view->to = $to;
+
+		if (empty($from)) {$from = '-365 days';}
+		if (empty($to)) {$to = 'today';}	
+		
+		try {
+			$ragResult = $this->DriveRAGApi->search($phrase, $from, $to, $parameters);
+		} catch (\Exception $e) {
+			$this->view->errorMessage = $e->getMessage();
+			$ragResult = [];
 		}
 
 		$ragResult = array_slice($ragResult, 0, 10);
 		$articlesJsonString = json_encode($ragResult);
 
-		$prompt['content'] = str_replace(['{{phrase}}', '{{userneed}}', '{{length}}'], [$phrase, $userneed, $length], $prompt['content']);
+		$prompt['content'] = str_replace(['{{query}}', '{{phrase}}', '{{userneed}}', '{{length}}'], [$query, $phrase, $userneed, $length], $prompt['content']);
 
 		$this->ChatGPT->jsonMode = false;
 		$this->ChatGPT->conversation = [];
 
-		$this->ChatGPT->model = 'gpt-4.1';
+		$this->ChatGPT->model = AIMODELS[$prompt['model']] ?? 'gpt-4.1';
 
 		$this->ChatGPT->add($prompt['content'], 'system');
-		foreach ($prompt['knowledges'] as $knowledge) {$this->ChatGPT->add($knowledge, 'system');}
+
+		if (!empty($prompt['knowledges'])) {
+			foreach ($prompt['knowledges'] as $knowledge) {$this->ChatGPT->add($knowledge, 'system');}
+		}
+
 		$this->ChatGPT->add($articlesJsonString, 'user');
 		$this->ChatGPT->add($prompt['afterthought'], 'system');
 
@@ -116,9 +141,41 @@ class DriveRAG extends Controller {
 
 	}
 
+
+	public function search_index() {
+		$this->view->timeframe = null;	
+		$this->view->render('driverag/search');
+	}
+
 	public function search() {
 		$query = $_POST['query'] ?? null;
-		$result = $this->DriveRAGApi->search($query);
+
+		$from = $_POST['from'] ?? null;
+		$to = $_POST['to'] ?? null;
+
+		$parameters = [];
+		$ressorts = $_POST['ressorts'] ?? null;
+		if ($ressorts) {$parameters['ressorts'] = $ressorts;}
+		
+		$tags = $_POST['tags'] ?? null;
+		if ($tags) {
+			$tags = explode_and_trim(',', $tags);
+			$parameters['tags'] = $tags;
+		}
+
+		$exact = $_POST['exact'] ?? null;
+		if ($exact) {$parameters['exact'] = $exact;}
+
+		$this->view->from = $from;
+		$this->view->to = $to;
+		$this->view->ressorts = $ressorts;
+		$this->view->tags = $tags;
+		$this->view->exact = $exact ?? false;
+
+		if (empty($from)) {$from = '-365 days';}
+		if (empty($to)) {$to = 'today';}
+
+		$result = $this->DriveRAGApi->search($query, $from, $to, $parameters);
 		$this->view->query = $query;
 		$this->view->result = $result ?? null;
 		$this->view->render('driverag/search');
@@ -141,6 +198,15 @@ class DriveRAG extends Controller {
 			$out .= '<p>' . trim($current) . '</p>';
 		}
 		return $out;
+	}
+
+	public function read_tags() {
+		$filepath = ROOT . 'cache/tags/taglist.txt';
+		if (!file_exists($filepath)) {return null;}
+		$tagString = file_get_contents($filepath);
+		$tags = unserialize($tagString);
+		unset($tags['Storys'],$tags['S-Nummer']);
+		return array_merge(...array_values($tags));
 	}
 
 }
