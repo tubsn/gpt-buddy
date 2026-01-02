@@ -216,7 +216,7 @@ class Stats extends Model
 		} elseif (!is_string($message)) {
 			$message = (string)$message;
 		}
-		
+
 		$maxCharacters = 300;
 		if (strlen($message) > $maxCharacters) {
 			$message = mb_substr($message,0,$maxCharacters) . ' ...';		
