@@ -4,9 +4,9 @@ Prompt Management System for Interaction with the ChatGPT API
 ![Buddypreview](buddy.jpg)
 
 ## Latest News
-Added realtime Data Injection into Prompts via URL Imports.
-For the latest Model Selector Update it´s neccesary to add a new Database field (model). Please Contact me for Help.
-As always before updating: rember to save your config.php, custom.css, main-nav.tpl and faq.tpl!!!
+2026 Update to Response API
+This Major update switches the current Core to use the improved responses API from OpenAI instead of the original chat API. This enables features like tool Calling and MCP Server inclusion.
+Please contact me before updating to the current Version as it will break backwards compatibility.
 
 ## Features
 Configurable Prompt Database including lots of examples  
