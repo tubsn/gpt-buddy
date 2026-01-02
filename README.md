@@ -5,7 +5,9 @@ Prompt Management System for Interaction with the ChatGPT API
 
 ## Latest News
 2026 Update to Response API
-This Major update switches the current Core to use the improved responses API from OpenAI instead of the original chat API. This enables features like tool Calling and MCP Server inclusion.
+This Major update switches the current core, to use the improved responses API from OpenAI instead of the original chat API.
+
+This enables features like tool calling and MCP server inclusion.
 Please contact me before updating to the current Version as it will break backwards compatibility.
 
 ## Features
