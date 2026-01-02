@@ -6,7 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 	<meta name="author" content="<?=$page['meta']['author'] ?? 'flundr'?>" />
 	<meta name="description" content="<?=$page['description']?>" />
-	<meta name="robots" content="noindex">	
 <?php if (isset($page['fonts'])):?>
 	<link href="<?=$page['fonts']?>" rel="stylesheet">
 <?php endif ?>
@@ -22,7 +21,11 @@
 	<script type="text/javascript" src="<?=$framework?>"></script>
 <?php endforeach ?>
 <?php endif ?>
-
+<?php if (!empty($page['modules'])):?>
+<?php foreach ($page['modules'] as $module): ?>
+	<script type="module" src="<?=$module?>"></script>
+<?php endforeach ?>
+<?php endif ?>
 <?php if (isset($_COOKIE['darkmode']) && $_COOKIE['darkmode']): ?>
 	<link id="dark-mode-css-link" rel="stylesheet" type="text/css" media="all" href="/styles/css/darkmode.css" />
 <?php endif ?>
