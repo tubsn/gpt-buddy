@@ -21,8 +21,13 @@ class DefaultLayout extends htmlView {
 		'/styles/flundr/components/fl-dialog.js',
 		'/styles/js/dropdown-menu.js',
 		'/styles/js/marked.min.js',
-		'//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js',
+		'/styles/js/moment.js',
+		'/styles/js/highlightjs/highlight.min.js',
 	];
+	public $modules = [
+		'/styles/js/prototype.js',
+	];
+
 	public $meta = [
 		'author' => 'flundr',
 		'robots' => 'index, follow',
