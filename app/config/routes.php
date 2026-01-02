@@ -9,7 +9,6 @@ $routes->get('/engines', 'Chat@engines');
 // API
 $routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
-$routes->get('/stream/{model}/{id}', 'API@stream');
 $routes->get('/prompts', 'API@prompts');
 $routes->get('/prompts/{id}', 'API@prompt');
 $routes->get('/admin/apitoken', 'API@create_bearer_token');
