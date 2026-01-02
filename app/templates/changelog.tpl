@@ -14,7 +14,20 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
-<h3>27. August 2025 - Gesprächs Historie manipulieren</h3>
+
+<h3>16. Dezember 2025 - Ai Buddy Tooling Update</h3>
+<p>
+Mit dem Tooling Update wurde die komplette AiBuddy-Kernarchitektur von der OpenAI-Chat- auf die Responses-Schnittstelle umgebaut.
+Es entfällt die Abhängigkeit von dem bisher genutzten PHP-Framework, was die Kommunikation mit der Schnittstelle etwas performanter macht.
+
+Mit der Response API ist es möglich, serverseitige Funktionen/Tooling sowie MCP-Server an den Ai Buddy anzubinden, was dem KI-Modell z. B. genaue Datumsberechnungen, Websuche oder Kommunikation mit einem Archivsystem ermöglicht.</p>
+
+
+<h3>12. Dezember 2025 - GPT 5.2 Modell</h3>
+<p>In der Zwischenzeit stehen bereits 2 Neue Modelle zur Verfügung</p>
+
+
+<h3>27. August 2025 - Gesprächs Historie Manipulieren</h3>
 <p>Es ist jetzt möglich die Historie nachträglich zu verändern und damit den Ki Output "auszutricksen".
 Dazu ganz einfach per Rechtsklick auf einen Verlaufseintrag klicken und dann den Text editieren.
 Der Linksklick kopiert weiterhin den aktuellen Eintrag zurück ins Engabefeld.

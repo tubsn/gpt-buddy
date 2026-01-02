@@ -7,11 +7,17 @@
 <?php include tpl('multiimport/datepicker');?>
 
 <h1>Geburtstage für Kalenderwoche <?=$selectedWeek?> </h1>
-<h3>vom <?=formatDate($from,'d.m.Y')?> - <?=formatDate($to,'d.m.Y')?>
-<?php if (!empty($filter)): ?>
- - für <?=$filter?>	
-<?php endif ?></h3>
 
+<h3>
+<?php if (!empty($events)): ?>
+vom <?=formatDate($from,'d.m.Y')?> - <?=formatDate($to,'d.m.Y')?>
+<?php if (!empty($filter)): ?>
+ - für <?=$filter?>
+<?php endif ?> - <?=$weeks[$selectedWeek]['entries']?> Einträge
+<?php else: ?>
+für <?=$filter?>
+<?php endif ?>
+</h3>
 
 <?php if ($events): ?>
 <section class="cue-article box">
@@ -20,7 +26,7 @@
 <?php foreach ($set as $key => $event): ?>
 <?=$event['firstname']?> 
 <?=$event['lastname']?> 
-(<?=$event['age']?>),
+(<?=$event['age']?>)<?php if ($event['location']): ?>, <?php endif ?>
 <?=$event['location']?><?php if ($key != array_key_last($set)): ?>; <?php else: ?>. <?php endif ?>
 <?php endforeach ?>
 <br>

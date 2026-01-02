@@ -115,6 +115,8 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 </div>
 </fieldset>
 
+	<small><b>Hinweis:</b> Du kannst mit {{{ rot | grün }}} einen Zufallsgenerator nutzen oder mit Tokens wie: date, time, now - Datum und Uhrzeit einfügen. Beispiel: {{{ now }}} wird 2025-04-16 11:45</small>
+
 	<hr class="black">
 
 	<button class="submit">Prompt anlegen</button>&ensp;

@@ -6,15 +6,15 @@
 		<?php foreach (IMPORT_RESSORTS as $ressort): ?>
 		<?php if ($filter == $ressort): ?>
 		<option selected value="<?=$ressort?>"><?=$ressort?>
-		<?php if (isset($stats['ressort'][$ressort])): ?>
+		<!--<?php if (isset($stats['ressort'][$ressort])): ?>
 		[<?=$stats['ressort'][$ressort] ?? ''?>]
-		<?php endif ?>
+		<?php endif ?>-->
 		</option>
 		<?php else: ?>
 		<option value="<?=$ressort?>"><?=$ressort?>
-		<?php if (isset($stats['ressort'][$ressort])): ?>
+		<!--<?php if (isset($stats['ressort'][$ressort])): ?>
 		[<?=$stats['ressort'][$ressort] ?? ''?>]
-		<?php endif ?>
+		<?php endif ?>-->
 		</option>
 		<?php endif ?>
 		<?php endforeach ?>
@@ -28,7 +28,7 @@
 
 		<?php foreach ($weeks as $week): ?>
 		<?php if ($week['week'] == $currentWeek): ?>
-		<?php $class='current-week'; $selected = 'selected';?>
+		<?php $class='current-week'; $selected = '';?>
 		<?php else: ?>
 		<?php $class=''; $selected = '';?>			
 		<?php endif ?>

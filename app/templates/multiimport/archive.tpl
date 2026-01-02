@@ -133,9 +133,12 @@
 
 <div>
 	<button class="button">Duplikate Entfernen (in Arbeit)</button> &nbsp;
-	<button id="btn-delete-obsolete" class="button danger"><img class="icon-delete" src="/styles/flundr/img/icon-delete-white.svg"> Alte Geburtstage löschen</button> &nbsp;
-	<button id="btn-delete-all" class="button danger"><img class="icon-delete" src="/styles/flundr/img/icon-delete-white.svg"> Daten komplett löschen</button> &nbsp;
+	<button id="btn-delete-obsolete" class="button danger"><img class="icon-delete" src="/styles/flundr/img/icon-delete-white.svg"> Alte Geburtstage löschen</button> 
 
+	<?php if (auth('level') == 'Admin'): ?>
+	&nbsp;
+	<button id="btn-delete-all" class="button danger"><img class="icon-delete" src="/styles/flundr/img/icon-delete-white.svg"> Daten komplett löschen</button> &nbsp;
+	<?php endif ?>
 
 	<fl-dialog selector="#btn-delete-all" href="/multiimport/wipe_all">
 	<h1>Datenbank löschen Bestätigen</h1>

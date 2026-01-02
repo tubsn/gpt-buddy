@@ -39,7 +39,7 @@
 
 <div class="box">
 <label>Direktimport:
-<textarea v-model="input" class="large" placeholder="Rohtext zum Importieren einfügen z.B. Text aus einer E-Mail, oder Wort Datei"></textarea>
+<textarea v-model="input" class="large" placeholder="Rohtext zum Importieren einfügen z.B. Text aus einer E-Mail, oder Word Datei"></textarea>
 </label>
 
 
