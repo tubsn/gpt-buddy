@@ -6,7 +6,7 @@
 html {scrollbar-color: #2a3340 #11141A}
 body {background-color:#111824; color:#d4d4d9;}
 
-::selection {background-color: #34ac90; color:black}
+::selection {background-color: var(--primary);}
 
 h1, h2, h3, h4, h5, h6 {color:var(--primary-lighter-font)}
 
@@ -37,6 +37,8 @@ a:hover {color:white;}
 details.fancy summary {background-color: #181818;}
 details.fancy summary:hover {background-color: #000;}
 
+dialog {background-color: #26303c; color:#d4d4d9; border: 1px solid #3f4355; border-radius:.5em;}
+
 .main-nav {background:#0d1118;}
 
 .main-nav ul li a {color:#d4d4d9}
@@ -44,7 +46,7 @@ details.fancy summary:hover {background-color: #000;}
 .main-nav ul li:hover {}
 .main-nav ul li ul li a {color:#d4d4d9}
 
-.main-nav a:hover, .main-nav a:focus {background-color: #51ac8e}
+.main-nav a:hover, .main-nav a:focus {background-color: var(--primary); color:#d4d4d9}
 
 form button, .button {background-color: black; color:#d4d4d9}
 form button.light, form .button.light, .button.light {background: #2b3442; color:#d4d4d9;}
@@ -79,6 +81,9 @@ hr {border-color: white;}
 
 .io-output-div {background-color: #131720; border: 1px solid #3f4355;}
 .io-textarea:disabled {background:#1a1d22; color:#616971;}
+
+.output-info {background-color: var(--primary); color: white;}
+
 
 .loadIndicator > div {background-color: var(--primary-lighter)}
 .loadIndicator {background:none;}
