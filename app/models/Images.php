@@ -25,7 +25,7 @@ class Images extends Model
 	}
 
 
-	public function read_directory(int $limit = null, int $offset = 0) {
+	public function read_directory(?int $limit, int $offset = 0) {
 
 		if (file_exists($this->internalPath)) {
 			$files = scandir($this->internalPath, SCANDIR_SORT_DESCENDING);

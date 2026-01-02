@@ -101,7 +101,7 @@
 		<button type="submit" @click.prevent="ask" v-if="!loading">Absenden</button>
 		<button type="submit" class="stop" @click.prevent="stopStream" v-if="loading">Generierung abbrechen</button>
 
-		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chatverlauf löschen</small></button>
+		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeHistory()" :disabled="loading">Chatverlauf löschen</button>
 		<button class="light mlsmall del-historie" tabindex="-1" type="button" @click="wipeInput()" :disabled="loading">Eingabe löschen</button>
 	</section>
 
