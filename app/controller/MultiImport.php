@@ -124,7 +124,7 @@ class MultiImport extends Controller {
 		if ($filetype == 'image') {$data = $this->image($file);}
 		if ($filetype == 'word') {$data = $this->docx($file['tmp_name']);}
 		if ($filetype == 'excel') {$data = $this->excel($file['tmp_name']);}
-		//if ($filetype == 'text') {$data = $this->default($file);}
+		if ($filetype == 'text') {$data = $this->default($file);}
 		if ($filetype == false) {throw new \Exception('Unknown Filetype ', 400);}
 
 		$ids = $this->Imports->add($data);
@@ -169,10 +169,8 @@ class MultiImport extends Controller {
 
 	}
 
-	public function excel($filepath) {
-		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filepath);
-		$data = array(1,$spreadsheet->getActiveSheet()->toArray(null,true,true,true));
-		$data = json_encode($data);
+	public function default($file) {
+		$content = file_get_contents($file['tmp_name']);
 
 		$ChatGPT = new ChatGPT();
 		$ChatGPT->jsonMode = true;
@@ -180,8 +178,27 @@ class MultiImport extends Controller {
 		$prompt = $this->prompt['content'];
 		$date = date('d.m.Y', time());
 		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;		
-		$prompt = $prompt . $content;
+		$prompt = $prompt . "\n" .  $content;
 		
+		$response = $ChatGPT->direct($prompt);
+		$response = json_decode($response,1);
+		return $response['data'];
+	}
+
+
+	public function excel($filepath) {
+		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filepath);
+		$data = array(1,$spreadsheet->getActiveSheet()->toArray(null,true,true,true));
+		$content = json_encode($data);
+
+		$ChatGPT = new ChatGPT();
+		$ChatGPT->jsonMode = true;
+
+		$prompt = $this->prompt['content'];
+		$date = date('d.m.Y', time());
+		$prompt = $prompt . "\n" . 'Wir haben heute den: ' . $date;		
+		$prompt = $prompt . "\n" . $content;
+
 		$response = $ChatGPT->direct($prompt);
 		$response = json_decode($response,1);
 		return $response['data'];
@@ -242,6 +259,7 @@ class MultiImport extends Controller {
 
 
 	public function detect_type($file) {
+
 		switch ($file['type']) {
 			case 'text/plain': case 'text/html': case 'text/csv': return 'text'; break;
 			case 'application/pdf': return 'pdf'; break;

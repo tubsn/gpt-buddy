@@ -26,13 +26,18 @@
 </label>
 </fieldset>
 
-<fieldset class="col-2">
+<fieldset class="col-3">
 <label>Wohnort:
 	<input name="location" type="text" placeholder="Ort" value="<?=$event['location'] ?? null?>">
 </label>
 <label>Geburtstag:
 	<input name="birthday" type="date" placeholder="Geburtstag" value="<?=$event['birthday'] ?? null?>">
 </label>
+
+<label>Alter:
+	<input name="age" type="text" placeholder="Alter" value="<?=$event['age'] ?? null?>">
+</label>
+
 </fieldset>
 
 <?php if (isset($event['id'])): ?>

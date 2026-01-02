@@ -12,7 +12,7 @@ class OpenAIImage
 
 	public function fetch($prompt, $options = null) {
 
-		$model = 'gpt-image-1';
+		$model = 'gpt-image-1.5';
 		$resolution = '1536x1024';
 		$quality = 'medium';
 		$background = 'auto';

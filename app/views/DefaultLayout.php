@@ -15,14 +15,19 @@ class DefaultLayout extends htmlView {
 	];
 
 	public $fonts = 'https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,600|Fira+Sans+Condensed:400,600';
-	public $js = '/styles/js/main.js';
+
 	public $framework = [
 		'/styles/js/vue34.min.js',
 		'/styles/flundr/components/fl-dialog.js',
-		'/styles/js/dropdown-menu.js',
 		'/styles/js/marked.min.js',
-		'//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js',
+		'/styles/js/moment.js',
+		'/styles/js/highlightjs/highlight.min.js',
 	];
+
+	public $modules = [
+		'/styles/js/main.js',
+	];
+
 	public $meta = [
 		'author' => 'flundr',
 		'robots' => 'index, follow',

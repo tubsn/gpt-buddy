@@ -19,8 +19,8 @@
 
 /* Table Sort */
 table.js-sortable th {cursor:pointer;}
-table.js-sortable th.dir-u {background-image: linear-gradient(to top, #0d0d0d 0%, #242424 82%, #50a296 82%, #1d5e55 100%) !important;}
-table.js-sortable th.dir-d {background-image: linear-gradient(#0d0d0d 0%, #242424 82%, #1d5e55 82%, #50a296 100%) !important}
+table.js-sortable th.dir-u {background-image: linear-gradient(to top, #0d0d0d 0%, #242424 82%, #1277bf 82%, #1e7bbd 100%) !important;}
+table.js-sortable th.dir-d {background-image: linear-gradient(#0d0d0d 0%, #242424 82%, #1e7bbd 82%, #1277bf 100%) !important}
 table.fancy.js-sortable th:hover {background-color: #0b0b0b}
 table.fancy tr:hover {background-color: var(--grey);}
 

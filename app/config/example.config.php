@@ -7,12 +7,12 @@ define('CHART_COLOR', '#1d5e55'); // Farbwert in Statistiken
 // Hier werden die Verfügbaren Modelle Konfiguriert.
 // 'apiname' ist der Name der OpenAI Modelle. Description und der Keyname sind frei wählbar.
 define('AIMODELS', [
-	'GPT-4o' 		=> ['apiname' => 'gpt-4o', 'description' => 'standard Model, gut, günstig'],
-	'GPT-4o-mini' 	=> ['apiname' => 'gpt-4o-mini', 'description' => 'am günstigsten, wenig Wissen'],
-	'o3-Mini-Low'	=> ['apiname' => 'o3-mini', 'description' => 'bessere Logik, langsamer'],
-	'o3-Mini-High'	=> ['apiname' => 'o3-mini', 'description' => 'beste Logik, sehr langsam', 'reasoning' => 'high'],
+	'GPT-5.2' 	=> ['apiname' => 'gpt-5.2', 'description' => 'standard Model, ohne Reasoning', 'reasoning' => 'none'],
+	'GPT-5.2-Reasoning' 	=> ['apiname' => 'gpt-5.2', 'description' => 'maximale Denkprozesse', 'reasoning' => 'medium'],
+	'GPT-5.1' 	=> ['apiname' => 'gpt-5.1', 'description' => 'altes Model, ohne Reasoning', 'reasoning' => 'none'],
+	'GPT-5.1-Reasoning' => ['apiname' => 'gpt-5.1', 'description' => 'mit Denkprozess', 'reasoning' => 'medium'],
+	'GPT-Search' 	=> ['apiname' => 'gpt-5-search-api', 'description' => 'mit Live Websuche'],
 ]);
-
 
 // Hier wird der Standard Prompt hinterlegt, dieser kann im Mandantenmodus 
 // je nach Portal unterschiedlich eingestellt werden
@@ -37,6 +37,8 @@ Folgende Optionen sind für die Kategorien zulässig:
 "hideDefault" => true versteckt für diese Prompt Kategorie den Standard Chat z.B. wenn du für diese Prompt Kategorie einen eigenen Basic Prompt anlegen willst z.B. Rubrik "Webdesign" hier macht es ja keinen Sinn das ChatGPT bei der Tageszeitung arbeitet sondern vielleicht in der Agentur des Hauses
 
 "promptless" => true schaltet in der Promptkategorie die Möglichkeit frei die ChatGPT API komplett ohne Systemprompt zu nutzen. Das ist z.B. fürs Testen kann gut. Die Auswahl heißt dann "Chat ohne Prompt"
+
+"tool" => 'toolname' - aktiviert ein Serverseitiges Tool oder eine MCP Schnittstelle die auf dem System eingerichtet wurde. Dies zur Zeit ist ein experimentelles Feature.
 */
 
 define('CATEGORIES', [
@@ -47,7 +49,7 @@ define('CATEGORIES', [
 	'sales'			=> ['title' => 'Anzeigenverkauf', 'hideDefault' => true],
 	'social'		=> ['title' => 'Social Media', 'articleImport' => true, 'hideDefault' => true],
 	'coding'		=> ['title' => 'Webentwicklung', 'hideDefault' => true],
-	'tests'			=> ['title' => 'Testprompts', 'promptless' => true, 'hideDefault' => true],
+	'tests'			=> ['title' => 'Testprompts', 'promptless' => true, 'hideDefault' => true, 'tools' => 'DriveRag'],
 
 	'bilder'		=> ['title' => 'Prompts für den Bildgenerator', 'hideDefault' => true],
 	'translate'		=> ['title' => 'Übersetzer', 'hideDefault' => true],

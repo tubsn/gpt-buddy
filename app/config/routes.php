@@ -9,12 +9,21 @@ $routes->get('/engines', 'Chat@engines');
 // API
 $routes->post('/ask', 'Chat@ask');
 $routes->get('/ping', 'API@ping');
-$routes->get('/stream/{model}/{id}', 'API@stream');
 $routes->get('/prompts', 'API@prompts');
 $routes->get('/prompts/{id}', 'API@prompt');
 $routes->get('/admin/apitoken', 'API@create_bearer_token');
 
+// Conversations Responses API
+$routes->post('/stream', 'Streaming@post_request');
+$routes->get('/stream/sse', 'Streaming@sse');
+$routes->get('/stream/session[/{responseID}]', 'Streaming@get_conversation');
+$routes->get('/stream/deleteconversion[/{responseID}]', 'Streaming@delete_conversation');
+$routes->post('/conversation', 'Streaming@edit_conversation');
+$routes->post('/conversation/new', 'Streaming@add_conversation_entry');
+$routes->post('/conversation/pop/{index}', 'Streaming@remove_conversation_entry');
+
 // Conversations
+/*
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->post('/conversation/{id}', 'Chat@edit_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
@@ -23,6 +32,7 @@ $routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
 $routes->get('/conversation/{id}/pop/lasttwo', 'Chat@remove_last_conversation_generation');
 $routes->get('/conversation/{id}/pop/{index}', 'Chat@remove_conversation_entry');
 //$routes->get('/conversations', 'Chat@conversation_list');
+*/
 
 // Image Generator
 $routes->get('/image', 'Image@index');

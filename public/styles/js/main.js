@@ -1,392 +1,107 @@
+import ModelSelector from "./components/model-selector.js";
+import PromptSelector from "./components/prompt-selector.js";
+import UrlImporter from "./components/url-importer.js";
+import RagSettings from "./components/rag-settings.js";
+import FileUpload from "./components/file-upload.js";
+import TtsButton from "./components/tts-button.js";
+import ChatHistory from "./components/chat-history.js";
+import Dropdown from "./components/dropdown-menu.js";
+import DebugModal from "./components/debug-modal.js";
 
-const {createApp} = Vue
+const { createApp, defineAsyncComponent } = Vue
 
-createApp({
+const chatApp = createApp({
 data() {
 	return {
-		action: null,
-		description: null, // Helptext in UI
-		markdown: false,
-		portal: null,
-		gpt4: false,
-		gpt4forced: false,
-		model: '',
-		userSelectedModel: '',
-		modelDescription: '',
-		input: '',
-		output: '',
-		payload: '',
-		history: '', // Conversion History
-		historyExpanded: true,
-		conversationID: null,
-		loading: false,
-		eventSource: null,
-		responseSeconds: 0,
-		tokens: 0,
-		chars: 0,
-		errormessages: '',
+		input : null,
+		output : null,
+		promptID: null,
+		responseID: null,
+		directPromptID: null,
+		infotext: null,
+		eventSource: null,		
+		loading : false,
+		reasoning: false,
+		model : null,
+		modelmode : null,
+		modelarguments : null,
 		stopWatchStartTime: null,
-		loadbalancer: false, // Activate if using multiple Api Keys or PHP instances
-		availableServers: ['//chatapi1.lr-digital.de','//chatapi2.lr-digital.de','//chatapi3.lr-digital.de'],
+		responsetime: 0,
+		usage: [],
+		errormessages: null,
+		sseFinalOutput: [],
+		sseProgress: [],
 	}
 },
 
 components: {
-	'dropdown': VueDropDown,
+	"model-selector": ModelSelector,
+	"prompt-selector": PromptSelector,
+	"url-importer": UrlImporter,
+	"rag-settings": RagSettings,
+	"file-upload": FileUpload,
+	"tts-button": TtsButton,
+	"chat-history": ChatHistory,
+	"dropdown": Dropdown,
+	"debug-modal": DebugModal,
 },
 
 computed: {
-	responsetime() {
-		if (this.responseSeconds <= 0) {return ''}
-		return this.responseSeconds
+	chars() {
+		if (!this.output) {return 0}
+		return this.output.length
 	},
-
-	error() {
-		if (!this.errormessages) {return ''}
-		return `Fehler: ${this.errormessages}`
-	},
-
-	inputChars() {
-		if (!this.input) {return 0}
-		return this.input.length
-	},
-
-	advancedModel() {
-		if (this.model.toLowerCase().includes('gpt-5') || this.model.includes('o3') || this.model.includes('o4')) {return true;}
-	}
 },
 
 watch: {
-	history(content) {sessionStorage.history = JSON.stringify(content)},
 	input(content) {sessionStorage.input = content},
-	historyExpanded(value) {localStorage.historyExpanded = value;},
-	gpt4(value) {localStorage.gpt4 = value;},
-	resolution(value) {localStorage.resolution = value;},
-	quality(value) {localStorage.quality = value;},
-	style(value) {localStorage.style = value;},
-	conversationID(value) {sessionStorage.conversationID = value},
-	action(value) {sessionStorage.action = value},
-	markdown(value) {sessionStorage.markdown = value},
-	model(value) {localStorage.model = value},
-	userSelectedModel(value) {localStorage.userSelectedModel = value},
+	output(content) {sessionStorage.output = content},
+	model() {this.reasoning = this.$refs.model?.reasoning || false},
 },
 
 mounted() {
-	this.portalConfig()
-	this.autofocus()
-	this.getUserSettings()
-	this.autoSelectBox()
-	this.getHistory()
-	this.setPromptSettings()
-	this.preselectModelBox()
-	this.preselectActionByHash()
-	this.initCopyPaste()
+	this.loadInput()
 },
 
 methods: {
 
-	getPortal() {return this.$el.parentElement.dataset.portal},
+	send() {
+		this.clearLogs()
+		this.createStreamRequest()
+	},
 
-	portalConfig() {
-		this.portal = this.getPortal()
-
-		if (this.portal == 'MOZ') {
-			this.availableServers = ['//chatapi-moz-1.lr-digital.de','//chatapi-moz-2.lr-digital.de','//chatapi-moz-3.lr-digital.de']
+	clearLogs() {
+		this.errormessages = null
+		if (this.$refs.debug) {
+			this.$refs.debug.sseFinalOutput = []
+			this.$refs.debug.sseProgress = []
 		}
-		
-		if (this.portal == 'SWP') {
-			this.availableServers = ['//chatapi-swp-1.lr-digital.de','//chatapi-swp-2.lr-digital.de','//chatapi-swp-3.lr-digital.de']
-		}
-
 	},
 
-	autofocus() {
-		if (!this.$refs.autofocusElement) {return}
-		Vue.nextTick(() => {this.$refs.autofocusElement.focus()})
-	},
-
-	jwtToken() {
-		let form = this.$refs.form
-		this.jwt = form.dataset.token
-	},
-
-	autoSelectBox() {
-		if (!this.$refs.selectElement) {return}
-		let selectbox = this.$refs.selectElement
-
-		if (this.action != null) {
-			let options = [...selectbox].map(el => el.value);
-			if (options.includes(this.action)) {selectbox.value = this.action; return}
-		}		
-
-		this.action = selectbox.children[0].value || 'general'
-	},
-
-	preselectModelBox() {
-		if (!this.$refs.modelpicker) {return}
-		let selectbox = this.$refs.modelpicker
-		let options = [...selectbox].map(el => el.value);
-		if (options.includes(this.model)) {
-			selectbox.value = this.model
-			this.setModelSettings(selectbox.selectedOptions[0])
-			return
-		}
-		this.setModelSettings(selectbox[0])
-	},
-
-	setModelSettings(options) {
-
-		if (!options) {
-			let selectbox = this.$refs.modelpicker
-			this.setModelSettings(selectbox[0])
-			return
-		}
-		let selectedOption = options.target?.selectedOptions[0] ?? options
-		this.modelDescription = selectedOption.dataset.description
-		this.model = selectedOption.value
-	},
-
-
-	detectBestValidModel(modelname) {
-		// This is important, to select a Model based on prompt settings
-		// and if no model is defined swap back to the default model
-		if (modelname) {
-			let modelpicker = this.$refs.modelpicker
-			let options = [...modelpicker].map(el => el.value)
-		
-			if (options.includes(modelname)) {
-				modelpicker.value = modelname
-				this.setModelSettings(modelpicker.selectedOptions[0])
-			}
-		} else {
-			this.setModelSettings(this.$refs.modelpicker[this.userSelectedModel ?? 0])
-		}
-
-	},
-
-
-	setUserSelectedModel(event) {
-		let selectBox = event.target
-		this.userSelectedModel = selectBox.selectedIndex
-	},
-
-	preselectActionByHash() {
-
-		if (!this.$refs.selectElement) {return}
-		let selectbox = this.$refs.selectElement
-		
-		Vue.nextTick(() => {
-			if (location.hash) {
-				let hash = decodeURI(location.hash.substr(1))
-				let options = [...selectbox].map(el => el.value);
-				if (options.includes(hash)) {
-					this.action = hash
-					selectbox.value = hash
-					this.description = selectbox.options[selectbox.selectedIndex].getAttribute('data-description')					
-					this.detectBestValidModel(selectbox.options[selectbox.selectedIndex].getAttribute('data-model'))
-				}
-			}
-
-		})
-
-	},
-
-	uploadFile(event) {
-
-		let file = event
-		if (event.target) {
-			file = event.target.files[0]
-		}
-
-		this.loading = true
-
-		let formData = new FormData();
-		formData.append('file', file);
-
-		fetch('/import/file', {
-			method: 'POST',
-			body: formData
-		})
-
-		.then(response => response.text())
-		.then(data => {
-			try {
-				let jsondata = JSON.parse(data)
-				if (jsondata.payload) {
-					this.payload = jsondata.payload
-					this.gpt4 = true,
-					this.loading = false
-					return
-				}
-			} catch (error) {
-				console.log(error)
-			}
-			
-			this.input = data
-			this.loading = false
-		})
-		.catch(error => {
-			console.error(error)
-			this.loading = false
-		});
-
-	},
-
-	filterInstructions(node) {
-		// Removes OpenAI instrucational Arrays e.g. for Vision Uploads
-		if (node[0].text) {return node[0].text}
-		else {return node}
-	},
-
-	resetMetaInfo() {
-		this.responseSeconds = 0
-		this.errormessages = ''
-	},
-
-	showError(message) {
-			this.errormessages = message
-			this.loading = false
-			this.stopClock()
-	},
-
-	startClock() {this.stopWatchStartTime = Date.now()},
-	stopClock() {this.responseSeconds = this.elapsedTime()},
-	elapsedTime() {
-		if (!this.stopWatchStartTime) {return 0}
-		return (Date.now() - this.stopWatchStartTime) / 1000
-	},
-
-	setPromptSettings() {
-		if (!this.$refs.selectElement) {return ''}
-
-		let selectbox = this.$refs.selectElement
-		this.description = selectbox.options[0].getAttribute('data-description')
-
-		let selectedOption = selectbox.options[selectbox.selectedIndex]
-		if (selectedOption) {
-
-			// shall only happen when something is actively selected
-			if (selectbox.value != 'default') {
-				window.location.hash = selectbox.value
-			} else {
-				window.location.hash = ''
-				history.replaceState(null, null, window.location.pathname)
-			}
-
-			this.description = selectedOption.getAttribute('data-description')
-			this.detectBestValidModel(selectedOption.getAttribute('data-model'))
-
-		}
-		
-		if (sessionStorage.action != 'undefined') {
-			if (sessionStorage.action != this.action) {
-				this.wipeHistory() 
-			}
-		}
-
-	},
-
-	wipeInput() {
-		this.input = ''
-		this.payload = ''
-		this.errormessages = ''
-	},
-
-	wipeHistory() {
-		this.history = ''
-		this.output = ''
-		this.conversationID = ''
-		this.markdown = false
-	},
-
-	getHistory() {
+	loadInput() {
 		if (sessionStorage.input) {this.input = sessionStorage.input}
-		if (this.action == sessionStorage.action) {
-			this.conversationID = sessionStorage.conversationID
-			this.fetchConversation()
-		}
+		if (sessionStorage.output) {this.output = sessionStorage.output}
 	},
 
-	getUserSettings() {
-
-		if (localStorage.historyExpanded == 'true') {this.historyExpanded = true}
-		else {this.historyExpanded = false}
-
-		if (localStorage.gpt4 == 'true') {this.gpt4 = true}
-		else {this.gpt4 = false}
-
-		if (localStorage.model) {this.model = localStorage.model}
-		if (localStorage.userSelectedModel) {this.userSelectedModel = localStorage.userSelectedModel}
-		if (localStorage.resolution && localStorage.resolution != 0) {this.resolution = localStorage.resolution}
-		if (localStorage.quality && localStorage.quality != 0) {this.quality = localStorage.quality}
-		if (localStorage.style && localStorage.style != 0) {this.style = localStorage.style}
-
+	removeInput() {
+		this.input = ''
+		this.$refs.payload.payload = ''
+		this.errormessages = ''
+	},
+	
+	async removeHistory() {
+		this.$refs.history.kill()
+		this.clearLogs()
+		this.responsetime = 0
+		this.output = ''
+		sessionStorage.output = ''
 	},
 
-	createTTS(event) {
+	getHistory() {return this.$refs.history.history},
 
-		const container = event.target.parentElement.parentElement
-		let text = ''
-
-		if (container.classList.contains('user-input')) {text = this.input}
-		else {text = this.output}
-
-		// HTML has to be striped
-		const HTMLcleaner = document.createElement('div');
-		HTMLcleaner.innerHTML = text;
-		text = HTMLcleaner.textContent || HTMLcleaner.innerText || '';
-
-		const form = document.createElement('form');
-		form.method = 'POST';
-		form.action = '/tts';
-
-		const data = { input: text};
-		for (const key in data) {
-			const input = document.createElement('input');
-			input.type = 'hidden'; input.name = key; input.value = data[key];
-			form.appendChild(input);
-		}
-
-		document.body.appendChild(form);
-		form.submit();
-
-	},
-
-	async fetchConversation() {
-		if (!this.conversationID) {return}
-		if (this.conversationID === 'undefined') {return}
-		let response = await fetch('/conversation/' + this.conversationID + '/json')
-		if (!response.ok) {return}
-
-		let json = await response.json()
-		this.history = json
-	},
-
-	copyHistoryToClipboard(index) {
-		let historyData = JSON.parse(JSON.stringify(this.history));
-
-		if (!index.target) {
-			navigator.clipboard.writeText(historyData[index].content)
-			return	
-		}
-
-		let history = '';
-		historyData.forEach(entry => {
-			history = history + `[${entry.role}] ${entry.content}\n\n`
-		}) 
-		navigator.clipboard.writeText(history);
-	},
-
-	copyHistoryResultToClipboard() {
-		let historyData = JSON.parse(JSON.stringify(this.history));
-
-		let history = '';
-		historyData.forEach(entry => {
-			if (entry.role == 'assistant') {
-				history = history + `${entry.content}\n\n`
-			}
-		}) 
-		navigator.clipboard.writeText(history);
+	async redoLastStep() {
+		const regenerate = true
+		this.createStreamRequest(regenerate)
 	},
 
 	async copyOutputToClipboard(userSelection = null) {
@@ -395,7 +110,7 @@ methods: {
 			return
 		}
 		let element = document.querySelector('.gpt-output .io-textarea')
-		let text = element.innerText || element.value
+		let text = element.innerText || element.value || ''
 		navigator.clipboard.writeText(text);
 	},
 
@@ -405,154 +120,81 @@ methods: {
 			return
 		}		
 		let element = document.querySelector('.user-input .io-textarea')
-		let text = element.innerText || element.value
+		let text = element.innerText || element.value || ''
 		navigator.clipboard.writeText(text);
 	},
 
-	copyToInput(event) {
-		element = event.target
-		if (element == document.activeElement) {return}
-		this.input = element.innerText
-	},
+	directPrompt(event) {
 
-	editHistoryEntry(event) {
-		element = event.target
-		if (!element.isContentEditable) {
-			event.preventDefault()
-			element.setAttribute('contenteditable', 'true');
-			element.focus();
-		}		
-	},
-
-	async updateHistoryEntry(index, event) {
-		if (!this.conversationID) {return}		
-		
-		let element = event.target
-		element.setAttribute('contenteditable', 'false')
-		
-		let content = element.innerText
-		let formData = new FormData()
-		formData.append('entryID', index)
-		formData.append('content', content)
-
-		let response = await fetch('/conversation/' + this.conversationID, {method: "POST", body: formData})
-		if (!response.ok) {return}
-	},
-
-	async bestServer() {
-		if (!this.loadbalancer) {return ''}
-		let servers = this.availableServers
-		let availableServer = false
-
-		for (let server of servers) {
-			await this.checkResponseTime(server + '/ping', 120)
-			.then(responseTime => {availableServer = server})
-			.catch(error => {});	
-			if (availableServer) {break}
-		}
-
-		if (!availableServer) {return servers[0]} // Default Server if none available
-		return availableServer
-	},
-
-	async checkResponseTime(url, timeout) {
-		let startTime = Date.now();
-
-		return new Promise((resolve, reject) => {
-		let timer = setTimeout(() => {
-			reject(new Error('Timeout'))
-		}, timeout)
-
-		fetch(url)
-			.then(response => {
-				clearTimeout(timer)
-				resolve(Date.now() - startTime)
-			}).catch(error => {
-				clearTimeout(timer)
-				reject(error)
-			});
-		});
-	},
-
-	async importArticle(event) {
-
-		this.loading = true
-		let value = event.target.value || null;
-		if (!value) {this.input = ''; this.loading = false; return}
-
-		let formData = new FormData()
-		formData.append('url', value)
-
-		let response = await fetch('/import/article', {method: "POST", body: formData})
-		if (!response.ok) {this.input = 'URL ungültig oder Artikel nicht gefunden'; this.loading = false; return}
-
-		let json = await response.json()
-		.catch(error => {this.input = error; this.loading = false; return})
-		this.input = json.content || ''
-		this.loading = false
-
-	},
-
-	async ask(event) {
-
-		this.loading = true
-		this.resetMetaInfo()
-		this.startClock()
 		let element = event?.target || null
+		let directPromptID = element.dataset.directId || null
+		if (!directPromptID) {return}
 
-		let formData = new FormData()
-		formData.append('question', this.input)
-		formData.append('payload', this.payload)
-		formData.append('action', this.action)
-		formData.append('conversationID', this.conversationID)
+		this.directPromptID = directPromptID
+		this.removeHistory()
 
-		if (element?.dataset.directId) {formData.append('directPromptID', element.dataset.directId)}
+		let backup = this.input
+		this.input = null
+		this.createStreamRequest()
+		this.directPromptID = null
+		this.input = backup
 
-		let response = await fetch('/ask', {method: "POST", body: formData})
-		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
+	},
 
-		// Own PHP Errors
-		response = await response.text()
-		let json // no Idea why but it has to be defined first
-		try {json = JSON.parse(response);}
-		catch (error) {this.showError('PHP Error: ' + response); return}
-	
-		// PHP Api Handling Errors
-		if (json.error) {this.showError(json.error); return}
+	async createStreamRequest(regenerate = false) {
 
-		//this.payload = ''
-
-		this.tokens = json.tokens || 0
-		if (json.conversationID) {
-			this.conversationID = json.conversationID
-			this.stream(this.conversationID)
+		const requestURL = '/stream'
+		let requestData = {
+			input : this.input,
+			responseID : this.responseID,
+			promptID : this.promptID,
+			model : this.$refs.model.model,
+			category : this.$refs.prompts.category,
+			payload : this.$refs.payload?.payload || null,
+			parameters: this.$refs.parameters?.accessData() || null,
+			regenerate : regenerate,
 		}
 
-		this.chars = this.output.length
+		if (this.directPromptID) {
+			requestData.promptID = this.directPromptID
+		}
+
+		const response = await fetch(requestURL, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(requestData)
+		});
+
+		if (!response.ok) throw new Error('Kanal-Erstellung fehlgeschlagen');
+		
+		const data = await response.json()
+		const streamURL = data.url
+
+		this.stream(streamURL)
 	},
 
 
-	async stream(conversionID) {
-		this.output = ''
+	async stream(url) {
+
 		this.startClock()
-		this.markdown = false
+		this.errormessages = ''
+		this.output = ''
+		this.loading = true
 
-		let apiurl = await this.bestServer()
-		let modelpath = encodeURI(this.model) + '/'
+		if (!url) {url = '/stream'}
 
-		this.eventSource = new EventSource(apiurl + '/stream/' + modelpath + conversionID);
-
-		this.eventSource.addEventListener('message', (event) => {
-			this.output += JSON.parse(event.data)
-		})
-
-		this.eventSource.addEventListener('stop', (event) => {
-			this.stopStream()
-			this.fetchConversation()
-		})
-
+		this.eventSource = new EventSource(url, { withCredentials: true });
+		this.eventSource.addEventListener('message', (event) => {this.handleStream(JSON.parse(event.data))})
+		this.eventSource.addEventListener('done', (event) => {this.stopStream()})
+		this.eventSource.addEventListener('stop', (event) => {this.stopStream()})
 		this.eventSource.addEventListener("error", (event) => {
-			this.errormessages = event.data
+
+			//if (event.data.type == 'done') {this.stopStream();}
+			if (event.data) {
+				this.errormessages = event.data
+				this.output += event.data
+			}
+			else {this.errormessages = '404 - Connection Error while Streaming (Browser Console for more)'}
 			this.stopStream()
 		});
 
@@ -561,150 +203,103 @@ methods: {
 
 	},
 
-	stopStreamOnEscape(event) {
-		if (event.key === "Escape") {
-			this.stopStream()
-			//await this.fetchConversation()
-			this.removeLastHistoryEntry()
+	handleStream(chunk) {
+		switch (chunk.type) {
+			case 'delta': {
+				this.modelmode = ''
+				this.output += chunk.content
+				break
+			}
+
+			case 'error': {
+				this.errormessages = chunk.text || chunk.message
+				console.error(chunk)
+				this.output = chunk.text
+				break
+			}
+
+			case 'progress': {
+				if (this.$refs.debug) {this.$refs.debug.sseProgress.push(chunk.content)}
+				break
+			}
+
+			case 'tool_call': {
+				if (chunk.content == 'start') {this.modelmode = `verwende Tool - ${chunk.tool_name}`}
+				if (chunk.arguments && this.$refs.debug) {this.$refs.debug.modelarguments += chunk.arguments}
+				break
+			}
+
+			case 'reasoning': {
+				if (chunk.content == 'start') {this.modelmode = 'Reasoning'}
+				if (chunk.content == 'done') {this.modelmode = ''}
+				break
+			}
+
+			case 'completed': {
+				if (this.$refs.debug) {this.$refs.debug.sseFinalOutput.push(chunk.content)}
+				this.responseID = chunk.content.id 
+				this.usage = chunk.content.usage
+				break
+			}
+
+			case 'final': {
+				this.stopStream()
+				break
+			}
+
 		}
 	},
 
+	stopStreamOnEscape(event) {
+		if (event.key === "Escape") {this.stopStream()}
+	},
+
 	stopStream() {
-		this.eventSource.close()
 
-		this.markdown = true		
 		marked.use({breaks: true, mangle:false, headerIds: false,});
-		this.chars = this.output.length
-
 		this.output = marked.parse(this.output)
+
 		Vue.nextTick(() => {
 			hljs.highlightAll();
-			const outputDiv = document.querySelector(".io-output-div")
+			const outputDiv = document.querySelector(".output")
 			if (outputDiv) {
 				outputDiv.contentEditable = 'true'
 			}
 		})
-		
-		this.loading = false
+
+		this.eventSource.close()
 		this.stopClock()
-		this.autofocus()
-	},
+		this.modelmode = ''
+		if (!this.isMobileDevice()) {this.autofocus()}
+		this.$refs.history.fetchHistory()
+		this.loading = false
 
-	isOutputUrl() {
-		try { return Boolean(new URL(this.output)) }
-		catch(e){ return false }
-	},
-
-	async removeLastHistoryEntry() {
-
-		if (!this.conversationID) {return}
-		let response = await fetch('/conversation/' + this.conversationID + '/pop')
-		if (!response.ok) {return}
-
-		let json = await response.json()
-		this.history = json
+		sessionStorage.lastPrompt = this.promptID
 
 	},
 
-	async removeHistoryEntry(index) {
-
-		if (!this.conversationID) {return}
-		let response = await fetch('/conversation/' + this.conversationID + '/pop/' + index)
-		if (!response.ok) {return}
-
-		let json = await response.json()
-
-		this.history = json
-	},
-
-	async addHistoryEntry() {
-
-		if (!this.conversationID) {return}
-		let response = await fetch('/conversation/' + this.conversationID + '/new')
-		if (!response.ok) {return}
-
-		let json = await response.json()
-
-		this.history = json
-	},
-
-
-
-	async redoLastStep() {
-		
-		if (!this.conversationID) {return}
+	startClock() {this.stopWatchStartTime = Date.now(); this.responsetime = 0},
+	stopClock() {this.responsetime = this.elapsedTime()},
 	
-		let response = await fetch('/conversation/' + this.conversationID + '/pop/lasttwo')
-		if (!response.ok) {return}
-
-		let json = await response.json()
-
-		this.history = json
-		this.ask()
-		
+	elapsedTime() {
+		if (!this.stopWatchStartTime) {return 0}
+		return (Date.now() - this.stopWatchStartTime) / 1000
 	},
 
-	initCopyPaste() {
-		let _this = this
-		document.addEventListener('DOMContentLoaded', () => {
-			document.onpaste = function(event){
-				const content = _this.getContentFromPasteEvent(event);
-				if (typeof content === 'object') {_this.copyPasteUpload(content);}
-			}
-		});
+	autofocus() {
+		if (!this.$refs.autofocusElement) {return}
+		Vue.nextTick(() => {this.$refs.autofocusElement.focus()})
 	},
 
-	getContentFromPasteEvent(event) {
+	isMobileDevice() {
+		const isTouchDevice = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
+		const isSmallScreen = window.matchMedia("(max-width: 768px)").matches;
+		const isMobileLike = isTouchDevice && isSmallScreen;
 
-		const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-
-		for (let index in items) {
-			const item = items[index];
-
-			if (item.kind === 'file') {
-				return item.getAsFile();
-			}
-
-		}
-
-		return (event.clipboardData || window.clipboardData).getData("text")
-	},
-
-	async copyPasteUpload(file) {
-		if (!confirm('Möchten Sie ihren Screenshot hochladen?')) {return}
-		this.uploadFile(file)
-	},
-
-
-
+		return isMobileLike;
+	}
 
 }, // End of Methods
 
-}).mount('#gptInterface')
 
-
-// Darkmode
-function toggleDarkmode() {
-
-	let cssLink = document.querySelector('#dark-mode-css-link')
-	
-	if (cssLink) {
-		cssLink.remove()
-		document.cookie = 'darkmode = 0; path=/; expires=Fri, 31 Dec 1970 23:59:59 GMT'
-		return
-	}
-
-	let link = document.createElement('link')
-	link.id = 'dark-mode-css-link'
-	link.rel = 'stylesheet'
-	link.type = 'text/css'
-	link.href = '/styles/css/darkmode.css'
-	document.getElementsByTagName("head")[0].appendChild(link)
-	document.cookie = 'darkmode = 1;path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT'
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-	let colorModeIcon = document.querySelector('.color-mode')
-	if (colorModeIcon) {colorModeIcon.addEventListener('click', event => {toggleDarkmode()})}
-});
-
+}).mount('#chatapp')
