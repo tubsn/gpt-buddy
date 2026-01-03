@@ -19,6 +19,7 @@ class AiChat
 	private $stats;
 	private $prompts;
 	private $connection;
+	private $isNewConversation = true;
 
 	public function __construct() {
 		$this->connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com', '/v1/responses');
@@ -70,6 +71,8 @@ class AiChat
 		// If this is an existing Conversation we can return early
 		$conversation = Session::get('conversation');
 		if (!empty($conversation)) {
+
+			$this->isNewConversation = false;
 
 			if (Session::get('regenerate')) {
 				$conversation = $this->remove_last_interaction($conversation);
@@ -230,12 +233,34 @@ class AiChat
 		unset($trackingIDs[$oldID]);
 		Session::set('trackingIDs', $trackingIDs);
 
+		$this->log_conversation();
+
 		// Reset state in current Session
 		Session::unset('trackingID');
 		Session::unset('responseID');
 		Session::unset('conversation');
 		Session::unset('regenerate');
 
+	}
+
+	public function log_conversation() {
+
+		if (!defined('LOG_CONVERSATIONS')) {return;}
+		if (!LOG_CONVERSATIONS) {return;}
+
+		$folder = ROOT . 'cache' . DIRECTORY_SEPARATOR . 'conversations' . DIRECTORY_SEPARATOR;
+		$oldID = Session::get('responseID');
+		$responseID = $this->ai->last_response_id();
+
+		if (!$this->isNewConversation) {
+			$oldFile = $folder . $oldID;
+			if (is_file($oldFile)) {unlink($oldFile);}
+		}
+
+		$file = $folder . $responseID;
+		$content = $this->ai->last_conversation();
+		$content = json_encode($content);
+		file_put_contents($file, $content);
 	}
 
 	public function handle_rag_parameters() {
