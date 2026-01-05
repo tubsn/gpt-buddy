@@ -43,7 +43,7 @@ class AiChat
 		// Note the str_pad is important for some webservers to stream SSE
 		$this->ai->stream(function (array $event) {
 			echo 'data: ' . json_encode($event, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
-			echo str_pad('', 4096)."\n";
+			echo str_pad('', 256)."\n";
 			flush();
 		});
 
