@@ -6,8 +6,8 @@ data() {return {
 }},
 
 template: `
-<section class="fright hide-mobile">
-<button class="button light" type="button"
+<section class="fright hide-mobile debug-wrapper">
+<button class="button light debug-button" type="button"
 	onclick="document.getElementById('debugDialog').showModal()">Debug infos</button>
 
 <dialog id="debugDialog">

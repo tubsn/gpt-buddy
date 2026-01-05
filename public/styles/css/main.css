@@ -163,6 +163,9 @@ animation: outputInfoBreath 1.2s infinite; animation-timing-function: cubic-bezi
 	100% { opacity: 1; }
 }
 
+.debug-button {visibility:hidden;}
+.debug-wrapper:hover .debug-button {visibility: visible;}
+
 .debug textarea {height:600px;}
 
 
