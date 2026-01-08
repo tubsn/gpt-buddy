@@ -35,7 +35,7 @@ class AiChat
 	public function init_stream() {
 
 		$this->build_conversation();
-		$this->resolve_tools_from_config();
+		$this->resolve_tools();
 		$this->track_usage();
 
 		$this->init_streaming_header();
@@ -106,7 +106,7 @@ class AiChat
 
 	}
 
-	public function resolve_tools_from_config() {
+	public function resolve_tools() {
 		$categoryName = Session::get('category');
 		$category = CATEGORIES[$categoryName] ?? null;
 
@@ -117,11 +117,13 @@ class AiChat
 			if (!empty($tool)) {$this->ai->tools->use($tool);}
 		}
 
+		$searchtool = Session::get('search');
+		if ($searchtool) {$this->ai->tools->use('search');}
+
 		$this->ai->tools->use('date');
 		//$this->ai->tools->use('weekday');
 		//$this->ai->tools->use('Aibuddy_Github');
 		//$this->ai->tools->use('BNN_MCP');
-		//$this->ai->tools->use('search');
 
 	}
 

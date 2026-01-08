@@ -174,9 +174,12 @@ text-align:center; background-color:white; border-radius:0.3em; border: 1px soli
 
 .float-button img {width:22px; max-height:20px; position:relative; top:2px;}
 .float-button span {display:none; position:relative; bottom:2px; left:1px}
+.float-button span.visible {display:inline;}
+.float-button input {position:relative; bottom:-1px; left:-2px;}
 .float-button:hover span {display:inline-block;}
 .float-button:active {background-color:#ccc}
 
+.websearch-button {right:5.6em;}
 .speech-button {right:2.8em;}
 .file-button img.cloud {width:20px; top:3px}
 

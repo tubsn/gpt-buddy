@@ -84,6 +84,7 @@
 
 	<section class="gpt-output">
 
+		<search-toggle ref="searchtoggle"></search-toggle>
 		<tts-button></tts-button>
 
 		<div class="float-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"> <span>Inhalt kopieren</span></div>

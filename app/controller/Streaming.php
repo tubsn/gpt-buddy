@@ -129,6 +129,7 @@ class Streaming extends Controller {
 		Session::set('input', $data['input'] ?? null);
 		Session::set('category', $data['category'] ?? null);
 		Session::set('payload', $data['payload'] ?? null);
+		Session::set('search', $data['search'] ?? null);
 		Session::set('promptID', $data['promptID'] ?? null);
 		Session::set('model', $data['model'] ?? null);
 		Session::set('parameters', $data['parameters'] ?? null);

@@ -4,6 +4,7 @@ import UrlImporter from "./components/url-importer.js";
 import RagSettings from "./components/rag-settings.js";
 import FileUpload from "./components/file-upload.js";
 import TtsButton from "./components/tts-button.js";
+import SearchToggleButton from "./components/search-toggle.js";
 import ChatHistory from "./components/chat-history.js";
 import Dropdown from "./components/dropdown-menu.js";
 import DebugModal from "./components/debug-modal.js";
@@ -41,6 +42,7 @@ components: {
 	"rag-settings": RagSettings,
 	"file-upload": FileUpload,
 	"tts-button": TtsButton,
+	"search-toggle": SearchToggleButton,
 	"chat-history": ChatHistory,
 	"dropdown": Dropdown,
 	"debug-modal": DebugModal,
@@ -149,6 +151,7 @@ methods: {
 			responseID : this.responseID,
 			promptID : this.promptID,
 			model : this.$refs.model.model,
+			search : this.$refs.searchtoggle.active,
 			category : this.$refs.prompts.category,
 			payload : this.$refs.payload?.payload || null,
 			parameters: this.$refs.parameters?.accessData() || null,

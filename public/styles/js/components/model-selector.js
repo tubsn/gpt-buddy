@@ -14,9 +14,9 @@ watch: {
 		this.setMetaInfos()
 	},
 
-    forcedmodel(value) {
-      this.detectBestValidModel(value)
-    },
+	forcedmodel(value) {
+		this.detectBestValidModel(value)
+	},
 },
 
 template: `
