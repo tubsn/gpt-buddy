@@ -16,7 +16,7 @@ class Settings extends Controller {
 
 		$this->view('DefaultLayout');
 		$this->view->title = 'Settings';
-		$this->models('Prompts,Knowledge,Scrape');
+		$this->models('Prompts,Knowledge,Scrape,Usage');
 	}
 
 	public function index() {
@@ -33,10 +33,11 @@ class Settings extends Controller {
 
 		$this->view->categories = $categories;
 
-		$stats = $this->Prompts->most_hits();
+		$promptUsage = $this->Usage->prompts_by('month');
+
 		$chart = new AphexChart();
-		$chart->metric = array_column($stats,'hits');
-		$chart->dimension = array_column($stats,'title');
+		$chart->metric = array_column($promptUsage,'hits');
+		$chart->dimension = array_column($promptUsage,'title');
 		$chart->color = CHART_COLOR;
 		$chart->height = 400;
 		$chart->xfont = '12px';
@@ -44,18 +45,16 @@ class Settings extends Controller {
 		$chart->name = 'Prompt Nutzung';
 		$chart->template = 'charts/default_bar_chart';
 
-		$this->view->usageChart = $chart->create();
+		$this->view->usageByPromptChart = $chart->create();
 
-		$statsgrouped = $this->Prompts->most_hits_by_type();
-
-		$statsgrouped = array_map(function($item) {
-			$item['category'] = ucfirst($item['category']);
-			return $item;
-		}, $statsgrouped);
+		$categoryUsage = $this->Usage->categories_by('month');
+		$categoryUsage = array_combine(
+			array_map('ucfirst', array_keys($categoryUsage)), array_values($categoryUsage)
+		);
 
 		$chartgrouped = new AphexChart();
-		$chartgrouped->metric = array_column($statsgrouped,'hits');
-		$chartgrouped->dimension = array_column($statsgrouped,'category');
+		$chartgrouped->metric = array_values($categoryUsage);
+		$chartgrouped->dimension = array_keys($categoryUsage);
 		$chartgrouped->color = CHART_COLOR;
 		$chartgrouped->height = 400;
 		$chartgrouped->xfont = '12px';
@@ -63,7 +62,7 @@ class Settings extends Controller {
 		$chartgrouped->name = 'Kategorie Nutzung';
 		$chartgrouped->template = 'charts/default_bar_chart';
 
-		$this->view->usageChartgrouped = $chartgrouped->create();
+		$this->view->usageByCategoryChart = $chartgrouped->create();
 
 		$this->view->referer('/settings');
 		$this->view->render('admin/settings');

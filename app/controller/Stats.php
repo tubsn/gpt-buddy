@@ -15,30 +15,32 @@ class Stats extends Controller {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$this->view('DefaultLayout');
 		$this->view->title = 'Statistiken';
-		$this->models('Conversations,Prompts,Stats,Names');
+		$this->models('Conversations,Prompts,Stats,Usage');
 	}
 
-	public function form_name() {
-		$this->view->title = 'Auf der Suche...';
-		$this->view->render('namenssuche');
-	}
 
-	public function list_name() {
-		$this->view->title = 'Auf der Suche...';
-		$this->view->names = $this->Names->all();
-		$this->view->render('namenliste');
-	}
+	public function prompt_stats($timeframe = 'month') {
 
-	public function save_name() {
-		$this->Names->create(['name' => strip_tags($_POST['name']), 'portal' => PORTAL]);
-		$this->view->title = 'Auf der Suche...';
-		$this->view->render('dankeseite');
+		$options = ['day', 'week', 'month', 'year'];
+		if (!in_array($timeframe, $options)) {throw new \Exception("This Timeframe is not supported", 404);}
+
+		$stats = $this->Usage->prompts_by($timeframe);
+		//$stats = $this->Usage->categories_by($timeframe);
+
+		dd($stats);
+
 	}
 
 
 	public function index() {
 
 		$conversationsByMonth = $this->Stats->conversations_by_month();
+
+		if (isset($conversationsByMonth['2025-12'])) {
+			$conversationsByMonth['2025-12'] = $conversationsByMonth['2025-12'] + $this->Usage->stats_gap_december_2025();
+		}
+		
+		$conversationsByMonth = array_merge($conversationsByMonth, $this->Usage->conversations_by_month());
 
 		// Anfragen nach Monat
 		$monthly = new AphexChart();
@@ -54,7 +56,7 @@ class Stats extends Controller {
 		$this->view->monthly = $conversationsByMonth;		
 		$this->view->monthlyChart = $monthly->create();
 
-		$conversationsByDay = $this->Stats->conversations_by_day(14);
+		$conversationsByDay = $this->Usage->conversations_by_day(14);
 
 		// Anfragen nach Tag
 		$daily = new AphexChart();
@@ -106,7 +108,7 @@ class Stats extends Controller {
 	}
 
 	public function daily_stats() {
-		$stats = $this->Stats->conversations_by_day(90);
+		$stats = $this->Usage->conversations_by_day(90);
 		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
@@ -128,7 +130,7 @@ class Stats extends Controller {
 	}
 
 	public function weekly_stats() {
-		$stats = $this->Stats->conversations_by_week();
+		$stats = $this->Usage->conversations_by_week();
 		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
@@ -151,7 +153,7 @@ class Stats extends Controller {
 
 
 	public function weekday_stats() {
-		$stats = $this->Stats->conversations_by_weekday();
+		$stats = $this->Usage->conversations_by_weekday();
 		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
@@ -174,7 +176,7 @@ class Stats extends Controller {
 
 
 	public function hourly_stats() {
-		$stats = $this->Stats->conversations_by_hour();
+		$stats = $this->Usage->conversations_by_hour();
 		if (empty($stats)) {throw new \Exception("Stats not Available", 404);}
 
 		$chart = new AphexChart();
@@ -205,17 +207,24 @@ class Stats extends Controller {
 
 	}
 
-	public function export_prompt_stats() {
+	public function export_legacy_stats() {
 		$csv = new \flundr\mvc\views\csvView();
 		$stats = $this->Prompts->most_hits();
+		$csv->title = 'Legacy-Prompt-Stats-'.date("dmY").'.csv';
+		$csv->export($stats);
+	}
+
+	public function export_prompt_stats() {
+		$csv = new \flundr\mvc\views\csvView();
+		$stats = $this->Usage->alltime();
 		$csv->title = 'Prompt-Stats-'.date("dmY").'.csv';
 		$csv->export($stats);
 	}
 
 	public function export_category_stats() {
 		$csv = new \flundr\mvc\views\csvView();
-		$stats = $this->Prompts->most_hits_by_type();
-		$csv->title = 'Kategorie-Stats-'.date("dmY").'.csv';
+		$stats = $this->Usage->alltime_categories();
+		$csv->title = 'Category-Stats-'.date("dmY").'.csv';
 		$csv->export($stats);
 	}
 

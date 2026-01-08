@@ -81,22 +81,23 @@
 <?php endforeach ?>
 
 
-<h1>Prompt-Nutzungsstatistik</h1>
+<h1>Prompt-Nutzungsstatistik letzte 30 Tage</h1>
 
 <p>Prompts müssen mindestens 10 mal benutzt werden, um hier gelistet zu sein.</p>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <div class="chartbox">
-<?=$usageChartgrouped?>
+<?=$usageByCategoryChart?>
 </div>
 
 
 <div class="chartbox mb">
-<?=$usageChart?>
+<?=$usageByPromptChart?>
 </div>
 
 <div style="margin-top:2em;">
 <a class="button" href="/stats/export/prompts">Prompt-Statistik exportieren</a> <a class="button" href="/stats/export/category">Kategorie-Statistik exportieren</a>
+<a class="button" href="/stats/export/legacy">Legacy-Statistik (bis 2025) exportieren</a>
 </div>
 
 </main>

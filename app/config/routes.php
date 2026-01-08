@@ -22,18 +22,6 @@ $routes->post('/conversation', 'Streaming@edit_conversation');
 $routes->post('/conversation/new', 'Streaming@add_conversation_entry');
 $routes->post('/conversation/pop/{index}', 'Streaming@remove_conversation_entry');
 
-// Conversations
-/*
-$routes->get('/conversation/{id}', 'Chat@show_conversation');
-$routes->post('/conversation/{id}', 'Chat@edit_conversation');
-$routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
-$routes->get('/conversation/{id}/new', 'Chat@add_conversation_entry');
-$routes->get('/conversation/{id}/pop', 'Chat@remove_last_conversation_entry');
-$routes->get('/conversation/{id}/pop/lasttwo', 'Chat@remove_last_conversation_generation');
-$routes->get('/conversation/{id}/pop/{index}', 'Chat@remove_conversation_entry');
-//$routes->get('/conversations', 'Chat@conversation_list');
-*/
-
 // Image Generator
 $routes->get('/image', 'Image@index');
 $routes->get('/image/archive', 'Image@archive');
@@ -111,6 +99,10 @@ $routes->get('/stats/weekday', 'Stats@weekday_stats');
 $routes->get('/stats/import', 'Stats@import_and_summarize');
 $routes->get('/stats/export/prompts', 'Stats@export_prompt_stats');
 $routes->get('/stats/export/category', 'Stats@export_category_stats');
+$routes->get('/stats/export/legacy', 'Stats@export_legacy_stats');
+
+// Usage 
+$routes->get('/usage[/{timeframe}]', 'Stats@prompt_stats');
 
 
 // Authentication Routes
