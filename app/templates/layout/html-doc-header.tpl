@@ -6,6 +6,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 	<meta name="author" content="<?=$page['meta']['author'] ?? 'flundr'?>" />
 	<meta name="description" content="<?=$page['description']?>" />
+
+	<link rel="modulepreload" href="/styles/js/main.js">
+	<link rel="modulepreload" href="/styles/js/components/model-selector.js">
+	<link rel="modulepreload" href="/styles/js/components/prompt-selector.js">
+	<link rel="modulepreload" href="/styles/js/components/url-importer.js">
+	<link rel="modulepreload" href="/styles/js/components/rag-settings.js">
+	<link rel="modulepreload" href="/styles/js/components/file-upload.js">
+	<link rel="modulepreload" href="/styles/js/components/tts-button.js">
+	<link rel="modulepreload" href="/styles/js/components/search-toggle.js">
+	<link rel="modulepreload" href="/styles/js/components/chat-history.js">
+	<link rel="modulepreload" href="/styles/js/components/dropdown-menu.js">
+	<link rel="modulepreload" href="/styles/js/components/debug-modal.js">
+	
 <?php if (isset($page['fonts'])):?>
 	<link href="<?=$page['fonts']?>" rel="stylesheet">
 <?php endif ?>
