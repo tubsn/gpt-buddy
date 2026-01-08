@@ -2,7 +2,7 @@ export default Vue.defineComponent({
 data() {return {}},
 
 template: `
-<div class="float-button speech-button" title="Text to Speech" @click="createTTS"><img src="/styles/img/icon-volume.svg"> <span>Text to Speech</span></div>
+<div class="float-button speech-button" title="Text to Speech" @click="createTTS"><img src="/styles/img/icon-volume.svg"> </div>
 `,
 
 mounted: function() {},
