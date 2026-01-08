@@ -23,7 +23,7 @@ class Usage extends Model
 		$SQLstatement = $this->db->connection->prepare("
 			SELECT DATE_FORMAT(date, '%H') as hour, count(*) as 'usage'
 			FROM $table 
-			WHERE date >= '2025-01-01'
+			WHERE date >= '2026-01-01'
 			GROUP BY hour ORDER BY hour ASC
 			");
 		$SQLstatement->execute();
@@ -53,7 +53,7 @@ class Usage extends Model
 		$SQLstatement = $this->db->connection->prepare("
 			SELECT DAYOFWEEK(date) as weekday, count(*) as 'usage'
 			FROM $table 
-			WHERE date >= '2025-01-01'
+			WHERE date >= '2026-01-01'
 			GROUP BY weekday ORDER BY weekday ASC
 			");
 		$SQLstatement->execute();
@@ -67,7 +67,7 @@ class Usage extends Model
 		$SQLstatement = $this->db->connection->prepare("
 			SELECT DATE_FORMAT(date, '%Y-%v') as week, count(*) as 'usage'
 			FROM $table 
-			WHERE date >= '2025-01-01'
+			WHERE date >= '2026-01-01'
 			GROUP BY week ORDER BY week ASC
 			");
 		$SQLstatement->execute();
@@ -81,7 +81,7 @@ class Usage extends Model
 		$SQLstatement = $this->db->connection->prepare("
 			SELECT DATE_FORMAT(date, '%Y-%m') as month, count(*) as 'usage'
 			FROM $table 
-			WHERE date >= '2025-01-01'
+			WHERE date >= '2026-01-01'
 			GROUP BY month ORDER BY month ASC
 			");
 		$SQLstatement->execute();
@@ -104,6 +104,13 @@ class Usage extends Model
 
 	public function number_of_conversations() {
 		$SQLstatement = $this->db->connection->prepare("SELECT count(*) from stats");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetch(\PDO::FETCH_COLUMN);
+		return $output;
+	}
+
+	public function number_of_conversations_with_prompt() {
+		$SQLstatement = $this->db->connection->prepare("SELECT count(*) FROM stats WHERE prompt_id is not null");
 		$SQLstatement->execute();
 		$output = $SQLstatement->fetch(\PDO::FETCH_COLUMN);
 		return $output;
@@ -212,6 +219,18 @@ class Usage extends Model
 		
 		$SQLstatement->execute();
 		$output = $SQLstatement->fetchall(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
+		return $output;
+
+	}
+
+	public function avglength() {
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare("
+			SELECT avg(length) as 'length' FROM $table 
+		");
+		$SQLstatement->execute();
+		$output = $SQLstatement->fetch(\PDO::FETCH_COLUMN);
 		return $output;
 
 	}

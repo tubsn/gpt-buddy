@@ -8,7 +8,7 @@
 
 <section class="box" >
 
-
+<?php if (!empty(array_values($type)[0])): ?>
 <figure class="grid-2-1">
 <div style="margin-top:-4em; margin-bottom:-6em; margin-left:-10em; margin-right:-5em; align-self: center;">
 <?=$typeChart?>
@@ -26,10 +26,10 @@
 <small style="font-size:0.6em;position:relative; top:0.5em">*Hinweis: in der Grafik wurde Wissensaufbau entfernt, da hier >40% der Anfragen landen.</small>
 </p>
 
-
 </div>
 
 </figure>
+<?php endif ?>
 
 
 <figure class="chartbox grid-2-1">

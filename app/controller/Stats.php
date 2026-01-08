@@ -36,10 +36,11 @@ class Stats extends Controller {
 
 		$conversationsByMonth = $this->Stats->conversations_by_month();
 
+
 		if (isset($conversationsByMonth['2025-12'])) {
 			$conversationsByMonth['2025-12'] = $conversationsByMonth['2025-12'] + $this->Usage->stats_gap_december_2025();
 		}
-		
+
 		$conversationsByMonth = array_merge($conversationsByMonth, $this->Usage->conversations_by_month());
 
 		// Anfragen nach Monat
@@ -75,11 +76,11 @@ class Stats extends Controller {
 
 		$type = $this->Stats->conversations_by_type();
 
-		$whiteListesTypes['Empfehlungen'] = $type['Empfehlungen'];
-		$whiteListesTypes['Kreativität'] = $type['Kreativität'];
-		$whiteListesTypes['Problemlösungen'] = $type['Problemlösungen'];
-		$whiteListesTypes['Sprachliche Unterstützung'] = $type['Sprachliche Unterstützung'];
-		$whiteListesTypes['Unterhaltung'] = $type['Unterhaltung'];
+		$whiteListesTypes['Empfehlungen'] = $type['Empfehlungen'] ?? null;
+		$whiteListesTypes['Kreativität'] = $type['Kreativität'] ?? null;
+		$whiteListesTypes['Problemlösungen'] = $type['Problemlösungen'] ?? null;
+		$whiteListesTypes['Sprachliche Unterstützung'] = $type['Sprachliche Unterstützung'] ?? null;
+		$whiteListesTypes['Unterhaltung'] = $type['Unterhaltung'] ?? null;
 		//$whiteListesTypes['Wissensaufbau'] = $type['Wissensaufbau'];
 
 		// Anfragen nach Rubrik
@@ -95,13 +96,16 @@ class Stats extends Controller {
 
 		$prompts = $this->Prompts->all(['hits']);
 		$promptusage = array_sum(array_column($prompts,'hits'));
+		$promptusage += $this->Usage->number_of_conversations_with_prompt();
 
 		$this->view->type = $whiteListesTypes;		
 		$this->view->typeChart = $chart->create();
 
-		$this->view->usage = $this->Stats->count();
+		$usage = $this->Stats->count() + $this->Usage->number_of_conversations();
+
+		$this->view->usage = $usage;
 		$this->view->promptusage = $promptusage;
-		$this->view->length = $this->Stats->avglength();	
+		$this->view->length = $this->Usage->avglength();	
 
 		$this->view->render('stats');
 
