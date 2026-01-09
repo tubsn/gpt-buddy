@@ -126,6 +126,19 @@ methods: {
 		navigator.clipboard.writeText(text);
 	},
 
+	createUserEmail(event) {
+		const email = event.currentTarget.dataset.usermail || '';
+		const output = document.querySelector('.gpt-output .io-textarea')
+		const text = output.innerText || output.value || ''
+		const subject = 'AiBuddy'
+
+		const mailtoUrl =
+		"mailto:" +	encodeURIComponent(email) +
+		"?subject=" + encodeURIComponent(subject) +
+		"&body=" + encodeURIComponent(text);
+		window.location.href = mailtoUrl;
+	},
+
 	directPrompt(event) {
 
 		let element = event?.target || null

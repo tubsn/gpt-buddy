@@ -317,6 +317,7 @@ table.fancy th {background-color: var(--primary);}
 
 @media only screen and (max-width: 768px) {
 	.speech-button {display:none;}
+	.websearch-button {display:none;}
 	.io-textarea {height:14vh; min-height: 98px; font-size:.9em;}
 	.user-input {margin-bottom: 0em; padding-bottom: 0em; display: flex; flex-direction: column;}
 	.del-historie {align-self:center; margin-bottom:0em; font-size:0.8em; align-self:normal; float:none;}
@@ -344,15 +345,16 @@ table.fancy th {background-color: var(--primary);}
 	grid-template-rows: auto; grid-template-areas: 
 	"label label . ."
 	"output output output output"
-	"button1 button1 button2 button2"
+	"button1 button2 button3 button3"
 	"stats stats stats stats";
 	}
 
 	.gpt-output label {grid-area: label; display:none;}
 	.gpt-output .io-textarea {grid-area: output; min-height:150px; height: calc(100vh - 500px);}
 	.gpt-output .usage-stats {grid-area: stats; text-align:center}
-	.gpt-output .float-button {grid-area: button1;}
-	.gpt-output .del-historie {grid-area: button2;}
+	.gpt-output .copy-button {grid-area: button1;}
+	.gpt-output .send-button {grid-area: button2;}
+	.gpt-output .del-historie {grid-area: button3;}
 }
 
 

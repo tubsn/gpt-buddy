@@ -87,7 +87,8 @@
 		<search-toggle ref="searchtoggle"></search-toggle>
 		<tts-button></tts-button>
 
-		<div class="float-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"></div>
+		<div class="float-button send-button show-mobile" title="per Mail Versenden" data-usermail="<?=auth('email') ?? ''?>" @click="createUserEmail"><img src="/styles/img/mail-icon.svg"></div>
+		<div class="float-button copy-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"></div>
 
 		<label><span class="">Ausgabe:</span> <span class="output-info" v-if="modelmode">{{modelmode}}</span></label>
 			<textarea tabindex="3" v-if="loading" class="io-textarea" v-html="output" contenteditable="true" tabindex="0"></textarea>
