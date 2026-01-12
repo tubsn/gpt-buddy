@@ -22,6 +22,9 @@ $routes->post('/conversation', 'Streaming@edit_conversation');
 $routes->post('/conversation/new', 'Streaming@add_conversation_entry');
 $routes->post('/conversation/pop/{index}', 'Streaming@remove_conversation_entry');
 
+$routes->get('/conversation/{id}', 'Chat@show_conversation');
+$routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
+
 // Image Generator
 $routes->get('/image', 'Image@index');
 $routes->get('/image/archive', 'Image@archive');
@@ -43,7 +46,7 @@ $routes->post('/tts/generate', 'TextToSpeech@generate');
 
 // Imports
 $routes->get('/import/ticker/{id}', 'Import@ticker');
-$routes->post('/import/article/', 'Import@article');
+$routes->post('/import/article', 'Import@article');
 $routes->get('/import/pdf', 'Import@pdf');
 $routes->get('/import/splitter', 'Import@splitter');
 $routes->post('/import/splitter', 'Import@splitter');
