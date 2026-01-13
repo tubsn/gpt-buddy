@@ -129,7 +129,11 @@ methods: {
 	createUserEmail(event) {
 		const email = event.currentTarget.dataset.usermail || '';
 		const output = document.querySelector('.gpt-output .io-textarea')
-		const text = output.innerText || output.value || ''
+		const input = document.querySelector('.user-input .io-textarea')
+
+		let text = output.innerText || output.value || ''
+		if (text == '') {text = input.innerText || input.value || ''}
+
 		const subject = 'AiBuddy'
 
 		const mailtoUrl =
