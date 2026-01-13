@@ -332,6 +332,7 @@ table.fancy th {background-color: var(--primary);}
 
 	.float-button {position: relative; top:0; border:none;}
 	.float-button span {display:inline}
+	.float-button:hover {background-color:#ccc}
 	.float-button img {max-height:14px; top: 1px;}
 	.file-button img.cloud {top: 1px;}
 
