@@ -21,6 +21,27 @@ class Conversations
 		return $this->decode_and_validate($data);
 	}
 
+	public function get_json($id) {
+		$filename = $this->path . $id;
+		if (!file_exists($filename)) {return null;}
+		$data = file_get_contents($filename);
+		return json_decode($data,1);
+	}
+
+	public function get_json_with_markdown($id) {
+		$filename = $this->path . $id;
+		if (!file_exists($filename)) {return null;}
+		$data = file_get_contents($filename);
+		$data = json_decode($data,1);
+
+		$converter = new CommonMarkConverter();
+		foreach ($data as $key => $message) {
+			$data[$key]['content'] = $converter->convert($message['content']);
+		}
+
+		return $data;
+	}
+
 	public function get_with_markdown($id) {
 
 		$conversation = $this->get($id);

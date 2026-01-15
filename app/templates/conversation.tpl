@@ -7,7 +7,7 @@
 <script>
 document.querySelector('.js-apply').addEventListener('click', async (e) => {
 	e.preventDefault()
-	sessionStorage.conversationID = '<?=$id?>'
+	sessionStorage.responseID = '<?=$id?>'
 	window.location = '/'
 });
 </script>

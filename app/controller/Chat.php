@@ -56,11 +56,6 @@ class Chat extends Controller {
 
 	}
 
-	public function external_api_url_test() {
-		$out = $this->ChatGPT->direct('Hi was geht?');
-		dd($out);
-	}
-
 	// Should be Refactored into Model
 	public function read_tags() {
 		$filepath = ROOT . 'cache/tags/taglist.txt';
@@ -132,11 +127,23 @@ class Chat extends Controller {
 
 	}
 
+	public function show_sessions() {
+		$conversations = Session::get('conversations');
+		dd($conversations);
+	}
+
 	public function show_conversation($id) {
-		$conversation = $this->Conversations->get_with_markdown($id);
+		$conversation = $this->Conversations->get_json_with_markdown($id);
+		$conversationJson = $this->Conversations->get_json($id);
 		if (empty($conversation)) {throw new \Exception("Conversation not Found", 404);}
-		$this->view->title = 'Chat vom ' . date('d.m.Y H:i', $conversation['edited']) . '&thinsp;Uhr';
-		$this->view->conversation = $conversation['conversation'];
+
+		$conversations = Session::get('conversations');
+		$conversations[$id] = $conversationJson;
+		Session::set('conversations', $conversations);
+		Session::set('conversation', $conversationJson);
+
+		$this->view->title = 'Chat vom ' . $id;
+		$this->view->conversation = $conversation;
 		$this->view->id = $id;
 		$this->view->render('conversation');
 	}
@@ -160,9 +167,9 @@ class Chat extends Controller {
 	}
 
 	public function get_conversation_json($id) {
-		$conversation = $this->Conversations->get($id);
+		$conversation = $this->Conversations->get_json($id);
 		if (empty($conversation)) {throw new \Exception("Conversation Unavailable", 404);}
-		$this->view->json($conversation['conversation']);
+		$this->view->json($conversation);
 	}
 
 	public function add_conversation_entry($id) {
