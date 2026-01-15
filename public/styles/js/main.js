@@ -9,7 +9,7 @@ import ChatHistory from "./components/chat-history.js";
 import Dropdown from "./components/dropdown-menu.js";
 import DebugModal from "./components/debug-modal.js";
 
-const { createApp, defineAsyncComponent } = Vue
+const { createApp } = Vue
 
 const chatApp = createApp({
 data() {
