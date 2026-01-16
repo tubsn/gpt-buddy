@@ -181,7 +181,7 @@ class OpenAI
 		$options['tool_choice'] = 'auto';
 		$options['tools'] = $this->tools_schema();
 		$options['parallel_tool_calls'] = true;
-		// $options['max_tool_calls'] = 5;
+		$options['max_tool_calls'] = 5;
 
 		if ($this->reasoning) {
 			$options['reasoning']['effort'] = $this->reasoning;
