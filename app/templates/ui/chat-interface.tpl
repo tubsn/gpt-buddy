@@ -5,11 +5,16 @@
 <p v-if="infotext" class="hide-mobile" v-html="'Hinweis: ' + infotext"></p>
 <p v-else class="hide-mobile">Hinweis: mit der Tastenkombination <b>TAB + Leertaste</b>, lässt sich eine Nachricht schnell abschicken.</p>
 
-<section class="box <?php if ($rag ?? false == true): ?>rag-layout<?php endif ?>" :class="{'advanced-model' : reasoning}">
+<section class="main-form box <?php if ($rag ?? false == true): ?>rag-layout<?php endif ?>" :class="{'advanced-model' : reasoning}">
 
 <p v-if="errormessages" v-cloak class="error-message" v-html="errormessages"></p>
 
-<div class="ui-header">
+<?php $directPrompts = array_filter($prompts, function($prompt) {return $prompt['direct'] == true;});
+$hasDirect = null;
+if (!empty($directPrompts)) {$hasDirect = ' has-direct-prompts';}
+?>
+
+<div class="ui-header<?=$hasDirect?>">
 
 	<div class="options">	
 		<?php 
@@ -22,6 +27,7 @@
 
 		<prompt-selector <?=$selectOptions?> @change="promptID = $event" @forcemodel="model = $event" ref="prompts">
 			<?php foreach ($prompts as $prompt): ?>
+			<?php if ($prompt['direct']) {continue;} ?>
 			<option value="<?=$prompt['id']?>" data-description="<?=$prompt['description'] ?? ''?>" data-advanced="<?=$prompt['advanced'] ?? ''?>" data-model="<?=$prompt['model'] ?? ''?>"><?=$prompt['title']?></option>
 			<?php endforeach ?>
 		</prompt-selector>
@@ -30,8 +36,6 @@
 	<div class="center-options">
 		<url-importer @change="input = $event"></url-importer>
 	</div>
-
-	<?php $directPrompts = array_filter($prompts, function($prompt) {return $prompt['direct'] == true;});?>
 
 	<?php if ($directPrompts): ?>
 	<div class="direct-actions hide-mobile">
@@ -108,12 +112,11 @@
 
 </div>
 
-
-</section> <!-- Main Form Section -->
-
 <?php if (auth_rights('debug')): ?>
 <debug-modal ref="debug"></debug-modal>
 <?php endif ?>
+
+</section> <!-- Main Form Section -->
 
 <chat-history ref="history" :current-response="responseID"></chat-history>
 

@@ -6,7 +6,7 @@ data() {return {
 }},
 
 template: `
-<section class="fright hide-mobile debug-wrapper">
+<section class="hide-mobile debug-wrapper">
 <button class="button light debug-button" type="button"
 	onclick="document.getElementById('debugDialog').showModal()">Debug infos</button>
 
@@ -18,7 +18,7 @@ template: `
 
 	<figure>
 		Model Tooling Parameter:
-		<pre>{{modelarguments}}</pre>
+		<pre>{{modelarguments || 'empty'}}</pre>
 	</figure>
 
 	<div class="col-2 debug">

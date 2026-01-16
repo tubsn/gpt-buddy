@@ -60,6 +60,7 @@ code {white-space: preserve;}
 
 
 /* Misc Stuff */
+.main-form {position:relative;}
 .fright + h3 {margin-top:0;}
 .ucfirst {text-transform: capitalize}
 .mlsmall {margin-left:0.4em;}
@@ -163,6 +164,7 @@ animation: outputInfoBreath 1.2s infinite; animation-timing-function: cubic-bezi
 	100% { opacity: 1; }
 }
 
+.debug-wrapper {position:absolute; right:0; bottom:-2.5em;}
 .debug-button {visibility:hidden;}
 .debug-wrapper:hover .debug-button {visibility: visible;}
 
@@ -185,13 +187,14 @@ text-align:center; background-color:white; border-radius:0.3em; border: 1px soli
 
 .rag-layout .picker-ui-wrapper {display:block;}
 .rag-layout .ui-header {grid-template-columns: 2fr 4fr 1fr}
+.rag-layout .ui-header.has-direct-prompts .ui-header {grid-template-columns: 2fr 1fr 1fr 1fr}
+.rag-layout .ui-header.has-direct-prompts .rag-settings {grid-column-end: 5}
+
 .rag-layout .meta-options {justify-self: initial; grid-column: initial;}
 .rag-layout .options {display:block}
 .rag-layout .options select {max-width:100%}
 
 .rag-layout .io-textarea {height:  calc(100vh - 700px);}
-
-.center-options {}
 
 /* Model Picker */
 .picker-ui-wrapper {align-items:center; display:flex; gap:0.4em; white-space: nowrap; margin-bottom:0.1em; font-size:0.8em}
