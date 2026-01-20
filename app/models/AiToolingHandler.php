@@ -3,6 +3,7 @@
 namespace app\models;
 
 use \app\models\mcp\GeneralTools;
+use \app\models\mcp\PoliceArticle;
 use \app\models\mcp\PipedreamMCPConnector;
 use \app\models\mcp\DriveMixer;
 use flundr\utility\Log;
@@ -54,6 +55,50 @@ class AiToolingHandler {
 		$this->ai->register_tool('file_search', ['type' => 'file_search']);
 	}
 
+	public function Police_Article() {
+
+		$this->ai->register_tool(
+			'Police_Article',
+			[
+				'name' => 'Police_Article',
+				'description' => 'Creates a Police Article based on a news story',
+				'parameters' => [
+					'type' => 'object',
+					'properties' => [
+						'input' => [
+							'type' => 'string',
+							'description' => 'The Newsstory which needs to be transformed into a police article',
+						],
+					],
+					'required' => ['input'],
+				],
+			],
+			function (array $args) {return new PoliceArticle()->create($args);}
+		);
+	}
+
+
+	public function Call_GPT() {
+
+		$this->ai->register_tool(
+			'Call_GPT',
+			[
+				'name' => 'Call_GPT',
+				'description' => 'Asks a question to ChatGPT',
+				'parameters' => [
+					'type' => 'object',
+					'properties' => [
+						'query' => [
+							'type' => 'string',
+							'description' => 'The Question you want to ask ChatGPT',
+						],
+					],
+					'required' => ['query'],
+				],
+			],
+			function (array $args) {return new GeneralTools()->call_gpt($args);}
+		);
+	}
 
 	private function DriveRag() {
 
@@ -168,7 +213,7 @@ class AiToolingHandler {
 
 	private function Piano() {
 
-		$ai->register_tool(
+		$this->ai->register_tool(
 			'Piano',
 			[
 				'type' => 'mcp',
