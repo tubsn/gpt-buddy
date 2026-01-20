@@ -121,6 +121,9 @@ background-color: #efefef; padding: .5em 1em; border-radius: .5em; font-style:ob
 .options {margin-bottom:1em; display:flex; gap:1em; justify-content:start; align-items:flex-start;}
 .options select {max-width: 400px;}
 
+.tool-select {display:flex;}
+.tool-select label {width:100%;}
+.tool-select select {height: 84%; flex: 1 1 auto; min-height: 0; box-sizing: border-box;}
 
 .promptlist .inactive {background-color:#dfdfdf}
 
@@ -222,7 +225,6 @@ text-align:center; background-color:white; border-radius:0.3em; border: 1px soli
 
 @media only screen and (max-width: 768px) {
 .rag-grid {grid-template-columns: 1fr 1fr}
-/*.ui-header {display:flex; flex-wrap: wrap; gap:0; margin-bottom:1em;}*/
 .ui-header {display:grid; grid-template-columns: 2fr 1fr 1fr; grid-gap:0.25em;}
 .ui-header .meta-options {grid-column:unset}
 

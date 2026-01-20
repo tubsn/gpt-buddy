@@ -16,7 +16,7 @@ class Settings extends Controller {
 
 		$this->view('DefaultLayout');
 		$this->view->title = 'Settings';
-		$this->models('Prompts,Knowledge,Scrape,Usage');
+		$this->models('Prompts,Knowledge,Scrape,Usage,AiChat');
 	}
 
 	public function index() {
@@ -92,6 +92,7 @@ class Settings extends Controller {
 		}
 
 		$this->view->aimodels = AIMODELS ?? [];
+		$this->view->tools = $this->AiChat->ai->tools->list();
 		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
 		$this->view->username = $this->get_username($prompt['user'] ?? null);		
@@ -122,6 +123,7 @@ class Settings extends Controller {
 		}
 
 		$this->view->aimodels = AIMODELS ?? [];
+		$this->view->tools = $this->AiChat->ai->tools->list();		
 		$this->view->knowledges = $this->Knowledge->distinct();
 		$this->view->categories = $categories;
 		$this->view->selectedCategory = $_GET['category'] ?? null;
@@ -135,11 +137,15 @@ class Settings extends Controller {
 	}
 
 	public function save($id) {
+		// this is required because empty select boxes with multiple attribute are not transmitted
+		if (!isset($_POST['tools'])) {$_POST['tools'] = null;} 
 		$this->Prompts->update_with_history($_POST, $id);
+
 		$category = $_POST['category'];
 		if ($this->view->referer() == '/archiv' || $this->view->referer() == '/settings') {$this->view->back();}
 		if ($category == 'alle') {$category = '';}
 		$backlink = '/' . $category . '#' . $id;
+
 		$this->view->redirect($backlink);
 	}
 

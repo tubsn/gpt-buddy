@@ -33,13 +33,13 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 			</select>
 		</label>
 
-		<label>Direktprompt:
-			<select name="direct" >
-				<option value="0">nein</option>
-				<?php if ($prompt['direct']): ?>
-				<option value="1" selected>Ja</option>
+		<label>Sichtbarkeit:
+			<select name="inactive" >
+				<option value="0">aktiv</option>
+				<?php if ($prompt['inactive']): ?>
+				<option value="1" selected>gesperrt</option>
 				<?php else: ?>
-				<option value="1">ja</option>
+				<option value="1">gesperrt</option>
 				<?php endif ?>
 			</select>
 		</label>
@@ -59,61 +59,59 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 	<fieldset>
 	<div class="grid-2-col">
-	<label>Sichtbarkeit:
-		<select name="inactive" >
-			<option value="0">aktiv</option>
-			<?php if ($prompt['inactive']): ?>
-			<option value="1" selected>gesperrt</option>
-			<?php else: ?>
-			<option value="1">gesperrt</option>
-			<?php endif ?>
-		</select>
-	</label>
+		<div>
+			<label>Model erzwingen:
+				<select name="model">
+					<option value="0">Standard Model</option>
+					<?php if ($prompt['model']): ?>
+					<option selected><?=$prompt['model']?></option>
+					<?php endif ?>
+					<?php foreach ($aimodels as $modelName => $modelMeta): ?>
+					<?php if ($prompt['model'] == $modelName) {continue;} ?>
+					<option><?=$modelName?></option>
+					<?php endforeach ?>
+				</select>
+			</label>
 
-	<label>Formatierung:
-		<select name="format" >
-			<option value="0">keine Formatierung</option>
-			<?php if ($prompt['format']): ?>
-			<option value="1" selected>Formatierung aktiv</option>
-			<?php else: ?>
-			<option value="1">Formatierung aktiv</option>
-			<?php endif ?>
-		</select>
-	</label>
+			<label>Direktprompt:
+				<select name="direct" >
+					<option value="0">nein</option>
+					<?php if ($prompt['direct']): ?>
+					<option value="1" selected>Ja</option>
+					<?php else: ?>
+					<option value="1">ja</option>
+					<?php endif ?>
+				</select>
+			</label>
 
+			<label>Datum im Prompt:
+				<select name="withdate" >
+					<option value="0">nein</option>
+					<?php if ($prompt['withdate']): ?>
+					<option value="1" selected>Ja</option>
+					<?php else: ?>
+					<option value="1">ja</option>
+					<?php endif ?>
+				</select>
+			</label>
+		</div>
 
+		<div class="tool-select">
+			<?php $prompt['tools'] = json_decode($prompt['tools'] ?? '',1);
+			if (empty($prompt['tools'])) {$prompt['tools'] = [];}?>
+			<label>Tools (mehrere mit STRG): 
+			<select name="tools[]" multiple>
+				<?php foreach ($tools as $toolID => $toolName): ?>
+					<?php if (in_array($toolID, $prompt['tools'])): ?>
+					<option selected value="<?=$toolID?>"><?=$toolName?></option>
+					<?php else: ?>
+					<option value="<?=$toolID?>"><?=$toolName?></option>
+					<?php endif ?>
+				<?php endforeach ?>
+			</select>
+			</label>
+		</div>
 	</div>
-
-	<div class="grid-2-col">
-	<label>Datum im Prompt:
-		<select name="withdate" >
-			<option value="0">nein</option>
-			<?php if ($prompt['withdate']): ?>
-			<option value="1" selected>Ja</option>
-			<?php else: ?>
-			<option value="1">ja</option>
-			<?php endif ?>
-		</select>
-	</label>
-
-	<label>Temperatur:
-		<input name="temperature" type="number" lang="en" step="0.1" min="0" max="2" placeholder="Standard 0.7" value="<?=$prompt['temperature'] ?? null?>">
-	</label>
-	</div>
-
-
-	<label>Model erzwingen:
-		<select name="model">
-			<option value="0">Standard Model</option>
-			<?php if ($prompt['model']): ?>
-			<option selected><?=$prompt['model']?></option>
-			<?php endif ?>
-			<?php foreach ($aimodels as $modelName => $modelMeta): ?>
-			<?php if ($prompt['model'] == $modelName) {continue;} ?>
-			<option><?=$modelName?></option>
-			<?php endforeach ?>
-		</select>
-	</label>
 
 	<label>Kontrollprompt:
 		<textarea style="height:118px" name="afterthought" placeholder="Zusatzprompt nach Usereingabe"><?=$prompt['afterthought'] ?? null?></textarea>

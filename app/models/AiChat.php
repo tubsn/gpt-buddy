@@ -17,6 +17,7 @@ class AiChat
 	public $ai;
 	private $tools;
 	private $stats;
+	private $prompt;
 	private $prompts;
 	private $connection;
 	private $isNewConversation = true;
@@ -54,6 +55,7 @@ class AiChat
 
 		$userInput = Session::get('input') ?? '';
 		$prompt = $this->prompts->get_and_track(Session::get('promptID')); 
+		$this->prompt = $prompt;
 
 		if (empty($userInput) && !($prompt['direct'] ?? false)) {
 			$this->sse_error('Achtung keine Eingabe erkannt');
@@ -113,6 +115,12 @@ class AiChat
 		$tools = $category['tools'] ?? null;
 		if (!is_array($tools)) {$tools = [$tools];}
 
+		$promptTools = json_decode($this->prompt['tools'] ?? '',1);
+
+		if (is_array($promptTools)) {
+			$tools = array_merge($promptTools, $tools);
+		}
+
 		foreach ($tools as $tool) {
 			if (!empty($tool)) {$this->ai->tools->use($tool);}
 		}
@@ -120,6 +128,7 @@ class AiChat
 		$searchtool = Session::get('search');
 		if ($searchtool) {$this->ai->tools->use('search');}
 
+		// Add Always on Tools here
 		$this->ai->tools->use('date');
 		//$this->ai->tools->use('weekday');
 		//$this->ai->tools->use('Aibuddy_Github');

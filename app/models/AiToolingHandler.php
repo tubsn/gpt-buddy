@@ -44,6 +44,7 @@ class AiToolingHandler {
 		}, $privateMethods);
 
 		$privateMethods = array_combine($privateMethods, $methodNames);
+		asort($privateMethods);
 		return $privateMethods;
 	}
 
