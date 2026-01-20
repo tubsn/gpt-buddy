@@ -37,7 +37,7 @@ class AphexChart
 	}
 
 	private function multiple_metrics() {
-		if (is_array($this->metric[0])) {return true;}
+		if (isset($this->metric[0]) && is_array($this->metric[0])) {return true;}
 		return false;
 	}
 
