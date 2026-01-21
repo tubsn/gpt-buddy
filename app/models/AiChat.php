@@ -132,7 +132,7 @@ class AiChat
 		$this->ai->tools->use('date');
 		//$this->ai->tools->use('weekday');
 		//$this->ai->tools->use('Aibuddy_Github');
-		//$this->ai->tools->use('BNN_MCP');
+		//$this->ai->tools->use('Piano');
 
 	}
 
@@ -262,6 +262,7 @@ class AiChat
 		$folder = ROOT . 'cache' . DIRECTORY_SEPARATOR . 'conversations' . DIRECTORY_SEPARATOR;
 		$oldID = Session::get('responseID');
 		$responseID = $this->ai->last_response_id();
+		if (empty($responseID)) {return;}
 
 		if (!$this->isNewConversation) {
 			$oldFile = $folder . $oldID;
