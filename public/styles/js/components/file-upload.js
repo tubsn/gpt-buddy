@@ -11,7 +11,8 @@ template: `
 	<img :src="payload">
 </figure>
 
-<div class="float-button file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span></div>
+<div class="float-button file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img v-if="!loading" class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span>
+<div v-if="loading" class="loadIndicator" style="top:0px; width:14px; height:8px; padding:0; margin-left:0.2em"><div></div><div></div><div></div></div></div>
 <input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 `,
 
