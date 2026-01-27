@@ -30,7 +30,6 @@ class AiChat
 		$this->stats = new Tracking();
 		$this->prompts = new Prompts();
 		$this->clear_toolcalling_results();
-		//$this->clear_logs(); // activate when Response Debug Logging is enabled		
 	}
 
 	public function init_stream() {
@@ -84,6 +83,10 @@ class AiChat
 			$this->ai->messages = $conversation;
 			Session::unset('conversation'); // we need to remove the conversation here else it wont be deleted if there is in error while streaming
 			return;
+		}
+
+		if ($prompt['withdate']) {
+			$this->ai->add_message('Aktuelles Datum: ' . date('Y-m-d H:i'), 'system');
 		}
 
 		// Start a new Conversation as User or System / Direct Prompt
