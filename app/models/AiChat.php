@@ -85,7 +85,7 @@ class AiChat
 			return;
 		}
 
-		if ($prompt['withdate']) {
+		if (isset($prompt['withdate']) && $prompt['withdate']) {
 			$this->ai->add_message('Aktuelles Datum: ' . date('Y-m-d H:i'), 'system');
 		}
 
