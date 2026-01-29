@@ -3,6 +3,7 @@
 namespace app\models\mcp;
 use flundr\utility\Log;
 use flundr\utility\Session;
+use \app\models\Prompts;
 use \app\models\ai\OpenAI;
 use \app\models\ai\ConnectionHandler;
 
@@ -36,8 +37,32 @@ class GeneralTools
 		$ai->model = 'gpt-5.2';
 		$ai->reasoning = 'none';
 
-		$query = $args['query'] ?? '';
-		$ai->add_message($query);
+		$promptID = $args['promptID'] ?? '';
+
+		if (!empty($promptID)) {
+			$prompts = new Prompts();
+			$prompt = $prompts->get_for_api($promptID);
+			$ai->add_message($prompt['content'],'system');
+
+			if (!empty($prompt['knowledges'])) {
+				foreach ($prompt['knowledges'] as $knowledge) {$ai->add_message($knowledge, 'system');}
+			}
+		
+			if (isset($prompt['withdate']) && $prompt['withdate']) {
+				$ai->add_message('Aktuelles Datum: ' . date('Y-m-d H:i'), 'system');
+			}
+
+			$query = $args['query'] ?? '';
+			$ai->add_message($query);
+
+			if (!empty($prompt['afterthought'])) {$ai->add_message($prompt['afterthought'], 'system');}
+		}
+
+		else {
+			$query = $args['query'] ?? '';
+			$ai->add_message($query);
+		}
+
 		return $ai->resolve();
 	}
 

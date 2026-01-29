@@ -79,20 +79,24 @@ class AiToolingHandler {
 	}
 
 
-	public function Call_GPT() {
+	private function Call_GPT() {
 
 		$this->ai->register_tool(
 			'Call_GPT',
 			[
 				'name' => 'Call_GPT',
-				'description' => 'Asks a question to ChatGPT',
+				'description' => 'With this tool you can make a subquery to ChatGPT. You can ask questions to the AI, get help with your task or run a predesigned workflow by using a promptID. This allows you to create a chain of thought or chain of prompts like approach to give an improved awnser to your main task.',
 				'parameters' => [
 					'type' => 'object',
 					'properties' => [
 						'query' => [
 							'type' => 'string',
-							'description' => 'The Question you want to ask ChatGPT',
+							'description' => 'The Question you want to ask the Ai Model or the specific Task you want to be resolved',
 						],
+						'promptID' => [
+							'type' => 'integer',
+							'description' => 'The ID of a predefined Prompt. This is optional and only needed if the user specifically asks you to use a Prompt.',
+						],						
 					],
 					'required' => ['query'],
 				],
