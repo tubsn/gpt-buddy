@@ -23,10 +23,10 @@ class AiChat
 	private $isNewConversation = true;
 
 	public function __construct() {
-		$this->connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com', '/v1/responses');
+		$this->connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com/v1/responses');
 		$this->ai = new OpenAI($this->connection);
-		$this->ai->add_toolhandler(new AiToolingHandler());
 		$this->resolve_model();
+		$this->ai->add_toolhandler(new AiToolingHandler());
 		$this->stats = new Tracking();
 		$this->prompts = new Prompts();
 		$this->clear_toolcalling_results();
@@ -191,6 +191,11 @@ class AiChat
 		$modelData = AIMODELS[$userModel] ?? null;
 		
 		if (!$modelData) {$modelData = ['apiname' => 'gpt-5.1', 'reasoning' => 'none'];}
+
+		if ($modelData['provider'] ?? false == 'azure') {
+			$this->connection->set_api_key(AZUREKEY);
+			$this->connection->set_api_path($modelData['url']);
+		}
 
 		$this->ai->model = $modelData['apiname'];
 		$this->ai->reasoning = $modelData['reasoning'] ?? null;

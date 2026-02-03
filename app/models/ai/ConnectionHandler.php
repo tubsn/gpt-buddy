@@ -5,7 +5,6 @@ namespace app\models\ai;
 class ConnectionHandler
 {
 	private string $apiKey;
-	private string $baseUrl;
 	private string $apiPath;
 	private array $defaultCurlOptions;
 
@@ -19,14 +18,20 @@ class ConnectionHandler
 
 	public function __construct(
 		string $apiKey,
-		string $baseUrl = 'https://api.openai.com',
-		string $apiPath = '/v1/responses',
+		string $apiPath = 'https://api.openai.com/v1/responses',
 		array $defaultCurlOptions = []
 	) {
 		$this->apiKey = $apiKey;
-		$this->baseUrl = rtrim($baseUrl, '/');
 		$this->apiPath = $apiPath;
 		$this->defaultCurlOptions = $defaultCurlOptions;
+	}
+
+	public function set_api_path($newUrl) {
+		$this->apiPath = $newUrl;
+	}
+
+	public function set_api_key($newKey) {
+		$this->apiKey = $newKey;
 	}
 
 	public function create_payload_logfile($url, $jsonPayload) {
@@ -45,13 +50,13 @@ class ConnectionHandler
 		file_put_contents($file, $content, FILE_APPEND);
 	}
 
-	public function request(array $payload, ?callable $onChunk = null, ?string $pathOverride = null): array {
+	public function request(array $payload, ?callable $onChunk = null): array {
 		
 		$this->sseBuffer = '';
 		$this->rawResponseBody = '';
 		$this->abortStream = false;
 
-		$url = $this->baseUrl . ($pathOverride ?? $this->apiPath);
+		$url = $this->apiPath;
 		$jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		
 		if ($jsonPayload === false) {
@@ -152,7 +157,11 @@ class ConnectionHandler
 
 			if ($httpStatus >= 400) {
 				$decodedError = json_decode($this->rawResponseBody, true);
-				$apiMessage = $decodedError['error']['message'] ?? 'Unknown API error';
+				if (json_last_error() !== JSON_ERROR_NONE) {
+					$decodedError['error']['message'] = (string) $this->rawResponseBody;
+				}
+
+				$apiMessage = $decodedError['error']['message'] ?? $this->rawResponseBody ?? 'Unknown API error';
 				throw new \RuntimeException('Stream HTTP error: ' . $httpStatus . ' - ' . $apiMessage);
 
 			}
