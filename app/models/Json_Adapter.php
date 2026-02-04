@@ -5,23 +5,27 @@ namespace app\models;
 class Json_Adapter
 {
 
-	public $portalURL = '';
+	// This is an Example Class for a base article Importer
 
-	public function get_by_id($articleID = null) {
+	public function get_by_url($url) {
 
-		$url = $this->portalURL . '/' . $articleID;
+		$articleID = $url; // You might need to extract the article ID here
+
+		$url = 'www.my-api.de/api/' . $articleID;
 		$curlData = $this->curl_with_redirect($url);
 
 		$url = $curlData['url'];
 		$data = $curlData['data'];
 
-		return $this->convert_input($data);
+		/* $data contains the API response.
+		This method must return an array that includes a 'content' key containing the raw article text, e.g.:
+		$data['content'] = 'Raw article text ...';
 
-	}
+		If the API returns a different structure, map/transform the response here so that 'content'
+		always contains the raw text. */
 
-	private function convert_input($data) {
-		$out['content'] = $data['editor_text'];
-		return $out;
+		return $data;
+
 	}
 
 
@@ -52,7 +56,5 @@ class Json_Adapter
 		return ['data' => $recievedData, 'url' => $lastUrl];
 
 	}
-
-
 
 }

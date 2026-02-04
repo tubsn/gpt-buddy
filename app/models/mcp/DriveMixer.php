@@ -113,8 +113,10 @@ class DriveMixer
 		}
 
 		$data = array_map(function($item) {
-			$item['url'] = $item['urls'][0];
-			unset($item['urls']);
+			if (isset($item['urls'][0])) {
+				$item['url'] = $item['urls'][0];
+				unset($item['urls']);
+			}
 			return $item;
 		}, $data);
 
