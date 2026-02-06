@@ -4,7 +4,7 @@ namespace app\models;
 use \app\models\AiToolingHandler;
 use \app\models\Tracking;
 use \app\models\Prompts;
-use \app\models\OpenAiVision;
+use \app\models\OpenAIVision;
 use \app\models\ai\OpenAI;
 use \app\models\ai\ConnectionHandler;
 use flundr\auth\Auth;
@@ -219,7 +219,7 @@ class AiChat
 	public function prepare_image_for_vision($imagePath) {
 		$visionData = PAGEURL . $imagePath;
 		if (defined('USEBASE64VISION') && USEBASE64VISION) {
-			$vision = new OpenAiVision();
+			$vision = new OpenAIVision();
 			$visionData = $vision->file_to_base64(PUBLICFOLDER . Session::get('payload'));
 		}
 		return $visionData;
