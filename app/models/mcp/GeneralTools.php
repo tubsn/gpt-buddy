@@ -70,8 +70,9 @@ class GeneralTools
 
 		$htmlString = $this->curl($url);
 
+		libxml_use_internal_errors(true);
 		$dom = @\Dom\HTMLDocument::createFromString($htmlString);
-		
+
 		if ($selector) {
 			$selectedNodes = $dom->querySelectorAll($selector);
 			$dom = $selectedNodes;

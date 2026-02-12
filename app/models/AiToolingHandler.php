@@ -56,29 +56,6 @@ class AiToolingHandler {
 		$this->ai->register_tool('file_search', ['type' => 'file_search']);
 	}
 
-	public function Police_Article() {
-
-		$this->ai->register_tool(
-			'Police_Article',
-			[
-				'name' => 'Police_Article',
-				'description' => 'Creates a Police Article based on a news story',
-				'parameters' => [
-					'type' => 'object',
-					'properties' => [
-						'input' => [
-							'type' => 'string',
-							'description' => 'The Newsstory which needs to be transformed into a police article',
-						],
-					],
-					'required' => ['input'],
-				],
-			],
-			function (array $args) {return new PoliceArticle()->create($args);}
-		);
-	}
-
-
 	private function Call_GPT() {
 
 		$this->ai->register_tool(
@@ -197,27 +174,6 @@ class AiToolingHandler {
 
 	}
 
-
-	private function Aibuddy_Github() {
-
-		$name = 'AiBuddy Github';
-		$schema = [
-			'type' => 'mcp',
-			'server_label' => 'AiBuddyGithub',
-			'server_url' => 'https://gitmcp.io/tubsn/gpt-buddy',
-			'require_approval' => 'never',
-		];
-
-		$this->ai->register_tool($name, $schema);
-	}
-
-	private function Pipedream() {
-		$pipedream = new PipedreamMCPConnector(PIPEDREAM_CLIENT_ID, PIPEDREAM_CLIENT_SECRET);
-		$toolSchema = $pipedream->create_tool_schema($app = 'slack_v2', $project = 'proj_9lsvxeZ', 'development');
-		$this->ai->register_tool('SlackMCP', $toolSchema);
-	}
-
-
 	private function DriveAnalytics() {
 
 		$mixer = new DriveMixer;
@@ -243,42 +199,6 @@ class AiToolingHandler {
 			],
 			function (array $args) use ($mixer) {return $mixer->analytics($args);}
 		);
-
-
-	}
-
-	private function Piano() {
-
-		$this->ai->register_tool(
-			'Piano',
-			[
-				'type' => 'mcp',
-				'server_label' => 'piano-analytics-mcp-server',
-				'server_url' => 'https://analytics-api-eu.piano.io/mcp/',
-				'headers' => [
-				  'x-api-key' => PIANOKEY,
-				],
-				'require_approval' => 'never',	
-			],		
-		);
-
-	}
-
-	private function BNN_MCP() {
-
-		$this->ai->register_tool(
-			'ChristianMCP',
-			[
-				'type' => 'mcp',
-				'server_label' => 'ChristianMCP',
-				'server_url' => 'https://compulsory-brown-dormouse.fastmcp.app/mcp',
-				'require_approval' => 'never',
-				'headers' => [
-					'Authorization' => 'Bearer ' . MCP_TESTSERVER_AUTH,
-				],				
-			],		
-		);
-
 	}
 
 	private function Date() {
