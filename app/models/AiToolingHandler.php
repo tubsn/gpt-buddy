@@ -105,6 +105,37 @@ class AiToolingHandler {
 		);
 	}
 
+
+	private function URL_Scraper() {
+
+		$this->ai->register_tool(
+			'URLScraper',
+			[
+				'name' => 'URLScraper',
+				'description' => 'This tool allows you to cURL a Website for its Plain Text content by passing a url and an optional CSS Selector. Be aware that this does not follow Links on that Website, but you can chain the Tool if neccesary. You can access multiple DOM Nodes via the selector. The Tool is based on the PHP Dom\HTMLDocument',
+				'parameters' => [
+					'type' => 'object',
+					'properties' => [
+						'url' => [
+							'type' => 'string',
+							'description' => 'The URL of the Website you want to crawl. You need to add the https:// or http:// prefix.',
+						],
+						'selector' => [
+							'type' => 'string',
+							'description' => 'A Valid CSS Selector e.g. main > article:last-child or p or .classname',
+						],						
+					],
+					'required' => ['url'],
+				],
+			],
+			function (array $args) {
+				$url = $args['url'];
+				$selector = $args['selector'] ?? null;
+				return new GeneralTools()->dom_parser($url, $selector);
+			}
+		);
+	}
+
 	private function DriveRag() {
 
 		$this->ai->register_tool(
