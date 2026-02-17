@@ -178,7 +178,7 @@ class OpenAI
 
 		$options['model'] = $this->model;
 		$options['stream'] = $useStream;
-		$options['store'] = false;
+		//$options['store'] = false; Prevents Saving of Conversations - setting to true prevents tools.
 		$options['tool_choice'] = 'auto';
 		$options['tools'] = $this->tools_schema();
 		$options['parallel_tool_calls'] = true;
