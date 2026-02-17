@@ -131,11 +131,9 @@ class AiChat
 		$searchtool = Session::get('search');
 		if ($searchtool) {$this->ai->tools->use('search');}
 
-		// Add Always on Tools here
-		$this->ai->tools->use('date');
+		// Add Always on Tools here if necessary
+		//$this->ai->tools->use('date');
 		//$this->ai->tools->use('weekday');
-		//$this->ai->tools->use('Aibuddy_Github');
-		//$this->ai->tools->use('Piano');
 
 	}
 
