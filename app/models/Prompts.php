@@ -218,7 +218,9 @@ class Prompts extends Model
 					case 'datum': return date('Y-m-d');
 					case 'weekday': return date('l');
 					case 'today': return date('Y-m-d');
+					case 'tomorrow': return date('Y-m-d', strtotime('tomorrow'));
 					case 'heute': return date('Y-m-d');
+					case 'morgen': return date('Y-m-d', strtotime('tomorrow'));
 					case 'now': return date('Y-m-d H:i');
 					default: return $matches[0];
 				}
