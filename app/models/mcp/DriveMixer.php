@@ -61,7 +61,7 @@ class DriveMixer
 
 
 
-	public function search($query, $from = '2000-01-01', $to = 'today', $limit = 10, $filters = null, $teasersOnly = false) {
+	public function search($query, $from = '2000-01-01', $to = 'today', $limit = 10, $filters = null, $teasersOnly = false, $exact = false) {
 
 		$minimalScore = 0;
 
@@ -83,26 +83,29 @@ class DriveMixer
 			'end_date' => $to,
 			'limit' => $limit,			
 			'fields' => $fields,
+			'exact_search' => $exact,
 		];
 
 		$settings = array_merge($settings,$filters);
 
 		$response = $this->curl($this->apiURL . '/search', $settings);
 
+
 		$json = json_decode($response, true);
 
 		if (isset($json['status_code'])) {
 
-			$error = $json['detail'] ?? 'Unknown';
+			$error = $json['detail'] ?? 'Unknown Error';
+			$errorMessage = 'Drive-API-Error: ' . $error;
 
-			$details = json_decode($json['details'],1);
-			$errors = json_decode($details,1);
-			$errormessage = $errors[0]['msg'] ?? null;
+			if (isset($json['details'])) {
+				$details = json_decode($json['details'],1);
+				$errors = json_decode($details,1);
+				$errormessage = 'Drive-API-Error: ' . $error . ' - ' .$errors[0]['msg'] ?? null;
+			}
 
-			throw new \Exception('Drive-API-Error: ' . $error . ' - ' .$errormessage, 500);
+			throw new \Exception($errorMessage, 500);
 		}
-
-		//if (empty($json['results'])) {throw new \Exception('Drive-API-Error: ' . $response, 500);}
 
 		$data = $json['results'];
 
@@ -175,7 +178,6 @@ class DriveMixer
 	private function curl($url, $data) {
 
 		$apikey = $this->apiKey;
-		if (auth_groups('Aachen')) {$apikey = DRIVE_API_KEY2;}
 
 		$headers = [
 			'accept: application/json',
