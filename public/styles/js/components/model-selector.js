@@ -55,11 +55,21 @@ methods: {
 
 	selectDefault() {
 		if (!this.model) {
-			const selectElement = this.$refs.selectBox
-			if (selectElement && selectElement.options.length > 0) {
-				this.model = selectElement.options[0].value
+			this.selectFirstAvailableOption()
+		}
+		else {
+			let options = [...this.$refs.selectBox].map(el => el.value);
+			if (!options.includes(this.model)) {
+				this.selectFirstAvailableOption()
 			}
 		}
+	},
+
+	selectFirstAvailableOption() {
+		const selectElement = this.$refs.selectBox		
+		if (selectElement && selectElement.options.length > 0) {
+			this.model = selectElement.options[0].value
+		}	
 	},
 
 	switchToUserPreference() {
