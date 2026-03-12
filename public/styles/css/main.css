@@ -273,9 +273,10 @@ div.rag-settings {margin-bottom:.5em;}
 }
 
 /* Vision Image */
-.input-payload {max-width:150px; max-height:30px; position: absolute; top: -4.5em; right:3em; cursor:pointer; }
+.input-payload {max-width:150px; max-height:30px; position: absolute; top: 2em; right:0.8em; cursor:pointer; }
 .input-payload img {max-height:110px; border-radius:0.3em; border:2px solid var(--primary);}
 .input-payload:hover:after {position: absolute; content: '✕'; right: 0.4em; top: 0.2em; color: white; font-size: 0.7em;} 
+.input-payload:hover {opacity:0.3;}
 
 /* Form Container */
 .form-container {background-color:#efefef; position:relative; transition: background-color 0.5s ease; transition: border-color 0.5s ease;
