@@ -9,18 +9,36 @@ class API extends Controller {
 
 	public function __construct() {
 		$this->view('DefaultLayout');
-		$this->models('ChatGPT,Conversations,Prompts,OpenAIImage');
+		$this->models('ChatGPT,Conversations,Prompts,OpenAIImage,DirectResponse');
 		header('Access-Control-Allow-Origin: *');		
 	}
 
-	public function stream($model, $id) {
-		$this->ChatGPT->model = AIMODELS[$model] ?? 'gpt-4.1';
-		header('Content-type: text/event-stream');
-		header('Cache-Control: no-cache');
-		$response = $this->ChatGPT->stream($id);
+	public function restrict_access_with_jwt() {
+		$jwt = new JWTAuth;
+		$remoteAccessURL = null;
+		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
+		
+		try {$jwt->authenticate_via_header($remoteAccessURL);}
+		catch (\Exception $e) {
+			$errorMessage = $e->getMessage();
+			$errorCode = $e->getCode();
+			http_response_code($errorCode);
+			$this->view->json($errorMessage);
+			die;
+		}
 	}
 
+	public function hub_response() {
+		$this->restrict_access_with_jwt();
+		$prompt = $_POST['prompt'] ?? null;
+		$data = $_POST['data'] ?? null;
+		$response = $this->DirectResponse->resolve($prompt, $data);
+		echo $response;
+	}
+
+
 	public function generate_image() {
+		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
 		$prompt = $_POST['question'];
 		$options['resolution'] = $_POST['resolution'] ?? null;
 		$options['quality'] = $_POST['quality'] ?? null;
@@ -35,9 +53,6 @@ class API extends Controller {
 		}
 
 	}
-
-	public function ping() {echo 'pong';}
-
 
 	public function prompt($id) {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {
@@ -59,36 +74,6 @@ class API extends Controller {
 		echo $this->view->json($prompts);
 	}
 
-	public function direct_access() {
-		$jwt = new JWTAuth;
-		$remoteAccessURL = null;
-		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
-		
-		try {$jwt->authenticate_via_header($remoteAccessURL);}
-		catch (\Exception $e) {
-			$errorMessage = $e->getMessage();
-			$errorCode = $e->getCode();
-			http_response_code($errorCode);
-			$this->view->json($errorMessage);
-			die;
-		}
-
-		$data = $_POST['data'] ?? null;
-
-		$systemPrompt = $_POST['prompt'] ?? null;
-		if (is_numeric($_POST['prompt'] ?? null)) {
-			// When Prompt is an ID -> gather all Prompt Infos in a String
-			$systemPrompt = $this->Prompts->get_flat_content($_POST['prompt']);
-		} else {
-			$promptArray['content'] = $systemPrompt;
-			$promptArray = $this->Prompts->apply_post_processing($promptArray);
-			$systemPrompt = $promptArray['content']; // this has to be a flat string
-		}
-
-		if (empty($data)) {echo $this->ChatGPT->direct($systemPrompt ?? null); die;}
-		echo $this->ChatGPT->direct($data, $systemPrompt ?? null);
-	}
-
 	public function create_bearer_token($urlsafe = null) {
 
 		if (!Auth::logged_in()) { Auth::loginpage(); }
@@ -103,6 +88,4 @@ class API extends Controller {
 		$token = $jwt->create_token(null, $remoteAccessURL, '+5years');
 		echo ($token);
 	}
-
-
 }

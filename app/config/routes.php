@@ -7,11 +7,10 @@ $routes->get('/changelog', 'Chat@changelog');
 $routes->get('/engines', 'Chat@engines');
 
 // API
-$routes->post('/ask', 'Chat@ask');
-$routes->get('/ping', 'API@ping');
 $routes->get('/prompts', 'API@prompts');
 $routes->get('/prompts/{id}', 'API@prompt');
-$routes->get('/admin/apitoken', 'API@create_bearer_token');
+$routes->post('/api/hub', 'API@hub_response');
+$routes->get('/admin/apitoken[/{urlsafe}]', 'API@create_bearer_token');
 
 // Conversations Responses API
 $routes->post('/stream', 'Streaming@post_request');
