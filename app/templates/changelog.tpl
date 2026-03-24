@@ -15,6 +15,20 @@
 <hr>
 
 
+<h3>24. März 2026 - Automatisches Scrolling beim Generieren von Antworten</h3>
+<p>Das Outputfenster scrollt jetzt automatisch mit, sobald der Nutzer während der Generierung, an den unteren Bildschirmrand scrollt.</p>
+
+<h3>15. März 2026 - Neues GPT5.4 Modell</h3>
+<p>Die aktuellen Generellen und Coding-Modelle wurden unter dem neuen GPT5.4 Modell zusammengefasst</p>
+
+<h3>Januar bis März 2026 - Weiterentwicklung von serverseitigen Tools</h3>
+<p>Im Bereich Tooling stehen jetzt eine Vielzahl von Optionen zur Verfügung, unter anderem ein Webscraper mit CSS Selektor, ein Agent-Subprozess (GPT-Tool) um Promptketten zu Bilden sowie diverse RSS-Reader und eine Kordiam Verknüpfung.</p>
+
+
+<h3>12. Dezember 2025 - GPT 5.2 Modell</h3>
+<p>In der Zwischenzeit stehen bereits 2 Neue Modelle zur Verfügung</p>
+
+
 <h3>16. Dezember 2025 - Ai Buddy Tooling Update</h3>
 <p>
 Mit dem Tooling Update wurde die komplette AiBuddy-Kernarchitektur von der OpenAI-Chat- auf die Responses-Schnittstelle umgebaut.
