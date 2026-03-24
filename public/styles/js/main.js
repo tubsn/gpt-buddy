@@ -27,6 +27,7 @@ data() {
 		modelmode : null,
 		modelarguments : null,
 		stopWatchStartTime: null,
+		shouldAutoScroll: false,
 		responsetime: 0,
 		usage: [],
 		errormessages: null,
@@ -200,6 +201,15 @@ methods: {
 		this.errormessages = ''
 		this.output = ''
 		this.loading = true
+		this.userScrolledOutput = false
+
+		// Enable Autoscrolling when user actively scrolls to the bottom
+		Vue.nextTick(() => {
+			let outputDiv = this.$refs.outputTextarea
+			outputDiv.addEventListener('scroll', () => {
+				this.shouldAutoScroll = this.isNearBottom(outputDiv);
+			});
+		})
 
 		if (!url) {url = '/stream'}
 
@@ -220,10 +230,10 @@ methods: {
 
 		document.removeEventListener("keydown", this.stopStreamOnEscape);
 		document.addEventListener("keydown", this.stopStreamOnEscape);
-
 	},
 
 	handleStream(chunk) {
+
 		switch (chunk.type) {
 			case 'delta': {
 				this.modelmode = ''
@@ -266,25 +276,44 @@ methods: {
 				this.stopStream()
 				break
 			}
-
 		}
+
+		this.scrollOutputDown()
 	},
 
 	stopStreamOnEscape(event) {
 		if (event.key === "Escape") {this.stopStream()}
 	},
 
+
+	isNearBottom(element, threshold = 80) {
+		return element.scrollTop + element.clientHeight >= element.scrollHeight - threshold;
+	},
+
+	scrollOutputDown(scrollBehavior = 'smooth') {
+		if (!this.shouldAutoScroll) {return;}
+		const outputDiv = this.$refs.outputTextarea
+		outputDiv.scrollTo({
+			top: outputDiv.scrollHeight,
+			behavior: scrollBehavior
+		});
+	},
+
 	stopStream() {
+
+		let userScrolledDown = this.isNearBottom(this.$refs.outputTextarea)
 
 		marked.use({breaks: true, mangle:false, headerIds: false,});
 		this.output = marked.parse(this.output)
 
 		Vue.nextTick(() => {
 			hljs.highlightAll();
-			const outputDiv = document.querySelector(".output")
+			const outputDiv = document.querySelector(".io-output-div")
 			if (outputDiv) {
 				outputDiv.contentEditable = 'true'
+				if (userScrolledDown) {outputDiv.scrollTop = outputDiv.scrollHeight}
 			}
+			this.shouldAutoScroll = false
 		})
 
 		this.eventSource.close()

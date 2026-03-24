@@ -95,7 +95,7 @@ if (!empty($directPrompts)) {$hasDirect = ' has-direct-prompts';}
 		<div class="float-button copy-button" title="in Zwischenablage kopieren" @click="copyOutputToClipboard"><img src="/styles/img/copy-icon.svg"></div>
 
 		<label><span class="">Ausgabe:</span> <span class="output-info" v-if="modelmode">{{modelmode}}</span></label>
-			<textarea tabindex="3" v-if="loading" class="io-textarea" v-html="output" contenteditable="true" tabindex="0"></textarea>
+			<textarea tabindex="3" v-if="loading" ref="outputTextarea" class="io-textarea" v-html="output" contenteditable="true" tabindex="0"></textarea>
 			<div v-else class="io-textarea io-output-div" tabindex="3" v-html="output" contenteditable="true" tabindex="0" ></div>
 
 		<div class="usage-stats fright small">
