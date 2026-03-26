@@ -20,6 +20,7 @@ class OpenAI
 	private ?Closure $onDelta = null;
 	private ?string $lastResponseId = null;
 	private array $lastResponse = [];
+	public array $lastResponseRaw = [];
 	private array $toolCalls = [];
 	private array $pendingToolOutputs = [];
 	private array $toolRegistry = [];
@@ -123,6 +124,8 @@ class OpenAI
 			if (empty($this->toolCalls)) {break;}
 			$this->execute_tools();
 		}
+
+		$this->lastResponseRaw = $responseData;
 
 		return $finalText;
 	}
