@@ -10,8 +10,9 @@ use \app\models\AiToolingHandler;
 
 class DirectResponse {
 
-	public function __construct() {}
+	public $responseData;
 
+	public function __construct() {}
 
 	public function resolve($prompt, $query = null) {
 
@@ -22,6 +23,18 @@ class DirectResponse {
 		else {
 			return $this->text_prompt($prompt, $query);
 		}
+	}
+
+	public function cleanup_raw_response($raw) {
+		$out = [];
+		$out['response_id'] = $raw['id'] ?? null;
+		$out['model'] = $raw['model'] ?? null;
+		$out['reasoning'] = $raw['reasoning']['effort'] ?? null;
+		$out['timestamp'] = $raw['completed_at'] ?? null;
+		$out['latency'] = round((microtime(true)-APP_START)*1000);
+		$out['input_tokens'] = $raw['usage']['input_tokens'] ?? null;
+		$out['output_tokens'] = $raw['usage']['output_tokens'] ?? null;
+		return $out;
 	}
 
 	public function text_prompt($prompt, $query = null) {
@@ -42,7 +55,10 @@ class DirectResponse {
 			$ai->add_message($query);
 		}
 
-		return $ai->resolve();
+		$output =  $ai->resolve();
+		$this->responseData = $this->cleanup_raw_response($ai->lastResponseRaw);
+
+		return $output;
 	}
 
 	public function with_prompt_ID($promptID, $query = null) {
@@ -78,7 +94,10 @@ class DirectResponse {
 
 		if (!empty($prompt['afterthought'])) {$ai->add_message($prompt['afterthought'], 'system');}
 
-		return $ai->resolve();
+		$output =  $ai->resolve();
+		$this->responseData = $this->cleanup_raw_response($ai->lastResponseRaw);
+		
+		return $output;
 	}
 
 }

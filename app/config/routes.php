@@ -9,8 +9,12 @@ $routes->get('/engines', 'Chat@engines');
 // API
 $routes->get('/prompts', 'API@prompts');
 $routes->get('/prompts/{id}', 'API@prompt');
-$routes->post('/api/hub', 'API@hub_response');
 $routes->get('/admin/apitoken[/{urlsafe}]', 'API@create_bearer_token');
+
+// API Generation
+$routes->post('/api/chat', 'API@general_response');
+$routes->post('/api/hub', 'API@hub_response');
+
 
 // Conversations Responses API
 $routes->post('/stream', 'Streaming@post_request');

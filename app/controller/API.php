@@ -24,8 +24,66 @@ class API extends Controller {
 			$errorCode = $e->getCode();
 			http_response_code($errorCode);
 			$this->view->json($errorMessage);
-			die;
+			exit;
 		}
+	}
+
+	public function general_response() {
+		$this->restrict_access_with_jwt();
+		$request = $this->validate_request(); 
+
+		$prompt = $request['prompt'] ?? null;
+		$text = $this->DirectResponse->resolve($prompt);
+		$responseMeta = $this->DirectResponse->responseData;
+				
+		$output = [
+			'status' => 200,
+			'response' => $text,
+			'details' => $responseMeta,
+		];
+
+		$this->view->json($output);
+	}
+
+	public function validate_request() {
+		$request = $this->get_header_input();
+
+		if (empty($request)) {
+			$this->raise_error_as_json('Request did not contain any data', 401);
+		}
+
+		$required = ['prompt'];
+		$missingFields = array_diff($required, array_keys($request));
+
+		if (!empty($missingFields)) {
+			$missingFields = implode(', ', $missingFields);
+			$this->raise_error_as_json('Request malformed - required fields missing: ' . $missingFields, 401);
+		}
+
+		return $request;
+	}
+
+	public function raise_error_as_json($message, $code) {
+		$output = ['status' => $code, 'response' => $message,];
+		http_response_code($code);
+		$this->view->json($output);
+		exit;
+	}
+
+	public function get_header_input() {
+		$rawBody = file_get_contents('php://input');
+		$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+		$trimmedBody = trim($rawBody);
+
+		$isJsonHeader = stripos($contentType, 'application/json') !== false;
+		$looksLikeJson = str_starts_with($trimmedBody, '{') || str_starts_with($trimmedBody, '[');
+
+		if ($isJsonHeader || $looksLikeJson) {
+			return json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+		}
+
+		if (!empty($_POST)) {return $_POST;}
+		return [];
 	}
 
 	public function hub_response() {
