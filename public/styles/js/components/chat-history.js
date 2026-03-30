@@ -25,7 +25,7 @@ template: `
 			<td class="text-right nowrap">
 				<span @click="copyHistoryToClipboard(index)" title="Eintrag kopieren">
 				<img class="icon-copy" src="/styles/img/copy-icon.svg">
-				</span>&nbsp;<span @click="removeHistoryEntry(index)" title="Eintrag löschen">
+				</span>&nbsp;<span @click="removeHistoryEntry(index, $event)" title="Eintrag löschen (STRG+Klick bis hier löschen)">
 				<img class="icon-delete" src="/styles/flundr/img/icon-delete-black.svg">
 				</span>
 			</td>
@@ -146,6 +146,7 @@ methods: {
 	async removeHistoryEntry(index) {
 		let formData = new FormData()
 		formData.append('responseID', this.responseID)
+		if (event.ctrlKey) {formData.append('truncateAfter', true)}
 		let response = await fetch('/conversation/pop/' + index, {method: "POST", body: formData})
 		if (!response.ok) {return}
 		let json = await response.json()

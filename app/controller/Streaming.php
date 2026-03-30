@@ -111,10 +111,17 @@ class Streaming extends Controller {
 	public function remove_conversation_entry($index) {
 		$conversations = Session::get('conversations');
 		$responseID = $_POST['responseID'] ?? null;
+		$truncateAfter = $_POST['truncateAfter'] ?? null;
+
 		$conversation = $conversations[$responseID];
 
-		unset($conversation[$index]);
-		$conversation = array_values($conversation); // OpenAI Requires sequential indexes 
+		if ($truncateAfter) {
+			$conversation = array_slice($conversation, 0, $index);
+		}
+		else {
+			unset($conversation[$index]);
+			$conversation = array_values($conversation); // OpenAI requires sequential indexes
+		}
 
 		$conversations[$responseID] = $conversation;
 		Session::set('conversations', $conversations);		
