@@ -1,3 +1,4 @@
+import Dropdown from "./components/dropdown-menu.js";
 
 const {createApp} = Vue
 
@@ -18,6 +19,12 @@ data() {
 		errormessages: '',
 	}
 },
+
+
+components: {
+	"dropdown": Dropdown,
+},
+
 
 computed: {
 	responsetime() {

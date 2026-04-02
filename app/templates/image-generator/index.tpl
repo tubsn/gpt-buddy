@@ -14,6 +14,8 @@ Bitte sparsam mit dem Bildgenerator umgehen.<br>Die Generierung kostet zwischen 
 	<img :src="output">
 </figure>
 
+<?php include tpl('image-generator/image-menu')?>
+
 </main>
 
 <div style="margin-bottom:-1em;">

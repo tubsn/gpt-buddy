@@ -1,10 +1,7 @@
 <figure class="image-history">
 <?php foreach ($lastimages as $image): ?>
-	<a href="<?=$image['path']?>" data-pswp-width="<?=$image['width']?>" data-pswp-height="<?=$image['height']?>" target="_blank" title="<?=$image['prompt']?>">
-		<img width="<?=$image['width']?>" height="<?=$image['height']?>" loading="lazy" src="<?=$image['path']?>">
-		<?php if (auth_rights('deleteimage')): ?>
-		<div class="image-delete-icon" onclick="deleteImage(event, '<?=$image['name']?>')"><img src="/styles/flundr/img/icon-delete-white.svg"></div>
-		<?php endif ?>
+	<a href="<?=$image['path']?>" class="image-thumb" data-pswp-width="<?=$image['width']?>" data-pswp-height="<?=$image['height']?>" target="_blank" title="<?=$image['prompt']?>">
+		<img data-imagename="<?=$image['name']?>" width="<?=$image['width']?>" height="<?=$image['height']?>" loading="lazy" src="<?=$image['path']?>">
 	</a>
 <?php endforeach ?>
 </figure>
@@ -52,28 +49,6 @@ lightbox.on('uiRegister', function() {
 	});
 });
 lightbox.init();
-
-
-// Gallery Deletion has to be handled outside of vue
-async function deleteImage(event, imagename) {
-
-	event.preventDefault();
-	event.stopPropagation()
-	let imagecontainer = event.target.parentElement.parentElement
-
-	let confirmed = confirm(`Bild "${imagename}" wirklich löschen?`);
-	if (!confirmed) {return;}
-
-	let formData = new FormData()
-	formData.append('imagename', imagename)
-
-	let response = await fetch('/image/delete', {method: "POST", body: formData})
-	if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
-
-	imagecontainer.remove();
-	magicGrid.positionItems();
-
-}
 
 </script>
 

@@ -467,7 +467,7 @@ animation: menu-scroll-in 0.1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;}
 
 
 /* Dropdown Popup Menu */
-.dropdown-menu {display:none; position:fixed; font-size:0.8em;}
+.dropdown-menu {display:none; position:fixed; font-size:0.8em; z-index:999}
 .dropdown-menu.open {display:block;}
 
 .dropdown-menu {background-color: var(--grey); padding:0.2em; border-radius:0.2em; border: 1px solid  var(--primary)}

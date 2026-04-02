@@ -21,13 +21,18 @@ mounted: function() {
 methods: {
 
 	bindEventListeners() {
-		const textarea = document.querySelector(`.${this.menuElement}`);
-		if (textarea) {
-				textarea.addEventListener('contextmenu', (event) => {
+		const clickedElement = document.querySelector(`.${this.menuElement}`);
+
+		if (clickedElement) {
+				clickedElement.addEventListener('contextmenu', (event) => {
 				this.userMadeSelection = window.getSelection().toString();
 				event.preventDefault();
-				this.showMenu(event);
+
 				this.clickTarget = event.target
+
+				if (this.menuElement == 'image-history' && this.clickTarget.tagName == 'FIGURE') {return}
+
+				this.showMenu(event);
 			});
 		}
 
@@ -62,6 +67,54 @@ methods: {
 		if (element.tagName === 'A') {
 			window.open(element.href);
 		}
+	},
+
+	copyimageprompt() {
+		let prompt = this.clickTarget.parentElement.title || ''
+		navigator.clipboard.writeText(prompt);
+	},
+
+	async exportimage() {
+
+		let url = this.clickTarget.parentElement.href
+		let prompt = this.clickTarget.parentElement.title
+		let name = this.clickTarget.dataset.imagename
+
+		let formData = new FormData();
+		formData.append('name', name);
+		formData.append('url', url);
+		formData.append('prompt', prompt);
+
+		let response = await fetch('https://example.de/api', {
+			method: 'POST', body: formData
+		});
+
+		if (response.status === 200) {
+			alert('success');
+		}
+	},
+
+	async deleteimage() {
+
+		let element = this.clickTarget
+		let imagename = element.dataset.imagename
+		let imagecontainer = element.parentElement
+
+		let confirmed = confirm(`Bild "${imagename}" wirklich löschen?`);
+		if (!confirmed) {return;}
+
+		let formData = new FormData()
+		formData.append('imagename', imagename)
+
+		let response = await fetch('/image/delete', {method: "POST", body: formData})
+		if (!response.ok) {this.showError('API Network Connection Error: ' + response.status); return}
+
+		imagecontainer.remove();
+
+		if (typeof magicGrid !== 'undefined' && typeof magicGrid.positionItems === 'function') {
+			magicGrid.positionItems(); // magicGrid is loaded in gallery.tpl
+		}
+
 	},
 
 	copy() {
