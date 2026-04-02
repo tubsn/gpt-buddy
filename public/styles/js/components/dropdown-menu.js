@@ -74,6 +74,21 @@ methods: {
 		navigator.clipboard.writeText(prompt);
 	},
 
+	openimage() {
+		const linkElement = this.clickTarget.parentElement
+		window.open(linkElement.href, "_blank");
+	},
+
+	downloadimage() {
+		const linkElement = this.clickTarget.parentElement
+		const tempLinkElement = document.createElement('a');
+		tempLinkElement.href = linkElement.href;
+		tempLinkElement.download = this.clickTarget.dataset.imagename;
+		document.body.appendChild(tempLinkElement);
+		tempLinkElement.click();
+		document.body.removeChild(tempLinkElement);
+	},
+
 	async exportimage() {
 
 		let url = this.clickTarget.parentElement.href
