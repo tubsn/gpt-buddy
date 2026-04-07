@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>2. April 2026 - Rechtsklick Menü für Bildergenerator</h3>
+<p>Das individualisierbare Rechtsklick Menü steht jetzt auch für Bildergallerien zur verfügung.</p>
+
 
 <h3>24. März 2026 - Automatisches Scrolling beim Generieren von Antworten</h3>
 <p>Das Outputfenster scrollt jetzt automatisch mit, sobald der Nutzer während der Generierung, an den unteren Bildschirmrand scrollt.</p>
