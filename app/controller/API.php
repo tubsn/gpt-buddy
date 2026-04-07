@@ -10,21 +10,14 @@ class API extends Controller {
 	public function __construct() {
 		$this->view('DefaultLayout');
 		$this->models('ChatGPT,Conversations,Prompts,OpenAIImage,DirectResponse');
-		header('Access-Control-Allow-Origin: *');		
+		header('Access-Control-Allow-Origin: *');
 	}
 
 	public function restrict_access_with_jwt() {
 		$jwt = new JWTAuth;
-		$remoteAccessURL = null;
-		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
-		
-		try {$jwt->authenticate_via_header($remoteAccessURL);}
+		try {$jwt->authenticate_via_header();}
 		catch (\Exception $e) {
-			$errorMessage = $e->getMessage();
-			$errorCode = $e->getCode();
-			http_response_code($errorCode);
-			$this->view->json($errorMessage);
-			exit;
+			$this->raise_error_as_json($e->getMessage(), $e->getCode());
 		}
 	}
 
@@ -63,6 +56,12 @@ class API extends Controller {
 		return $request;
 	}
 
+	public function respond_to_options_header() {
+		header('Access-Control-Allow-Headers: Content-Type, Authorization');
+		http_response_code(204);
+		exit;
+	}
+
 	public function raise_error_as_json($message, $code) {
 		$output = ['status' => $code, 'response' => $message,];
 		http_response_code($code);
@@ -87,7 +86,19 @@ class API extends Controller {
 	}
 
 	public function hub_response() {
-		$this->restrict_access_with_jwt();
+		$jwt = new JWTAuth;
+		$remoteAccessURL = null;
+		if (defined('DIRECT_ACCESS_URL')) {$remoteAccessURL = DIRECT_ACCESS_URL;}
+		
+		try {$jwt->authenticate_via_header($remoteAccessURL);}
+		catch (\Exception $e) {
+			$errorMessage = $e->getMessage();
+			$errorCode = $e->getCode();
+			http_response_code($errorCode);
+			$this->view->json($errorMessage);
+			exit;
+		}
+
 		$prompt = $_POST['prompt'] ?? null;
 		$data = $_POST['data'] ?? null;
 		$response = $this->DirectResponse->resolve($prompt, $data);

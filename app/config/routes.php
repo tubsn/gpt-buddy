@@ -14,6 +14,7 @@ $routes->get('/admin/apitoken[/{urlsafe}]', 'API@create_bearer_token');
 // API Generation
 $routes->post('/api/chat', 'API@general_response');
 $routes->post('/api/hub', 'API@hub_response');
+$routes->addRoute('OPTIONS', '/api/chat', 'API@respond_to_options_header');
 
 
 // Conversations Responses API
