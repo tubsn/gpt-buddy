@@ -9,7 +9,7 @@ class OpenAIImage
 	public function __construct() {}
 
 	public function fetch($prompt, $options = null)	{
-		$model = 'gpt-image-1.5';
+		$model = 'gpt-image-2';
 		$resolution = '1536x1024';
 		$quality = 'medium';
 		$background = 'auto';

@@ -65,6 +65,6 @@
 
 </script>
 
-<a href="/redaktion#125" class="button">Text im Ai Buddy weiteverarbeiten</a>
+<a href="/redaktion#125" class="button">Text im Ai-Buddy weiterverarbeiten</a>
 
 </main>
