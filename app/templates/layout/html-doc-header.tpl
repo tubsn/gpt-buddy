@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 	<meta name="author" content="<?=$page['meta']['author'] ?? 'flundr'?>" />
 	<meta name="description" content="<?=$page['description']?>" />
+	<meta name="robots" content="noindex, nofollow">
 
 	<link rel="modulepreload" href="/styles/js/main.js">
 	<link rel="modulepreload" href="/styles/js/components/model-selector.js">
