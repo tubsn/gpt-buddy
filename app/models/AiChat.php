@@ -53,6 +53,12 @@ class AiChat
 	public function build_conversation() {
 
 		$userInput = Session::get('input') ?? '';
+
+		// Apply Input Processing with {{{ Tokens }}}
+		$userInput = $this->prompts->replace_random_tokens($userInput);
+		$userInput = $this->prompts->replace_ignore_tokens($userInput);
+		$userInput = $this->prompts->replace_tokens($userInput);
+
 		$prompt = $this->prompts->get_and_track(Session::get('promptID')); 
 		$this->prompt = $prompt;
 
