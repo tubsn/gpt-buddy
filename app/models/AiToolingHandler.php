@@ -129,11 +129,11 @@ class AiToolingHandler {
 						],
 						'from' => [
 							'type' => 'string',
-							'description' => 'Daterange starting from in YYYY-MM-DD',
+							'description' => 'Daterange starting from in YYYY-MM-DD h:i or only YYYY-MM-DD',
 						],
 						'to' => [
 							'type' => 'string',
-							'description' => 'Daterange to in YYYY-MM-DD',
+							'description' => 'Daterange to in YYYY-MM-DD h:i or only YYYY-MM-DD',
 						],
 						'limit' => [
 							'type' => 'integer',

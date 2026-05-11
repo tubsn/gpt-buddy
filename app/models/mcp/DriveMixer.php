@@ -12,25 +12,53 @@ class DriveMixer
 
 	public function __construct() {}
 
-
 	public function analytics($args) {
 
-		$from = $args['from'];
-		$to = $args['to'];
+		$endpoint = '/bigquery';
+
+		$ids = $args['ids'] ?? null;
+		$from = $args['from'] ?? 'today -30 days';
+		$to = $args['to'] ?? 'today';
+		$limit = $args['limit'] ?? 10;
+		if ($limit > 50) {$limit = 50;}
+
+		$sort = $args['sort'] ?? 'Media_Time_in_h_Article_Subscriber';
+		$userneed = $args['userneed'] ?? null;
+		if (empty($userneed)) {$userneed = null;}
 
 		$from = date('Y-m-d', strtotime($from)) ;
 		$to = date('Y-m-d', strtotime($to));
 
 		$data = [
-			'limit' => 5,
+			'limit' => $limit,
 			'start_date' => $from,
 			'end_date' => $to,
 			'article_locality' => 'All',
-			'sort_by' => 'performance_score',
+			'sort_by' => $sort,
+			'user_need' => $userneed,
 		];
 
-		$response = $this->curl($this->apiURL . '/bigquery', $data);
+		if (!empty($ids)) {
+			$endpoint = '/bigquery/by-ids';
+			if (str_contains($ids, ',')) {
+				$ids = explode_and_trim(',' ,$ids);
+			}
+			$data['article_ids'] = $ids;
+		}
+
+		$response = $this->curl($this->apiURL . $endpoint, $data);
 		$json = json_decode($response, true);
+
+		if (isset($json['detail'])) {
+			$errors = $json['detail'];
+			$location = $errors[0]['loc'] ?? [];
+			$location = implode(' -> ', $location) . ': ';
+			$errorMessage = 'Drive-Analytics-API-Error: ' . $location . $errors[0]['msg'] ?? 'Unknown Error';
+
+			throw new \Exception($errorMessage, 500);
+		}
+
+
 		$json = $json['articles'];
 
 		$json = array_map(
@@ -39,38 +67,18 @@ class DriveMixer
 			return $entry;
 		}, $json);
 
-		/*
-		$output = [];
-
-		foreach ($json as $article) {
-			$output[] = implode(PHP_EOL, [
-				'Titel: ' . ($article['title'] ?? ''),
-				'Datum: ' . ($article['date'] ?? ''),
-				'Teaser: ' . ($article['article_teaser'] ?? ''),
-				'URL: ' . ($article['article_url'] ?? ''),
-				str_repeat('-', 80),
-			]);
-		}
-
-		$output = implode(PHP_EOL . PHP_EOL, $output);
-		*/
-
 		return $json;
 
 	}
-
-
 
 	public function search($query, $from = '2000-01-01', $to = 'today', $limit = 10, $filters = null, $teasersOnly = false, $exact = false) {
 
 		$minimalScore = 0;
 
-		$from = date('Y-m-d', strtotime($from)) . ' 00:00:00';
-		$to = date('Y-m-d', strtotime($to)) . ' 23:59:59';
+		$from = $this->normalizeFrom($from);
+		$to = $this->normalizeTo($to);
 		$limit = intval($limit);
-
 		$filters = $this->format_filters($filters);
-
 		$query = $this->sanitize($query);
 
 		$fields = ['article_title', 'article_teaser'];
@@ -89,7 +97,6 @@ class DriveMixer
 		$settings = array_merge($settings,$filters);
 
 		$response = $this->curl($this->apiURL . '/search', $settings);
-
 
 		$json = json_decode($response, true);
 
@@ -134,6 +141,34 @@ class DriveMixer
 		return $data;
 	}
 
+	private function normalizeFrom($input) {
+		return $this->normalizeDate($input);
+	}
+
+	private function normalizeTo($input) {
+		return $this->normalizeDate($input,true); // Returns with 23:59:59 timestamp
+	}
+
+	private function normalizeDate($input, $isEndOfDay = false) {
+		$input = trim($input);
+
+		if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $input)) {
+			return $input . ($isEndOfDay ? ' 23:59:59' : ' 00:00:00');
+		}
+
+		if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $input)) {
+			return $input . ':00';
+		}
+
+		if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $input)) {
+			return $input;
+		}
+
+		$timestamp = strtotime($input);
+
+		return date('Y-m-d', $timestamp) . ($isEndOfDay ? ' 23:59:59' : ' 00:00:00');
+	}
+
 	private function format_filters($parameters = null) {
 		if (empty($parameters)) {return [];}
 
@@ -169,7 +204,6 @@ class DriveMixer
 		return ['filters' => $filters];
 
 	}
-
 
 	private function sanitize($query) {
 		return htmlspecialchars(strip_tags(trim($query)), ENT_QUOTES, 'UTF-8');

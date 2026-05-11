@@ -12,7 +12,7 @@ class DriveRAG extends Controller {
 	public function __construct() {
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 		$this->view('DefaultLayout');
-		$this->models('DriveRAGApi,ChatGPT,Prompts');
+		$this->models('ChatGPT,Prompts');
 		$this->view->result = null;
 		$this->view->query = null;		
 		$this->view->errorMessage = null;		
@@ -27,6 +27,21 @@ class DriveRAG extends Controller {
 		$this->view->articleContentPromptID = 247;
 		$this->view->phrasePromptID = 246;
 	}
+
+	public function dpa_iq() {
+		$iq = new \app\models\mcp\DpaIq();
+		$args['query'] = 'Eifelturm';
+		$data = $iq->search($args ?? []);
+		$this->view->json($data);
+	}
+
+	public function rag_analytics($id = null) {
+		$mixer = new \app\models\mcp\DriveMixer();
+		if ($id) {$args['ids'] = [$id];}
+		$data = $mixer->analytics($args ?? []);
+		$this->view->json($data);
+	}
+
 
 	public function rag_index() {
 		$Prompts = new Prompts();
@@ -100,7 +115,8 @@ class DriveRAG extends Controller {
 		if (empty($to)) {$to = 'today';}	
 		
 		try {
-			$ragResult = $this->DriveRAGApi->search($phrase, $from, $to, $parameters);
+			$DriveRAGApi = new \app\models\mcp\DriveMixer();
+			$ragResult = $DriveRAGApi->search($phrase, $from, $to, $parameters);
 		} catch (\Exception $e) {
 			$this->view->errorMessage = $e->getMessage();
 			$ragResult = [];
@@ -175,7 +191,8 @@ class DriveRAG extends Controller {
 		if (empty($from)) {$from = '-365 days';}
 		if (empty($to)) {$to = 'today';}
 
-		$result = $this->DriveRAGApi->search($query, $from, $to, $parameters);
+		$DriveRAGApi = new \app\models\mcp\DriveMixer();
+		$result = $DriveRAGApi->search($query, $from, $to, $parameters);
 		$this->view->query = $query;
 		$this->view->result = $result ?? null;
 		$this->view->render('driverag/search');
