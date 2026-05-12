@@ -43,6 +43,11 @@ class DriveMixer
 			if (str_contains($ids, ',')) {
 				$ids = explode_and_trim(',' ,$ids);
 			}
+
+			if (!is_array($ids)) {
+				$ids = [$ids];
+			}
+
 			$data['article_ids'] = $ids;
 		}
 
