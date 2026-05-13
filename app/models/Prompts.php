@@ -57,7 +57,7 @@ class Prompts extends Model
 		$table = $this->db->table;
 		$SQLstatement = $this->db->connection->prepare(
 			"SELECT * FROM $table WHERE `category` = :category
-			 AND (inactive IS NULL OR inactive = '0') ORDER BY `title`"
+			 AND (inactive IS NULL OR inactive = '0') ORDER BY COALESCE(`pinned`, 0) DESC, `title` ASC"
 		);
 
 		$SQLstatement->execute([':category' => $category]);
@@ -73,7 +73,7 @@ class Prompts extends Model
 		$categorieNames = implode(',', array_fill(0, count($categories), '?'));
 		$SQLstatement = $this->db->connection->prepare(
 			"SELECT * FROM $table WHERE `category` IN ($categorieNames)
-			 AND (inactive IS NULL OR inactive = '0') ORDER BY `title`"
+			 AND (inactive IS NULL OR inactive = '0') ORDER BY COALESCE(`pinned`, 0) DESC, `title` ASC"
 		);
 
 		$SQLstatement->execute($categories);

@@ -10,7 +10,7 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 
 <fieldset class="grid-2-wide">
 	<div>
-		<fieldset class="grid-3-front-wide">
+		<fieldset class="grid-4-wide">
 		<label>Name:
 			<input name="title" type="text" placeholder="sichtbarer Name">
 		</label>
@@ -25,6 +25,13 @@ Die <b>Temperatur</b> regelt die Antwortenvarianz niedrige Werte erzeugen bei gl
 				<option value="<?=$category?>"><?=ucfirst($category)?></option>
 				<?php endif ?>
 				<?php endforeach ?>
+			</select>
+		</label>
+
+		<label>Anpinnen:
+			<select name="pinned" >
+				<option value="0" selected>nein</option>
+				<option value="1">ja</option>
 			</select>
 		</label>
 
