@@ -24,7 +24,24 @@ table.js-sortable th.dir-d {background-image: linear-gradient(#171a1e 0%, #2a313
 
 table.fancy tr:hover {background-color:#203a36}
 
-/*table tr.system, table tr.system:nth-child(2n) {background-color: var(--primary-superdark)}*/
+
+.main-form table {background: #232831; color: #d8dde6; border: 1px solid color-mix(in srgb, var(--grey) 18%, #000 82%);}
+
+.main-form table th, .main-form table td {border-bottom: 1px solid color-mix(in srgb, var(--grey) 16%, #000 84%);
+border-right: 1px solid color-mix(in srgb, var(--grey) 14%, #000 86%);}
+
+.main-form table thead th {background: color-mix(in srgb, var(--grey) 10%, #000 90%);
+color: #e7ebf1; border-bottom: 1px solid color-mix(in srgb, var(--grey) 20%, #000 80%);}
+
+.main-form table tbody tr {background: #232831;}
+
+.main-form table tbody tr:nth-child(even) {background: #2a303a;}
+
+.main-form table tbody tr:hover {background: color-mix(in srgb, var(--primary) 18%, #2a303a 82%);}
+
+.main-form table a {color: #d8dde6;}
+.main-form table a:hover {color: #fff;}
+
 .promptlist .inactive {background-color:#161f2b}
 
 table.fancy.history pre:hover {background-color: var(--grey)}
