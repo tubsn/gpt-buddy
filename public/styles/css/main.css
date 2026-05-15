@@ -92,7 +92,7 @@ table.fancy.history tr:hover, table tr.system {background-color:inherit;}
 
 
 /* Table in Chatwindow */
-.main-form table {box-sizing: border-box; width: 100%; border-collapse: collapse; border-spacing: 0; margin: 0.5rem 0 1rem; background: #fff;
+.main-form table {box-sizing: border-box; max-width: 100%; border-collapse: collapse; border-spacing: 0; margin: 0.5rem 0 1rem; background: #fff;
 color: inherit; font-size: 0.95rem; line-height: 1.35; border: 1px solid color-mix(in srgb, var(--grey) 82%, #000 18%);}
 
 .main-form table th, .main-form table td {box-sizing: border-box; padding: 0.42rem 0.58rem; text-align: left; vertical-align: top;
