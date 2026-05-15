@@ -91,6 +91,32 @@ table.fancy.history tr:hover, table tr.system {background-color:inherit;}
 .error-message {padding:0.2em 0.4em; display:inline-block; color:white; background-color:var(--warning); border-radius: 0.3em;}
 
 
+/* Table in Chatwindow */
+.main-form table {box-sizing: border-box; width: 100%; border-collapse: collapse; border-spacing: 0; margin: 0.5rem 0 1rem; background: #fff;
+color: inherit; font-size: 0.95rem; line-height: 1.35; border: 1px solid color-mix(in srgb, var(--grey) 82%, #000 18%);}
+
+.main-form table th, .main-form table td {box-sizing: border-box; padding: 0.42rem 0.58rem; text-align: left; vertical-align: top;
+border: 0; border-bottom: 1px solid color-mix(in srgb, var(--grey) 88%, #000 12%);
+border-right: 1px solid color-mix(in srgb, var(--grey) 90%, #000 10%); word-break: break-word; overflow-wrap: break-word;}
+
+.main-form table th:last-child, .main-form table td:last-child {border-right: 0;}
+
+.main-form table thead th {background: color-mix(in srgb, var(--grey) 92%, #fff 8%); color: #222; font-weight: 600; font-size: 0.88rem;
+line-height: 1.15; padding-top: 0.38rem; padding-bottom: 0.38rem; border-bottom: 1px solid color-mix(in srgb, var(--grey) 80%, #000 20%);}
+
+.main-form table tbody tr {background: #fff; transition: background-color 0.16s ease;}
+
+.main-form table tbody tr:nth-child(even) {background: color-mix(in srgb, var(--grey) 80%, #fff 20%);}
+.main-form table tbody tr:hover {background: color-mix(in srgb, var(--primary-highlight) 22%, #fff 78%);}
+.main-form table tbody tr:last-child td {border-bottom: 0;}
+.main-form table td:first-child, table th:first-child {white-space: nowrap;}
+.main-form table td:last-child, table th:last-child {white-space: nowrap;}
+
+.main-form table caption {caption-side: top; text-align: left; font-weight: 600; color: inherit;padding: 0 0 0.4rem;}
+.main-form table a {color: inherit; text-decoration: underline;}
+.main-form table a:hover {color: inherit;}
+
+
 /* Useful Elements */
 .box pre {background: white; padding: 0.1em 0.5em; border-radius: 0.4em; white-space:normal; max-height: 88px; text-overflow: ellipsis; overflow: auto;} 
 .box {background-color:#efefef; padding:1em 2em; margin-bottom:1em; border-radius:1em; 
