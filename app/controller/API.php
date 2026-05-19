@@ -4,6 +4,7 @@ namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\JWTAuth;
 use flundr\auth\Auth;
+use flundr\utility\Session;
 
 class API extends Controller {
 
@@ -115,6 +116,7 @@ class API extends Controller {
 		$options['image'] = $_POST['image'] ?? null;
 		
 		try {
+			Session::close(); // Prevent Session Blocking
 			$output = $this->OpenAIImage->fetch($prompt, $options);
 			$this->view->json($output);
 		} catch (\Exception $e) {
