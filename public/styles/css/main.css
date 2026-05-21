@@ -109,8 +109,11 @@ line-height: 1.15; padding-top: 0.38rem; padding-bottom: 0.38rem; border-bottom:
 .main-form table tbody tr:nth-child(even) {background: color-mix(in srgb, var(--grey) 80%, #fff 20%);}
 .main-form table tbody tr:hover {background: color-mix(in srgb, var(--primary-highlight) 22%, #fff 78%);}
 .main-form table tbody tr:last-child td {border-bottom: 0;}
+
+/*
 .main-form table td:first-child, table th:first-child {white-space: nowrap;}
 .main-form table td:last-child, table th:last-child {white-space: nowrap;}
+*/
 
 .main-form table caption {caption-side: top; text-align: left; font-weight: 600; color: inherit;padding: 0 0 0.4rem;}
 .main-form table a {color: inherit; text-decoration: underline;}
