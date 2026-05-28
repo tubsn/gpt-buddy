@@ -34,14 +34,9 @@ class Stats extends Controller {
 
 	public function index() {
 
-		$conversationsByMonth = $this->Stats->conversations_by_month();
 
+		$conversationsByMonth = $this->Usage->conversations_by_month();
 
-		if (isset($conversationsByMonth['2025-12'])) {
-			$conversationsByMonth['2025-12'] = $conversationsByMonth['2025-12'] + $this->Usage->stats_gap_december_2025();
-		}
-
-		$conversationsByMonth = array_merge($conversationsByMonth, $this->Usage->conversations_by_month());
 
 		// Anfragen nach Monat
 		$monthly = new AphexChart();
@@ -73,39 +68,13 @@ class Stats extends Controller {
 		$this->view->daily = $conversationsByDay;		
 		$this->view->dailyChart = $daily->create();
 
-
-		$type = $this->Stats->conversations_by_type();
-
-		$whiteListesTypes['Empfehlungen'] = $type['Empfehlungen'] ?? null;
-		$whiteListesTypes['Kreativität'] = $type['Kreativität'] ?? null;
-		$whiteListesTypes['Problemlösungen'] = $type['Problemlösungen'] ?? null;
-		$whiteListesTypes['Sprachliche Unterstützung'] = $type['Sprachliche Unterstützung'] ?? null;
-		$whiteListesTypes['Unterhaltung'] = $type['Unterhaltung'] ?? null;
-		//$whiteListesTypes['Wissensaufbau'] = $type['Wissensaufbau'];
-
-		// Anfragen nach Rubrik
-		$chart = new AphexChart();
-		$chart->metric = array_values($whiteListesTypes);
-		$chart->dimension = array_keys($whiteListesTypes);
-		$chart->color = CHART_COLOR;
-		//$chart->height = 800;
-		$chart->xfont = '14px';
-		$chart->legend = 'top';
-		$chart->name = 'Rubrik';
-		$chart->template = 'charts/default_pie_chart';
-
-		$prompts = $this->Prompts->all(['hits']);
-		$promptusage = array_sum(array_column($prompts,'hits'));
-		$promptusage += $this->Usage->number_of_conversations_with_prompt();
-
-		$this->view->type = $whiteListesTypes;		
-		$this->view->typeChart = $chart->create();
-
-		$usage = $this->Stats->count() + $this->Usage->number_of_conversations();
+		$promptusage = $this->Usage->number_of_conversations_with_prompt();
+		$usage = $this->Usage->number_of_conversations();
 
 		$this->view->usage = $usage;
 		$this->view->promptusage = $promptusage;
 		$this->view->length = $this->Usage->avglength();	
+
 
 		$this->view->render('stats');
 
