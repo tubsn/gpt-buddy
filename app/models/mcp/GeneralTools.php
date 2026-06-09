@@ -34,7 +34,7 @@ class GeneralTools
 	public function call_gpt(array $args) {
 		$connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com/v1/responses');
 		$ai = new OpenAI($connection);
-		$ai->model = 'gpt-5.2';
+		$ai->model = reset(AIMODELS) ?: 'gpt-5.4';
 		$ai->reasoning = 'none';
 
 		$promptID = $args['promptID'] ?? '';
