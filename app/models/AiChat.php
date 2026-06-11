@@ -42,18 +42,11 @@ class AiChat
 
 		// Note the str_pad is important for some webservers to stream SSE
 		$this->ai->stream(function (array $event) {
-			if (function_exists('connection_aborted') && connection_aborted()) {
-				return false;
-			}
-
 			echo 'data: ' . json_encode($event, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
 			echo str_pad('', 256)."\n";
 			flush();
 
-			if (function_exists('connection_aborted') && connection_aborted()) {
-				return false;
-			}
-
+			if (function_exists('connection_aborted') && connection_aborted()) {return false;}
 			return true;
 		});
 
