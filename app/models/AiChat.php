@@ -42,9 +42,19 @@ class AiChat
 
 		// Note the str_pad is important for some webservers to stream SSE
 		$this->ai->stream(function (array $event) {
+			if (function_exists('connection_aborted') && connection_aborted()) {
+				return false;
+			}
+
 			echo 'data: ' . json_encode($event, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
 			echo str_pad('', 256)."\n";
 			flush();
+
+			if (function_exists('connection_aborted') && connection_aborted()) {
+				return false;
+			}
+
+			return true;
 		});
 
 		$this->merge_conversation_and_tool_data();
@@ -324,6 +334,7 @@ class AiChat
 		@ini_set('zlib.output_compression', '0');
 		@ini_set('output_buffering', '0');
 		@ini_set('implicit_flush', '1');
+		@ignore_user_abort(false);
 
 		while (ob_get_level() > 0) {ob_end_clean();}
 

@@ -142,18 +142,26 @@ class OpenAI
 		try {
 			
 			while (true) {
-				$responseCollector = new ResponseEventCollector(function (array $payload): void {
-					$this->emit($payload);
+				$shouldContinue = true;
+				$responseCollector = new ResponseEventCollector(function (array $payload) use (&$shouldContinue): void {
+					if ($this->emit($payload) === false) {
+						$shouldContinue = false;
+					}
 				});
 
 				$requestOptions = $this->build_options(true);
 
 				// Calling the Connection for Streaming Events
-				$this->connection->request($requestOptions, function (array $eventData) use ($responseCollector) {
+				$this->connection->request($requestOptions, function (array $eventData) use ($responseCollector, &$shouldContinue) {
 					if ($this->debugEventFile) {$this->log_events($eventData);}
 					$responseCollector->handle($eventData);
+
+					if ($shouldContinue === false) {return false;}
+					if (function_exists('connection_aborted') && connection_aborted()) {return false;}
 					return true;
 				});
+
+				if ($shouldContinue === false) {break;}
 
 				$this->lastResponseId = $responseCollector->last_response_id();
 				$this->lastResponse = $responseCollector->complete_response();
@@ -402,9 +410,10 @@ class OpenAI
 		return $calls;
 	}
 
-	private function emit(array $payload): void {
+	private function emit(array $payload): bool {
 		if ($this->onDelta instanceof \Closure) {
-			($this->onDelta)($payload);
+			return ($this->onDelta)($payload) !== false;
 		}
+		return true;
 	}
 }

@@ -20,7 +20,7 @@ data() {
 		responseID: null,
 		directPromptID: null,
 		infotext: null,
-		eventSource: null,		
+		eventSource: null,
 		loading : false,
 		reasoning: false,
 		model : null,
@@ -69,6 +69,8 @@ mounted() {
 methods: {
 
 	send() {
+		if (this.loading) {return}
+		this.loading = true
 		this.clearLogs()
 		this.createStreamRequest()
 	},
@@ -91,7 +93,7 @@ methods: {
 		this.$refs.payload.payload = ''
 		this.errormessages = ''
 	},
-	
+
 	async removeHistory() {
 		this.$refs.history.kill()
 		this.clearLogs()
@@ -103,6 +105,8 @@ methods: {
 	getHistory() {return this.$refs.history.history},
 
 	async redoLastStep() {
+		if (this.loading) {return}
+		this.loading = true
 		const regenerate = true
 		this.createStreamRequest(regenerate)
 	},
@@ -121,7 +125,7 @@ methods: {
 		if (typeof userSelection === 'string' && userSelection) {
 			await navigator.clipboard.writeText(userSelection);
 			return
-		}		
+		}
 		let element = document.querySelector('.user-input .io-textarea')
 		let text = element.innerText || element.value || ''
 		navigator.clipboard.writeText(text);
@@ -145,10 +149,15 @@ methods: {
 	},
 
 	directPrompt(event) {
+		if (this.loading) {return}
+		this.loading = true
 
 		let element = event?.target || null
 		let directPromptID = element.dataset.directId || null
-		if (!directPromptID) {return}
+		if (!directPromptID) {
+			this.loading = false
+			return
+		}
 
 		this.directPromptID = directPromptID
 		this.removeHistory()
@@ -159,6 +168,31 @@ methods: {
 		this.directPromptID = null
 		this.input = backup
 
+	},
+
+	failRequest(message) {
+		this.errormessages = message
+		this.output = message
+		if (this.eventSource) {
+			this.eventSource.close()
+			this.eventSource = null
+		}
+		this.loading = false
+		this.modelmode = ''
+		this.stopClock()
+		document.removeEventListener("keydown", this.stopStreamOnEscape)
+	},
+
+	attachOutputScrollListener() {
+		Vue.nextTick(() => {
+			let outputDiv = this.$refs.outputTextarea
+			if (!outputDiv || outputDiv.dataset.scrollListenerAttached === 'true') {return}
+
+			outputDiv.addEventListener('scroll', () => {
+				this.shouldAutoScroll = this.isNearBottom(outputDiv);
+			});
+			outputDiv.dataset.scrollListenerAttached = 'true'
+		})
 	},
 
 	async createStreamRequest(regenerate = false) {
@@ -180,51 +214,60 @@ methods: {
 			requestData.promptID = this.directPromptID
 		}
 
-		const response = await fetch(requestURL, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(requestData)
-		});
+		try {
+			const response = await fetch(requestURL, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(requestData)
+			});
 
-		if (!response.ok) throw new Error('Kanal-Erstellung fehlgeschlagen');
-		
-		const data = await response.json()
-		const streamURL = data.url
+			if (!response.ok) {throw new Error('Kanal-Erstellung fehlgeschlagen')}
 
-		this.stream(streamURL)
+			const data = await response.json()
+			const streamURL = data.url
+
+			this.stream(streamURL)
+		}
+		catch (error) {
+			this.failRequest(error.message || 'Verbindungsfehler beim Starten des Streams')
+		}
 	},
 
 
 	async stream(url) {
 
+		if (!url) {url = '/stream'}
+
 		this.startClock()
 		this.errormessages = ''
 		this.output = ''
-		this.loading = true
-		this.userScrolledOutput = false
+		this.modelmode = ''
+		this.shouldAutoScroll = true
+
+		// A stale SSE connection must never keep running when a new explicit start happens.
+		if (this.eventSource) {
+			this.eventSource.close()
+			this.eventSource = null
+		}
 
 		// Enable Autoscrolling when user actively scrolls to the bottom
-		Vue.nextTick(() => {
-			let outputDiv = this.$refs.outputTextarea
-			outputDiv.addEventListener('scroll', () => {
-				this.shouldAutoScroll = this.isNearBottom(outputDiv);
-			});
-		})
-
-		if (!url) {url = '/stream'}
+		this.attachOutputScrollListener()
 
 		this.eventSource = new EventSource(url, { withCredentials: true });
-		this.eventSource.addEventListener('message', (event) => {this.handleStream(JSON.parse(event.data))})
-		this.eventSource.addEventListener('done', (event) => {this.stopStream()})
-		this.eventSource.addEventListener('stop', (event) => {this.stopStream()})
-		this.eventSource.addEventListener("error", (event) => {
-
-			//if (event.data.type == 'done') {this.stopStream();}
-			if (event.data) {
-				this.errormessages = event.data
-				this.output += event.data
+		this.eventSource.addEventListener('message', (event) => {
+			try {
+				this.handleStream(JSON.parse(event.data))
+			} catch (error) {
+				this.failRequest('Ungültige Stream-Antwort empfangen')
 			}
-			else {this.errormessages = '404 - Connection Error while Streaming (Browser Console for more)'}
+		})
+		this.eventSource.addEventListener('done', () => {this.stopStream()})
+		this.eventSource.addEventListener('stop', () => {this.stopStream()})
+		this.eventSource.addEventListener("error", () => {
+			if (!this.errormessages && !this.output) {
+				this.errormessages = '404 - Connection Error while Streaming (Browser Console for more)'
+				this.output = this.errormessages
+			}
 			this.stopStream()
 		});
 
@@ -267,7 +310,7 @@ methods: {
 
 			case 'completed': {
 				if (this.$refs.debug) {this.$refs.debug.sseFinalOutput.push(chunk.content)}
-				this.responseID = chunk.content.id 
+				this.responseID = chunk.content.id
 				this.usage = chunk.content.usage
 				break
 			}
@@ -293,6 +336,7 @@ methods: {
 	scrollOutputDown(scrollBehavior = 'smooth') {
 		if (!this.shouldAutoScroll) {return;}
 		const outputDiv = this.$refs.outputTextarea
+		if (!outputDiv) {return}
 		outputDiv.scrollTo({
 			top: outputDiv.scrollHeight,
 			behavior: scrollBehavior
@@ -301,10 +345,15 @@ methods: {
 
 	stopStream() {
 
-		let userScrolledDown = this.isNearBottom(this.$refs.outputTextarea)
+		let userScrolledDown = false
+		if (this.$refs.outputTextarea) {
+			userScrolledDown = this.isNearBottom(this.$refs.outputTextarea)
+		}
 
-		marked.use({breaks: true, mangle:false, headerIds: false,});
-		this.output = marked.parse(this.output)
+		if (this.output) {
+			marked.use({breaks: true, mangle:false, headerIds: false,});
+			this.output = marked.parse(this.output)
+		}
 
 		Vue.nextTick(() => {
 			hljs.highlightAll();
@@ -316,12 +365,17 @@ methods: {
 			this.shouldAutoScroll = false
 		})
 
-		this.eventSource.close()
+		if (this.eventSource) {
+			this.eventSource.close()
+			this.eventSource = null
+		}
 		this.stopClock()
 		this.modelmode = ''
 		if (!this.isMobileDevice()) {this.autofocus()}
 		this.$refs.history.fetchHistory()
 		this.loading = false
+
+		document.removeEventListener("keydown", this.stopStreamOnEscape)
 
 		sessionStorage.lastPrompt = this.promptID
 
@@ -329,7 +383,7 @@ methods: {
 
 	startClock() {this.stopWatchStartTime = Date.now(); this.responsetime = 0},
 	stopClock() {this.responsetime = this.elapsedTime()},
-	
+
 	elapsedTime() {
 		if (!this.stopWatchStartTime) {return 0}
 		return (Date.now() - this.stopWatchStartTime) / 1000
@@ -358,7 +412,7 @@ methods: {
 function toggleDarkmode() {
 
 	let cssLink = document.querySelector('#dark-mode-css-link')
-	
+
 	if (cssLink) {
 		cssLink.remove()
 		document.cookie = 'darkmode = 0; path=/; expires=Fri, 31 Dec 1970 23:59:59 GMT'

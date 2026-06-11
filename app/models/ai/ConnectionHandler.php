@@ -12,6 +12,7 @@ class ConnectionHandler
 	private string $sseBuffer = '';
 	private string $rawResponseBody = '';
 	private bool $abortStream = false;
+	private bool $streamCancelledByCallback = false;
 
 	public $debugRequest = false;
 	public $debugResponse = false;
@@ -55,6 +56,7 @@ class ConnectionHandler
 		$this->sseBuffer = '';
 		$this->rawResponseBody = '';
 		$this->abortStream = false;
+		$this->streamCancelledByCallback = false;
 
 		$url = $this->apiPath;
 		$jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -124,6 +126,7 @@ class ConnectionHandler
 					$callbackResult = $onChunk($chunk);
 					if ($callbackResult === false) {
 						$this->abortStream = true;
+						$this->streamCancelledByCallback = true;
 						return 0;
 					}
 				}
@@ -151,6 +154,10 @@ class ConnectionHandler
 		curl_close($curlHandle);
 
 		if ($onChunk) {
+			if ($this->streamCancelledByCallback) {
+				return [];
+			}
+
 			if ($curlErrorCode !== 0) {
 				throw new \RuntimeException('Stream transport error: ' . $curlErrorMessage);
 			}
