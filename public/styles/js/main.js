@@ -188,9 +188,23 @@ methods: {
 			let outputDiv = this.$refs.outputTextarea
 			if (!outputDiv || outputDiv.dataset.scrollListenerAttached === 'true') {return}
 
+			let lastScrollTop = outputDiv.scrollTop
+
 			outputDiv.addEventListener('scroll', () => {
-				this.shouldAutoScroll = this.isNearBottom(outputDiv);
-			});
+				if (this.isProgrammaticScroll) {return}
+
+				const currentScrollTop = outputDiv.scrollTop
+				const scrolledUp = currentScrollTop < lastScrollTop
+
+				if (scrolledUp) {
+					this.shouldAutoScroll = false
+				} else {
+					this.shouldAutoScroll = this.isNearBottom(outputDiv)
+				}
+
+				lastScrollTop = currentScrollTop
+			})
+
 			outputDiv.dataset.scrollListenerAttached = 'true'
 		})
 	},
@@ -242,7 +256,6 @@ methods: {
 		this.errormessages = ''
 		this.output = ''
 		this.modelmode = ''
-		this.shouldAutoScroll = true
 
 		// A stale SSE connection must never keep running when a new explicit start happens.
 		if (this.eventSource) {
