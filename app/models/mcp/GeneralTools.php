@@ -34,7 +34,10 @@ class GeneralTools
 	public function call_gpt(array $args) {
 		$connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com/v1/responses');
 		$ai = new OpenAI($connection);
-		$ai->model = reset(AIMODELS) ?: 'gpt-5.4';
+
+		$availableModels = AIMODELS;
+		$defaultModel = reset($availableModels)  ?: 'gpt-5.4';
+		$ai->model = $defaultModel['apiname'] ?? 'gpt-5.4';
 		$ai->reasoning = 'none';
 
 		$promptID = $args['promptID'] ?? '';
@@ -72,7 +75,7 @@ class GeneralTools
 
 		libxml_use_internal_errors(true);
 		$dom = @\Dom\HTMLDocument::createFromString($htmlString);
-
+		
 		if ($selector) {
 			$selectedNodes = $dom->querySelectorAll($selector);
 			$dom = $selectedNodes;
@@ -122,5 +125,6 @@ class GeneralTools
 
 		return $recievedData;
 	}
+
 
 }
