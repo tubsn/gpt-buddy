@@ -1,6 +1,7 @@
 export default Vue.defineComponent({
 data() {return {
 	payload: '',
+	timestamps: false,
 	loading: false
 }},
 
@@ -11,55 +12,59 @@ template: `
 	<img :src="payload">
 </figure>
 
-<div class="float-button file-button no-select" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img v-if="!loading" class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span>
+<div class="float-button file-button no-select" :class="{timestamps: timestamps}" onclick="event.preventDefault(); document.querySelector('#pdfupload').click()"><img v-if="!loading" class="cloud" src="/styles/img/upload-icon.svg"> <span>Datei hochladen (Mp3, Word, PDF, JPG, PNG)</span>
 <div v-if="loading" class="loadIndicator" style="top:0px; width:14px; height:8px; padding:0; margin-left:0.2em"><div></div><div></div><div></div></div></div>
 <input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 `,
 
+watch: {
+	timestamps(value) {localStorage.timestamps = value;},
+},
+
 mounted: function() {
 	this.initPasteUpload()
+	if (localStorage.timestamps == 'true') {this.timestamps = true}
 },
 
 methods: {
 
 	uploadFile(event) {
+		let fileObject = event
 
-		let file = event
-		if (event.target) {
-			file = event.target.files[0]
+		if (event.target && event.target.files && event.target.files[0]) {
+			fileObject = event.target.files[0]
 		}
 
 		this.loading = true
 
-		let formData = new FormData();
-		formData.append('file', file);
+		let formData = new FormData()
+		formData.append('file', fileObject)
+		formData.append('timestamps', this.timestamps)
 
 		fetch('/import/file', {
 			method: 'POST',
 			body: formData
 		})
-
 		.then(response => response.text())
-		.then(data => {
+		.then(responseText => {
 			try {
-				let jsondata = JSON.parse(data)
-				if (jsondata.payload) {
-					this.payload = jsondata.payload
-					this.loading = false
+				let parsedResponse = JSON.parse(responseText)
+
+				if (parsedResponse.payload) {
+					this.payload = parsedResponse.payload
 					return
 				}
-			} catch (error) {
-				console.log(error)
+			} catch (parseError) {
 			}
-			
-			this.$root.input = data
-			this.loading = false
+
+			this.$root.input = responseText
 		})
 		.catch(error => {
 			console.error(error)
+		})
+		.finally(() => {
 			this.loading = false
-		});
-
+		})
 	},
 
 	initPasteUpload() {

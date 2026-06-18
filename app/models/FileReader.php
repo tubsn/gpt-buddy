@@ -12,11 +12,15 @@ use \Intervention\Image\Drivers\Gd\Driver;
 class FileReader
 {
 
+	public $options = [];
+
 	public function __construct() {
 
 	}
 
-	public function import($file) {
+	public function import($file, $options = []) {
+
+		if ($options) {$this->options = $options;}
 
 		if (is_string($file)) {
 			if (!file_exists($file)) {
@@ -123,7 +127,8 @@ class FileReader
 
 	private function audio($file) {
 		$service = new Transcriber();
-		$service->timestamps = false;
+		$timestamps = filter_var($this->options['timestamps'], FILTER_VALIDATE_BOOLEAN);
+		$service->timestamps = $timestamps;
 		return $service->transcribe($file['tmp_name']);;
 	}
 

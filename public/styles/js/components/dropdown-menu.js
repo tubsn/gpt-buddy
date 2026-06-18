@@ -171,6 +171,10 @@ methods: {
 
 	redo() {this.$root.redoLastStep()},
 
+	timestamps() {
+		this.$root.$refs.payload.timestamps = !this.$root.$refs.payload.timestamps
+	},
+
 	// This is Ai Coded handle with care :S
 	async replaceBNNUrls() {
 

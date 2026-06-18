@@ -38,7 +38,8 @@ class Import extends Controller {
 	}
 
 	public function file_upload() {
-		$output = $this->FileReader->import($_FILES['file']);
+		$options['timestamps'] = $_POST['timestamps'] ?? false;
+		$output = $this->FileReader->import($_FILES['file'], $options);
 		echo $output;
 	}
 

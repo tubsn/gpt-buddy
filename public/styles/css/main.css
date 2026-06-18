@@ -217,6 +217,8 @@ text-align:center; background-color:white; border-radius:0.3em; border: 1px soli
 .speech-button {right:2.8em;}
 .file-button img.cloud {width:20px; top:3px}
 
+.file-button.timestamps {border-color:var(--primary);}
+
 .rag-layout .picker-ui-wrapper {display:block;}
 .rag-layout .ui-header {grid-template-columns: 2fr 4fr 1fr}
 .rag-layout .ui-header.has-direct-prompts .ui-header {grid-template-columns: 2fr 1fr 1fr 1fr}

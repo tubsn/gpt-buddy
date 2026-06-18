@@ -1,6 +1,7 @@
-<dropdown menu-element="user-input">
+<dropdown menu-element="input-area">
 	<div action="copy">Inhalt kopieren</div>
 	<div action="paste">Inhalt einfügen</div>	
+	<div action="timestamps">Timestamps an/aus</div>	
 	<div action="redo">Erneut generieren</div>	
 	<div action="delete"><img src="">Eingabe löschen</div>
 </dropdown>
@@ -9,4 +10,8 @@
 	<div action="copy">Inhalt kopieren</div>
 	<div action="redo">Erneut generieren</div>
 	<div action="delete" class="danger">Verlauf löschen</div>
+</dropdown>
+
+<dropdown menu-element="file-button">
+	<div action="timestamps">Timestamps an/aus</div>	
 </dropdown>

@@ -75,7 +75,7 @@ if (!empty($directPrompts)) {$hasDirect = ' has-direct-prompts';}
 		<file-upload ref="payload"></file-upload>
 
 		<label class="hide-mobile">Eingabe:</label>
-		<textarea autofocus ref="autofocusElement" tabindex="1" v-model="input" class="io-textarea" placeholder="Text oder Frage eingeben"></textarea>
+		<textarea autofocus ref="autofocusElement" tabindex="1" v-model="input" class="io-textarea input-area" placeholder="Text oder Frage eingeben"></textarea>
 	
 		<div class="ui-buttongroup">
 		<button class="button" tabindex="2" @click.prevent="send" v-if="!loading">Absenden</button>
