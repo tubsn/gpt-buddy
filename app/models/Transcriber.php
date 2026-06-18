@@ -2,24 +2,39 @@
 
 namespace app\models;
 
-class ChunkWhisper
+class Transcriber
 {
-	private $openAiApiKey;
-	private $ffmpegPath;
+	public $apiKey = CHATGPTKEY;
+	public $modelName = 'whisper-1';
+	public $apiURL = 'https://api.openai.com/v1/audio/transcriptions';
+	public $tempDir = PUBLICFOLDER . 'audio' . DIRECTORY_SEPARATOR . 'chunkwhisper';
+	public $language = 'de';
+	public $mimeType = 'audio/mpeg';
+	public $transferFilename = 'transcribe.mp3';
+	public $splittChunkSizeMB = 15;
+	public $timeStamps = false;
+	public $ffmpegPath;
 
 	public function __construct() {
-		$this->openAiApiKey = CHATGPTKEY;
-		$this->ffmpegPath = FFMPEGPATH;
+		$this->ffmpegPath = defined('FFMPEGPATH') ? FFMPEGPATH : 'ffmpeg';
+		$this->resolve_external_model();
 	}
 
-	public function transcribe($inputFile, $tmpDir, $language = 'de', $withTimestamps = false) {
-		$compressedFile = $tmpDir . DIRECTORY_SEPARATOR . 'compressed.ogg';
+	public function transcribe($inputFile) {
 
-		if (!$this->compressAudio($inputFile, $compressedFile)) {
+		if (!$this->ffmpeg_available()) {
+			return $this->run_api_request($inputFile);
+		}
+
+		$compressedFile = $this->tempDir . DIRECTORY_SEPARATOR . 'compressed.ogg';
+		$this->transferFilename = basename($compressedFile);
+		$this->mimeType = 'audio/ogg';
+
+		if (!$this->compress_audio($inputFile, $compressedFile)) {
 			return 'Audio-Komprimierung fehlgeschlagen';
 		}
 
-		$chunks = $this->splitAudio($compressedFile, $tmpDir . DIRECTORY_SEPARATOR . 'chunks');
+		$chunks = $this->split_audio($compressedFile);
 
 		if (!$chunks) {
 			return 'Audio-Splitting fehlgeschlagen';
@@ -28,7 +43,7 @@ class ChunkWhisper
 		$result = '';
 
 		foreach ($chunks as $chunkFile) {
-			$chunkText = $this->transcribeChunk($chunkFile, $language, $withTimestamps);
+			$chunkText = $this->run_api_request($chunkFile);
 
 			if ($chunkText !== '') {
 				$result .= $chunkText . "\n";
@@ -38,7 +53,15 @@ class ChunkWhisper
 		return trim($result);
 	}
 
-	public function compressAudio($inputFile, $outputFile) {
+	private function ffmpeg_available() {
+		$outputLines = [];
+		$returnCode = 1;
+		exec('ffmpeg -version 2>&1', $outputLines, $returnCode);
+		if ($returnCode === 0) {return true;} 
+		return false;
+	}
+
+	public function compress_audio($inputFile, $outputFile) {
 		$outputDir = dirname($outputFile);
 
 		if (!is_dir($outputDir)) {
@@ -57,24 +80,25 @@ class ChunkWhisper
 		return $returnCode === 0;
 	}
 
-	public function splitAudio($inputFile, $chunkDir, $chunkSizeMB = 15) {
-		if (!is_dir($chunkDir)) {
-			mkdir($chunkDir, 0777, true);
-		}
+	public function split_audio($inputFile) {
+
+		$chunkDir = $this->tempDir . DIRECTORY_SEPARATOR . 'chunks';
+		if (!is_dir($chunkDir)) {mkdir($chunkDir, 0777, true);}
 
 		$fileSize = filesize($inputFile);
+		$chunkSize = $this->splittChunkSizeMB * 1024 * 1024;
 
-		if ($fileSize <= ($chunkSizeMB * 1024 * 1024)) {
+		if ($fileSize <= ($chunkSize)) {
 			return [$inputFile];
 		}
 
-		$duration = $this->getAudioDuration($inputFile);
+		$duration = $this->get_audio_duration($inputFile);
 
 		if ($duration === false) {
 			return false;
 		}
 
-		$numberOfChunks = (int) ceil($fileSize / ($chunkSizeMB * 1024 * 1024));
+		$numberOfChunks = (int) ceil($fileSize / ($chunkSize * 1024 * 1024));
 		$chunkDuration = (int) ceil($duration / $numberOfChunks);
 
 		$chunkFiles = [];
@@ -104,7 +128,7 @@ class ChunkWhisper
 		return $chunkFiles;
 	}
 
-	private function getAudioDuration($file) {
+	private function get_audio_duration($file) {
 		$command = sprintf(
 			'%s -i %s 2>&1',
 			escapeshellcmd($this->ffmpegPath),
@@ -121,23 +145,24 @@ class ChunkWhisper
 		return false;
 	}
 
-	public function transcribeChunk($chunkFile, $language = 'de', $withTimestamps = false) {
+	public function run_api_request($file) {
+
 		$curlHandle = curl_init();
 
 		$postFields = [
-			'file' => new \CURLFile($chunkFile, 'audio/ogg', basename($chunkFile)),
-			'model' => 'whisper-1',
-			'language' => $language,
+			'file' => new \CURLFile($file, $this->mimeType, $this->transferFilename),
+			'model' => $this->modelName,
+			'language' => $this->language,
 			'response_format' => 'verbose_json',
 			'timestamp_granularities[]' => ['segment', 'word'],
 		];
 
-		curl_setopt($curlHandle, CURLOPT_URL, 'https://api.openai.com/v1/audio/transcriptions');
+		curl_setopt($curlHandle, CURLOPT_URL, $this->apiURL);
 		curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlHandle, CURLOPT_POST, true);
 		curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $postFields);
 		curl_setopt($curlHandle, CURLOPT_HTTPHEADER, [
-			'Authorization: Bearer ' . $this->openAiApiKey
+			'Authorization: Bearer ' . $this->apiKey
 		]);
 
 		$response = curl_exec($curlHandle);
@@ -145,26 +170,26 @@ class ChunkWhisper
 		if ($response === false) {
 			$errorMessage = curl_error($curlHandle);
 			curl_close($curlHandle);
-			return 'cURL Fehler: ' . $errorMessage;
+			return 'Transcription cURL Fehler: ' . $errorMessage;
 		}
 
 		$httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 		curl_close($curlHandle);
 
 		if ($httpCode !== 200) {
-			return 'API Fehler: ' . $response;
+			return 'Transcription API Fehler: ' . $response;
 		}
 
 		$data = json_decode($response, true);
 
 		if (!is_array($data)) {
-			return 'Ungültige API Antwort';
+			return 'Ungültige Transcription API Antwort';
 		}
 
-		return $this->resolveParagraphs($data, $withTimestamps);
+		return $this->resolve_paragraphs($data);
 	}
 
-	private function resolveParagraphs($data, $withTimestamps = false) {
+	private function resolve_paragraphs($data) {
 		if (empty($data['segments'] ?? [])) {
 			return trim($data['text'] ?? 'Kein Audio erkannt');
 		}
@@ -173,29 +198,23 @@ class ChunkWhisper
 
 		foreach ($data['segments'] as $segment) {
 			$part = trim($segment['text'] ?? '');
+			if ($part === '') {continue;}
 
-			if ($part === '') {
-				continue;
-			}
-
-			if ($withTimestamps) {
-				$startTime = $this->formatTimestamp($segment['start'] ?? 0);
+			if ($this->timeStamps) {
+				$startTime = $this->format_timestamp($segment['start'] ?? 0);
 				$output .= '[' . $startTime . '] ';
 			}
 
 			$output .= $part;
 
-			if ($this->endsSentence($part)) {
-				$output .= "\n";
-			} else {
-				$output .= ' ';
-			}
+			if ($this->ends_sentence($part)) {$output .= "\n";}
+			else {$output .= ' ';}
 		}
 
 		return trim($output);
 	}
 
-	private function endsSentence($text) {
+	private function ends_sentence($text) {
 		$trimmedText = trim($text);
 
 		return str_ends_with($trimmedText, '.')
@@ -204,7 +223,7 @@ class ChunkWhisper
 			|| str_ends_with($trimmedText, ':');
 	}
 
-	private function formatTimestamp($seconds) {
+	private function format_timestamp($seconds) {
 		$totalSeconds = (int) floor((float) $seconds);
 		$hours = (int) floor($totalSeconds / 3600);
 		$minutes = (int) floor(($totalSeconds % 3600) / 60);
@@ -216,4 +235,14 @@ class ChunkWhisper
 
 		return sprintf('%02d:%02d', $minutes, $remainingSeconds);
 	}
+
+	private function resolve_external_model() {
+		if (defined('EXTERNAL_MODELS') && !empty(EXTERNAL_MODELS['Transcription'])) {
+			$model = EXTERNAL_MODELS['Transcription'];
+			$this->apiURL = $model['url'];
+			if ($model['provider'] == 'azure') {
+				$this->apiKey = AZUREKEY;
+			}
+		}
+	}	
 }

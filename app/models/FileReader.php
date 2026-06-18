@@ -3,7 +3,7 @@
 namespace app\models;
 use \Smalot\PdfParser\Parser;
 use \Smalot\PdfParser\Config;
-use \app\models\OpenAIWhisper;
+use \app\models\Transcriber;
 use \flundr\file\Storage;
 use \flundr\utility\Log;
 use \Intervention\Image\ImageManager;
@@ -122,23 +122,8 @@ class FileReader
 	}
 
 	private function audio($file) {
-
-		$tmp_file = $_FILES['file']['tmp_name'];
-		$file_name = basename($_FILES['file']['name']);
-		$c_file = curl_file_create($tmp_file, $_FILES['file']['type'], $file_name);
-
-		if (defined('FFMPEGPATH')) {
-			$ChunkWhisper = new ChunkWhisper();
-			$output = $ChunkWhisper->transcribe($tmp_file, PUBLICFOLDER . 'audio' . DIRECTORY_SEPARATOR . 'chunkwhisper', 'de', true);
-		}
-
-		else {
-			$tts = new OpenAIWhisper();
-			$output = $tts->transcribe($c_file);
-		}
-
-		return $output;
-
+		$service = new Transcriber();
+		return $service->transcribe($file['tmp_name']);;
 	}
 
     private function readDocx($filename) {
