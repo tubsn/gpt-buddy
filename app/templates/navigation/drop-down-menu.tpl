@@ -1,7 +1,6 @@
 <dropdown menu-element="input-area">
 	<div action="copy">Inhalt kopieren</div>
 	<div action="paste">Inhalt einfügen</div>	
-	<div action="timestamps">Timestamps an/aus</div>	
 	<div action="redo">Erneut generieren</div>	
 	<div action="delete"><img src="">Eingabe löschen</div>
 </dropdown>
