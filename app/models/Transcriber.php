@@ -12,7 +12,7 @@ class Transcriber
 	public $mimeType = 'audio/mpeg';
 	public $transferFilename = 'transcribe.mp3';
 	public $splittChunkSizeMB = 15;
-	public $timeStamps = false;
+	public $timestamps = false;
 	private $ffmpegPath;
 
 	public function __construct() {
@@ -157,7 +157,7 @@ class Transcriber
 			'model' => $this->modelName,
 			'language' => $this->language,
 			'response_format' => 'verbose_json',
-			'timestamp_granularities[]' => ['segment', 'word'],
+			'timestamp_granularities' => ['segment', 'word'],
 		];
 
 		curl_setopt($curlHandle, CURLOPT_URL, $this->apiURL);
@@ -203,7 +203,7 @@ class Transcriber
 			$part = trim($segment['text'] ?? '');
 			if ($part === '') {continue;}
 
-			if ($this->timeStamps) {
+			if ($this->timestamps) {
 				$startTime = $this->format_timestamp($segment['start'] ?? 0);
 				$output .= '[' . $startTime . '] ';
 			}

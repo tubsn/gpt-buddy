@@ -123,6 +123,7 @@ class FileReader
 
 	private function audio($file) {
 		$service = new Transcriber();
+		$service->timestamps = false;
 		return $service->transcribe($file['tmp_name']);;
 	}
 
