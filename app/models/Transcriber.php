@@ -13,7 +13,7 @@ class Transcriber
 	public $transferFilename = 'transcribe.mp3';
 	public $splittChunkSizeMB = 15;
 	public $timeStamps = false;
-	public $ffmpegPath;
+	private $ffmpegPath;
 
 	public function __construct() {
 		$this->ffmpegPath = defined('FFMPEGPATH') ? FFMPEGPATH : 'ffmpeg';
@@ -56,7 +56,10 @@ class Transcriber
 	private function ffmpeg_available() {
 		$outputLines = [];
 		$returnCode = 1;
-		exec('ffmpeg -version 2>&1', $outputLines, $returnCode);
+
+		$ffmpeglocation = escapeshellcmd($this->ffmpegPath);
+		exec($ffmpeglocation . ' -version 2>&1', $outputLines, $returnCode);
+
 		if ($returnCode === 0) {return true;} 
 		return false;
 	}
