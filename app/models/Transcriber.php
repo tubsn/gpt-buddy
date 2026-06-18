@@ -98,7 +98,7 @@ class Transcriber
 			return false;
 		}
 
-		$numberOfChunks = (int) ceil($fileSize / ($chunkSize * 1024 * 1024));
+		$numberOfChunks = (int) ceil($fileSize / ($chunkSize));
 		$chunkDuration = (int) ceil($duration / $numberOfChunks);
 
 		$chunkFiles = [];
