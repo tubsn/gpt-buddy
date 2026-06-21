@@ -14,9 +14,20 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
-<h3>2. April 2026 - Rechtsklick Menü für Bildergenerator</h3>
-<p>Das individualisierbare Rechtsklick Menü steht jetzt auch für Bildergallerien zur verfügung.</p>
+<h3>12. Juni 2026 – Zeitstempel für Transkribierungen</h3>
+<p>Über ein neues Rechtsklick-Menü auf den Dateihochlade-Button lassen sich jetzt Zeitstempel beim Transkribieren an- und abschalten. Außerdem gibt es ffmpeg-Verbesserungen.</p>
 
+<h3>11. Juni 2026 – API-Anbindung angeglichen und verbessert</h3>
+<p>Die Verbindung zu den API-Schnittstellen wurde verbessert. Zudem wurden auch für die Whisper-Transkribierung und den Bildgenerator Schnittstellen zur Azure Cloud geschaffen.</p>
+
+<h3>21. Mai 2026 – Bildgenerator blockiert Textgenerierung nicht mehr</h3>
+<p>Es wurde ein Fehler behoben, durch den man, während die Bildgenerierung läuft, nicht weiter chatten konnte.</p>
+
+<h3>14. Mai 2026 – Bessere Tabellen und neue serverseitige Tools</h3>
+<p>Die Ausgabe von Tabellen im Chatfenster wurde verschönert; neben dem DriveRAG ist jetzt auch die Drive-Analytics-Schnittstelle angebunden.</p>
+
+<h3>2. April 2026 – Rechtsklick-Menü für Bildergenerator</h3>
+<p>Das individualisierbare Rechtsklick-Menü steht jetzt auch für Bildergalerien zur Verfügung.</p>
 
 <h3>24. März 2026 - Automatisches Scrolling beim Generieren von Antworten</h3>
 <p>Das Outputfenster scrollt jetzt automatisch mit, sobald der Nutzer während der Generierung, an den unteren Bildschirmrand scrollt.</p>
