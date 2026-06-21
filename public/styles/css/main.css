@@ -184,6 +184,14 @@ dialog {width:100%; max-width:80%}
 .user-input button {margin-top:0.5em;}
 .user-input button.light {float:right; position:relative;}
 
+/* Drag and Drop Styling */
+.input-area.file-drop-active {background: color-mix(in srgb, var(--primary) 15%, white);}
+.file-drop-overlay {position: absolute; inset: 18% 9% 18% 9%; z-index: 20;
+display: flex; align-items: center; justify-content: center;
+border: 3px dashed var(--primary); border-radius: .4em;
+background: #ffffffcc; color: var(--primary); pointer-events: none;
+font-size: 1.2em; font-weight: bold; text-align: center;}
+
 .output-info {position: absolute; top: 40px; right: 10px; text-align: right; opacity: 1; font-size: 0.9em; 
 background-color: #666; color: white; padding: .5em; border-radius: .4em; line-height: 1;
 animation: outputInfoBreath 1.2s infinite; animation-timing-function: cubic-bezier(0.42, 0.0, 0.58, 1.0);}

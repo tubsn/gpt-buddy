@@ -54,8 +54,10 @@ class FileReader
 	}
 
 	public function detect_type($file) {
+
 		switch ($file['type']) {
 			case 'text/plain': case 'text/html': case 'text/csv': return 'text'; break;
+			case 'text/css': case 'application/x-javascript': case 'application/octet-stream': case 'application/json': return 'text'; break;
 			case 'application/pdf': return 'pdf'; break;
 			case 'application/msword': return 'word'; break;
 			case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': return 'word'; break;

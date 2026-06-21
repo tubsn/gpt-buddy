@@ -119,3 +119,6 @@ ul.pager li a.active {background-color: #000; color:#dee1e6}
 fl-dialog {color:black}
 
 option {background: #131720; color: #dee1e6;}
+
+.input-area.file-drop-active {background: color-mix(in srgb, var(--primary) 30%, #1f1f1f);}
+.file-drop-overlay {border-color: var(--primary); background: #00000088; color: var(--primary);}
