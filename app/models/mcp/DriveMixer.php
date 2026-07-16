@@ -76,9 +76,7 @@ class DriveMixer
 
 	}
 
-	public function search($query, $from = '2000-01-01', $to = 'today', $limit = 10, $filters = null, $teasersOnly = false, $exact = false) {
-
-		$minimalScore = 0;
+	public function search($query, $from = '2000-01-01', $to = 'today', $limit = 10, $filters = null, $teasersOnly = false) {
 
 		$from = $this->normalizeFrom($from);
 		$to = $this->normalizeTo($to);
@@ -96,7 +94,6 @@ class DriveMixer
 			'end_date' => $to,
 			'limit' => $limit,			
 			'fields' => $fields,
-			'exact_search' => $exact,
 		];
 
 		$settings = array_merge($settings,$filters);
@@ -121,11 +118,10 @@ class DriveMixer
 
 		$data = $json['results'];
 
-		if ($minimalScore > 0) {
-			$data = array_filter($data, function($item) use ($minimalScore){
-				return $item['score'] >= $minimalScore;
-			});
-		}
+		$data = array_map(function (array $item) {
+			unset($item['score']); 
+			return $item;
+		}, $data); // Remove Scores
 
 		$data = array_map(function($item) {
 			if (isset($item['urls'][0])) {
@@ -179,32 +175,40 @@ class DriveMixer
 
 		$filters = [];
 
-		if (isset($parameters['tags'])) {
-			$tags = $parameters['tags'];
-			$tags = explode_and_trim(',', $tags);
-			$filters['tags'] = $tags;
-		}
-
-		if (isset($parameters['ressorts']) && !is_array($parameters['ressorts'])) {
-			$parameters['ressorts'] = [$parameters['ressorts']];
-		}
-
-		if (isset($parameters['ressorts'])) {
-			foreach ($parameters['ressorts'] as $key => $ressort) {
-				$parameters['ressorts'][$key] = '"section": "' . $ressort . '"';
-			}
-
-			if (isset($filters['tags'])) {
-				$filters['tags'] = array_merge($filters['tags'],$parameters['ressorts']);
-			}
-			else {
-				$filters['tags'] = $parameters['ressorts'];
-			}
-		}
-
 		if (isset($parameters['exact'])) {
-			$filters['exact_search'] = $parameters['exact'];
+			$filters['exact_search'] = filter_var($parameters['exact'] ?? false, FILTER_VALIDATE_BOOLEAN);
 		}	
+
+		$ressorts = [];
+		$tags = [];
+
+		if (!empty($parameters['ressorts'])) {
+
+			if (!is_array($parameters['ressorts'])) {
+				$parameters['ressorts'] = [$parameters['ressorts']];
+			}
+
+			foreach ($parameters['ressorts'] as $key => $ressort) {
+				$ressorts[$key] = 'section:' . strtolower($ressort);
+			}
+		}
+
+		if (!empty($parameters['tags'])) {
+
+			if (!is_array($parameters['tags'])) {
+				$parameters['tags'] = [$parameters['tags']];
+			}
+
+			foreach ($parameters['tags'] as $key => $tag) {
+				$tags[$key] = 'tags:'. strtolower($tag);
+			}
+		}
+
+		$sectionsAndTags = array_merge($ressorts,$tags);
+
+		if (!empty($sectionsAndTags)) {
+			$filters['meta_filter'] = $sectionsAndTags;
+		}
 
 		return ['filters' => $filters];
 
