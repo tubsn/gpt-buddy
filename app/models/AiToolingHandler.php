@@ -165,9 +165,9 @@ class AiToolingHandler {
 				$filters = null;
 				$summary = $args['summary'];
 
-				if ($args['tags']) {$filters['tags'] = $args['tags'];}
-				if ($args['section']) {$filters['ressorts'] = $args['section'];}
-				if ($args['exact']) {$filters['exact'] = $args['exact'];}
+				if ($args['tags'] ?? false) {$filters['tags'] = $args['tags'];}
+				if ($args['section'] ?? false) {$filters['ressorts'] = $args['section'];}
+				if ($args['exact'] ?? false) {$filters['exact'] = $args['exact'];}
 
 				return $mixer->search($query, $from, $to, $limit, $filters, $summary);
 			}
