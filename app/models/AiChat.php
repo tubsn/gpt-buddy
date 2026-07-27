@@ -182,6 +182,7 @@ class AiChat
 			$data['type'] = $type; // change e.g. for api usage
 			$data['model'] = $this->ai->model ?? null;
 			$data['reasoning'] = $this->ai->reasoning ?? null;
+			$data['tools'] = $this->ai->tools->used();
 
 			$id = $this->stats->create($data);
 			Session::set('trackingID', $id);

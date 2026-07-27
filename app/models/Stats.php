@@ -17,7 +17,6 @@ class Stats extends Model
 		$this->db->order = 'DESC';
 	}
 
-
 	public function count() {
 
 		$table = $this->db->table;

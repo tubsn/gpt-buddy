@@ -11,6 +11,7 @@ use flundr\utility\Log;
 class AiToolingHandler {
 
 	private $ai;
+	public $usedTools = [];
 
 	public function __construct($aiHandler = null) {$this->ai = $aiHandler;}
 	public function connect($aiHandler) {$this->ai = $aiHandler;}
@@ -22,12 +23,23 @@ class AiToolingHandler {
 		foreach ($toolnames as $toolname) {
 			if (method_exists($this, $toolname)) {
 				call_user_func([$this, $toolname]);
+				$this->make_use($toolname);
 			} else {
 				Log::error("Tool: $toolname not found or causing an error");
 			}
 		}
 
 	}
+
+	public function make_use($toolname) {
+		if (in_array($toolname, $this->usedTools)) {return;}
+		array_push($this->usedTools, $toolname);
+	}
+
+	public function used() {
+		if (empty($this->usedTools)) {return null;}
+		return implode(',', $this->usedTools);
+	}	
 
 	public function list() {
 		$reflection = new \ReflectionClass($this);
