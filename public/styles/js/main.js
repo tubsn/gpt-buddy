@@ -300,7 +300,7 @@ methods: {
 			case 'error': {
 				this.errormessages = chunk.text || chunk.message
 				console.error(chunk)
-				this.output = chunk.text
+				this.output += chunk.text || chunk.message + ' '
 				break
 			}
 
