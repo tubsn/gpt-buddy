@@ -110,11 +110,8 @@ class OpenAIImage
 
 		if ($fileContent === false || $httpCode >= 400) {
 			$curlError = curl_error($curlHandle);
-			curl_close($curlHandle);
 			throw new \Exception('Failed to download image. HTTP: ' . $httpCode . ' Error: ' . $curlError, 400);
 		}
-
-		curl_close($curlHandle);
 
 		file_put_contents($temporaryFilePath, $fileContent);
 		return $temporaryFilePath;

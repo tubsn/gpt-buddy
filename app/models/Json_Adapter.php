@@ -47,8 +47,6 @@ class Json_Adapter
 		$lastUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 		$responseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
 
-		curl_close ($ch);
-
 		if ($responseCode == 404) {
 			throw new \Exception("Artikel nicht gefunden oder kann nicht importiert werden", 404);
 		}

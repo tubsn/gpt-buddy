@@ -16,7 +16,6 @@ $routes->post('/api/chat', 'API@general_response');
 $routes->post('/api/hub', 'API@hub_response');
 $routes->addRoute('OPTIONS', '/api/chat', 'API@respond_to_options_header');
 
-
 // Conversations Responses API
 $routes->post('/stream', 'Streaming@post_request');
 $routes->get('/stream/sse', 'Streaming@sse');
@@ -38,13 +37,6 @@ $routes->get('/image/archive', 'Image@archive');
 $routes->post('/image/generate', 'API@generate_image');
 $routes->post('/image/upload', 'Image@upload_image');
 $routes->post('/image/delete', 'Image@delete');
-
-// AgentMode
-$routes->get('/agent', 'ResearchAgent@index');
-$routes->get('/agent/ask', 'ResearchAgent@ask');
-$routes->get('/agent/job/{id}', 'ResearchAgent@job');
-$routes->get('/agent/stream/{id}', 'ResearchAgent@stream');
-
 
 // TTS
 $routes->get('/tts', 'TextToSpeech@index');
@@ -80,7 +72,6 @@ $routes->get('/multiimport/wipe_all', 'MultiImport@wipe_db');
 $routes->get('/multiimport/wipe_old', 'MultiImport@wipe_old');
 
 $routes->get('/export/cue', 'Export@cue_congrats');
-
 
 // Settings / Prompts
 $routes->get('/settings', 'Settings@index');

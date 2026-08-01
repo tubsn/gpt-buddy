@@ -67,8 +67,6 @@ class ResponsesManager extends Controller {
 		$curlError = curl_error($curlHandle);
 		$httpStatus = (int) curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 
-		curl_close($curlHandle);
-
 		if ($responseBody === false) {
 			return ['ok' => false, 'status' => $httpStatus, 'error' => $curlError ?: 'curl_exec failed', 'body' => null];
 		}

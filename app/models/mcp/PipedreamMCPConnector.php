@@ -78,10 +78,8 @@ class PipedreamMCPConnector
 		$responseBody = curl_exec($curlHandle);
 		$httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 		if ($responseBody === false || $httpCode < 200 || $httpCode >= 300) {
-			curl_close($curlHandle);
 			return null;
 		}
-		curl_close($curlHandle);
 
 		$decoded = json_decode($responseBody, true);
 		return is_array($decoded) ? $decoded : null;
@@ -107,10 +105,8 @@ class PipedreamMCPConnector
 		$responseBody = curl_exec($curlHandle);
 		$httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 		if ($responseBody === false || $httpCode < 200 || $httpCode >= 300) {
-			curl_close($curlHandle);
 			return null;
 		}
-		curl_close($curlHandle);
 
 		$decoded = json_decode($responseBody, true);
 		return is_array($decoded) ? $decoded : null;

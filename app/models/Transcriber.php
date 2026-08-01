@@ -172,12 +172,10 @@ class Transcriber
 
 		if ($response === false) {
 			$errorMessage = curl_error($curlHandle);
-			curl_close($curlHandle);
 			return 'Transcription cURL Fehler: ' . $errorMessage;
 		}
 
 		$httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
-		curl_close($curlHandle);
 
 		if ($httpCode !== 200) {
 			return 'Transcription API Fehler: ' . $response;

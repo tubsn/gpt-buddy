@@ -121,8 +121,6 @@ class GeneralTools
 			return (curl_error($ch));
 		}
 
-		curl_close($ch);
-
 		return $recievedData;
 	}
 

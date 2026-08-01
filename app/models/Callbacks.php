@@ -53,8 +53,6 @@ class Callbacks
 			dd(curl_error($ch));
 		}
 
-		curl_close ($ch);
-
 		return json_decode($recievedData, true);
 
 	}

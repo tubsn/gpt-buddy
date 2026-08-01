@@ -248,8 +248,6 @@ class DriveMixer
 		$lastUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 		$responseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
 
-		curl_close ($ch);
-
 		if ($responseCode == 404) {
 			throw new \Exception("Fehler beim Abrufen der URL", 404);
 		}

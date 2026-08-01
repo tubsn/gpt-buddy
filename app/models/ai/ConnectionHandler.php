@@ -151,8 +151,6 @@ class ConnectionHandler
 		$curlErrorCode = curl_errno($curlHandle);
 		$curlErrorMessage = curl_error($curlHandle);
 
-		curl_close($curlHandle);
-
 		if ($onChunk) {
 			if ($this->streamCancelledByCallback) {
 				return [];
