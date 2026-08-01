@@ -122,7 +122,10 @@ class AiChat
 
 	public function resolve_tools() {
 		$categoryName = Session::get('category');
-		$category = CATEGORIES[$categoryName] ?? null;
+		
+		if ($categoryName !== null) {
+			$category = CATEGORIES[$categoryName] ?? null;
+		}
 
 		$tools = $category['tools'] ?? null;
 		if (!is_array($tools)) {$tools = [$tools];}
