@@ -54,15 +54,27 @@ class Import extends Controller {
 		$outDir = PUBLICFOLDER . $urlpath;
 
 		if ($_FILES) {
-			$tmp_file = $_FILES['audio']['tmp_name'];
+			$tmpFile = $_FILES['audio']['tmp_name'];
 			$filename = pathinfo($_FILES['audio']['name'], PATHINFO_FILENAME);
 			$extension = pathinfo($_FILES['audio']['name'], PATHINFO_EXTENSION);
 			$filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename);
+			$extension = preg_replace('/[^A-Za-z0-9]/', '', $extension);
 
-			$in = $tmp_file;
+			$in = $tmpFile;
 			if (!file_exists($outDir)) {mkdir($outDir, 0777, true);}
 			array_map('unlink', array_filter((array) glob($outDir.'*')));
-			echo shell_exec("$ff -i $in -f segment -segment_time 600 -c copy ".$outDir.$filename."-%03d." . $extension);
+
+
+			$outputPattern = $outDir . $filename . '-%03d.' . $extension;
+
+			$command = sprintf(
+				'%s -y -i %s -f segment -segment_time 600 -c copy %s 2>&1',
+				escapeshellcmd($ff),
+				escapeshellarg($tmpFile),
+				escapeshellarg($outputPattern)
+			);
+
+			exec($command, $commandOutput, $returnCode);
 		}
 
 		if (file_exists($outDir)) {
@@ -75,7 +87,6 @@ class Import extends Controller {
 		$this->view->render('audiosplitter');
 
 	}
-
 
 	public function converter() {
 
