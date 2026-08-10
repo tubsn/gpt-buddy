@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>11. August 2026 – Wasserzeichen im Bildgenerator</h3>
+<p>Um die Kennzeichnung von KI-Bildinhalten zu vereinfachen, steht jetzt ein Bildprozessor zur Verfügung. Damit lassen sich Wasserzeichen im Bild platzieren und individuell positionieren. Der Bildprozessor arbeitet per Webassembly im Browser des Nutzers, sodass die Bilder nicht nochmal zusätzlich hochgeladen werden müssen und auch größere Dateien ohne Qualitätsverlust verarbeitet werden können.</p>
+
 <h3>12. Juni 2026 – Zeitstempel für Transkribierungen</h3>
 <p>Über ein neues Rechtsklick-Menü auf den Dateihochlade-Button lassen sich jetzt Zeitstempel beim Transkribieren an- und abschalten. Außerdem gibt es ffmpeg-Verbesserungen.</p>
 

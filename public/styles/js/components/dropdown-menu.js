@@ -74,6 +74,12 @@ methods: {
 		navigator.clipboard.writeText(prompt);
 	},
 
+	watermarkimage() {
+		let imageURL = this.clickTarget.parentElement.href
+		let url = '/image/processor?img=' + imageURL
+		window.open(url, "_self");
+	},
+
 	openimage() {
 		const linkElement = this.clickTarget.parentElement
 		window.open(linkElement.href, "_blank");

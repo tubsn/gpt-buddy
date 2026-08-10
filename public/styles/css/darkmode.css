@@ -122,3 +122,34 @@ option {background: #131720; color: #dee1e6;}
 
 .input-area.file-drop-active {background: color-mix(in srgb, var(--primary) 30%, #1f1f1f);}
 .file-drop-overlay {border-color: var(--primary); background: #00000088; color: var(--primary);}
+
+
+html body .image-processor {
+    --processor-text: #dee1e6;
+    --processor-muted: #aab2be;
+    --processor-border: #343d4b;
+    --processor-border-hover: #596577;
+    --processor-background: #1e252f;
+    --processor-control-background: #151b24;
+    --processor-control-hover: #252e3a;
+    --processor-control-active: #35404f;
+    --processor-canvas-background: #0d131c;
+    --processor-canvas-pattern: #0d131c;
+    --processor-loading-background: rgb(13 19 28 / 88%);
+    --processor-error: #f09a91;
+    --processor-error-background: #371d20;
+    --processor-error-border: #66383d;
+    --processor-focus-shadow: transparent;
+    --processor-button-shadow: rgb(0 0 0 / 30%);
+    --processor-button-shadow-hover: rgb(0 0 0 / 40%);
+    --processor-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+}
+
+html body .image-processor-canvas-wrapper {
+    background-image: none;
+}
+
+html body .image-processor-controls input[type="range"] {
+    border: 0 !important;
+    box-shadow: none !important;
+}

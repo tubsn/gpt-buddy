@@ -37,6 +37,7 @@ $routes->get('/image/archive', 'Image@archive');
 $routes->post('/image/generate', 'API@generate_image');
 $routes->post('/image/upload', 'Image@upload_image');
 $routes->post('/image/delete', 'Image@delete');
+$routes->get('/image/processor', 'Image@processor');
 
 // TTS
 $routes->get('/tts', 'TextToSpeech@index');

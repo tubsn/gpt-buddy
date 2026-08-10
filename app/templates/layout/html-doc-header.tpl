@@ -19,6 +19,7 @@
 	<link rel="modulepreload" href="/styles/js/components/chat-history.js">
 	<link rel="modulepreload" href="/styles/js/components/dropdown-menu.js">
 	<link rel="modulepreload" href="/styles/js/components/debug-modal.js">
+	<link rel="modulepreload" href="/styles/js/components/image-processor.js">
 	
 <?php if (isset($page['fonts'])):?>
 	<link href="<?=$page['fonts']?>" rel="stylesheet">

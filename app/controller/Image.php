@@ -30,6 +30,14 @@ class Image extends Controller {
 		$this->view->render('image-generator/index');
 	}
 
+	public function processor() {
+		$imageUrl = $_GET['img'] ?? null;
+		$this->view('DefaultLayout');
+		$this->view->title = 'AI - Wasserzeichen Generator';
+		$this->view->image = $imageUrl;
+		$this->view->render('image-generator/watermark');
+	}
+
 	public function upload_image() {
 
 		$uploadinfo = $this->FileReader->import($_FILES['imagedata']);

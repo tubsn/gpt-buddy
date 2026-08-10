@@ -1,0 +1,669 @@
+.image-processor {
+	--processor-primary: var(--primary);
+	--processor-primary-hover: var(--primary-darker);
+	--processor-text: var(--primary-superdark);
+	--processor-muted: #66736f;
+	--processor-border: #d9e2de;
+	--processor-border-hover: #a9b2af;
+	--processor-background: #ffffff;
+	--processor-control-background: var(--grey);
+	--processor-control-hover: #e2e2e2;
+	--processor-control-active: #d6d6d6;
+	--processor-canvas-background: var(--grey);
+	--processor-canvas-pattern: #dddddd;
+	--processor-loading-background: rgb(255 255 255 / 84%);
+	--processor-error: var(--warning);
+	--processor-error-background: #fff1f0;
+	--processor-error-border: #e5bebe;
+	--processor-focus-shadow: rgb(0 0 0 / 8%);
+	--processor-button-shadow: rgb(29 94 85 / 22%);
+	--processor-button-shadow-hover: rgb(29 94 85 / 28%);
+	--processor-shadow: 0 10px 30px rgb(20 50 40 / 10%);
+	--processor-radius: 14px;
+
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-width: 0;
+	color: var(--processor-text);
+	background: var(--processor-background);
+	border: 1px solid var(--processor-border);
+	border-radius: var(--processor-radius);
+	box-shadow: var(--processor-shadow);
+}
+
+#chatapp {
+	min-width: 0;
+	padding: clamp(0.5rem, 1.5vw, 1.5rem);
+}
+
+/* Einheitliches Box-Modell */
+
+.image-processor,
+.image-processor *,
+.image-processor *::before,
+.image-processor *::after {
+	box-sizing: border-box;
+}
+
+/* Focus-Stile innerhalb des Image-Processors entfernen */
+
+.image-processor input:focus,
+.image-processor input:focus-visible,
+.image-processor select:focus,
+.image-processor select:focus-visible,
+.image-processor button:focus,
+.image-processor button:focus-visible {
+	outline: none !important;
+}
+
+/* Canvas-Bereich */
+
+.image-processor-canvas-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	overflow: hidden;
+	background-color: var(--processor-canvas-background);
+	background-image:
+		linear-gradient(
+			45deg,
+			var(--processor-canvas-pattern) 25%,
+			transparent 25%
+		),
+		linear-gradient(
+			-45deg,
+			var(--processor-canvas-pattern) 25%,
+			transparent 25%
+		),
+		linear-gradient(
+			45deg,
+			transparent 75%,
+			var(--processor-canvas-pattern) 75%
+		),
+		linear-gradient(
+			-45deg,
+			transparent 75%,
+			var(--processor-canvas-pattern) 75%
+		);
+	background-position:
+		0 0,
+		0 8px,
+		8px -8px,
+		-8px 0;
+	background-size: 16px 16px;
+}
+
+canvas.image-processor-canvas {
+	display: block !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	height: auto !important;
+	max-height: 75dvh !important;
+	object-fit: contain;
+	touch-action: none;
+	cursor: crosshair;
+}
+
+/* Noch kein Bild geladen */
+
+.image-processor-canvas-wrapper:has(.image-processor-empty) {
+	position: relative;
+	min-height: clamp(300px, 50vh, 540px);
+}
+
+.image-processor-empty {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: auto;
+	min-width: 0;
+	min-height: 0;
+	padding: 2rem;
+	color: var(--processor-text);
+	text-align: center;
+	cursor: pointer;
+	outline: none;
+}
+
+.image-processor-empty:focus,
+.image-processor-empty:focus-visible {
+	outline: none;
+}
+
+.image-processor-empty-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	width: auto;
+	max-width: calc(100% - 2rem);
+	margin: 0;
+	padding: 1.4rem 1.75rem;
+	color: var(--processor-text);
+	text-align: center;
+	background: var(--processor-background);
+	border: 2px dashed var(--processor-primary);
+	border-radius: 10px;
+}
+
+.image-processor-empty-content strong {
+	color: var(--processor-primary);
+	font-size: 1.3rem;
+	font-weight: 800;
+}
+
+.image-processor-empty-content span {
+	font-size: 1.05rem;
+	font-weight: 700;
+}
+
+.image-processor-empty-content small {
+	color: var(--processor-muted);
+	font-size: 0.925rem;
+	font-weight: 650;
+}
+
+/* Ladeanzeige */
+
+.image-processor-loading {
+	position: absolute;
+	z-index: 10;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	padding: 1rem;
+	color: var(--processor-primary);
+	font-size: 1rem;
+	font-weight: 750;
+	text-align: center;
+	background: var(--processor-loading-background);
+	backdrop-filter: blur(4px);
+}
+
+/* Fehlermeldung */
+
+.image-processor-error {
+	margin: 0.75rem;
+	padding: 0.75rem 0.95rem;
+	color: var(--processor-error);
+	font-size: 0.95rem;
+	line-height: 1.4;
+	background: var(--processor-error-background);
+	border: 1px solid var(--processor-error-border);
+	border-radius: 8px;
+}
+
+/* Formular */
+
+.image-processor-controls {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.95rem 1rem;
+	width: 100%;
+	min-width: 0;
+	margin: 0;
+	padding: 1rem;
+	overflow: visible;
+	color: var(--processor-text);
+	font-size: 1rem;
+	background: var(--processor-background);
+	border-top: 1px solid var(--processor-border);
+}
+
+.image-processor-controls > label {
+	display: grid;
+	min-width: 0;
+	gap: 0.4rem;
+	margin: 0;
+	color: var(--processor-text);
+	font-size: 0.95rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+/*
+ * Ausgabeformat und Qualität vorläufig ausblenden.
+ * Das sind das fünfte und sechste direkte Label.
+ */
+
+.image-processor-controls > label:nth-of-type(5),
+.image-processor-controls > label:nth-of-type(6) {
+	display: none;
+}
+
+/* Select und Dateiauswahl */
+
+.image-processor-controls select,
+.image-processor-controls input[type="file"] {
+	width: 100%;
+	min-width: 0;
+	min-height: 40px;
+	color: var(--processor-text);
+	font: inherit;
+	font-size: 0.95rem;
+	font-weight: 500;
+	background: var(--processor-control-background);
+	border: 1px solid var(--processor-border);
+	border-radius: 8px;
+	outline: none !important;
+	transition:
+		border-color 160ms ease,
+		box-shadow 160ms ease,
+		background-color 160ms ease;
+}
+
+.image-processor-controls select {
+	height: 40px;
+	padding: 0 2.25rem 0 0.7rem;
+	cursor: pointer;
+}
+
+.image-processor-controls input[type="file"] {
+	height: auto;
+	padding: 0.25rem;
+	cursor: pointer;
+}
+
+.image-processor-controls input[type="file"]::file-selector-button {
+	min-height: 32px;
+	margin-right: 0.65rem;
+	padding: 0.35rem 0.75rem;
+	color: var(--processor-text);
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 750;
+	background: var(--processor-control-hover);
+	border: 0;
+	border-radius: 6px;
+	cursor: pointer;
+	transition:
+		color 160ms ease,
+		background-color 160ms ease;
+}
+
+.image-processor-controls input[type="file"]::file-selector-button:hover {
+	color: var(--processor-text);
+	background: var(--processor-control-active);
+}
+
+.image-processor-controls select:hover,
+.image-processor-controls input[type="file"]:hover {
+	border-color: var(--processor-border-hover);
+}
+
+.image-processor-controls select:focus,
+.image-processor-controls select:focus-visible,
+.image-processor-controls input[type="file"]:focus,
+.image-processor-controls input[type="file"]:focus-visible {
+	outline: none !important;
+	border-color: var(--processor-border-hover);
+	box-shadow: 0 0 0 3px var(--processor-focus-shadow);
+}
+
+/* Positionsauswahl */
+
+.image-processor-controls fieldset {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.image-processor-controls legend {
+	width: 100%;
+	margin: 0 0 0.35rem;
+	padding: 0;
+	color: var(--processor-text);
+	font-size: 0.95rem;
+	font-weight: 750;
+	line-height: 1.3;
+}
+
+.image-processor-controls fieldset label {
+	display: inline-flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	min-width: 115px;
+	min-height: 38px;
+	margin: 0;
+	padding: 0.35rem 0.6rem;
+	color: var(--processor-muted);
+	font-size: 0.9rem;
+	font-weight: 650;
+	line-height: 1.25;
+	text-align: center;
+	background: var(--processor-control-background);
+	border: 1px solid var(--processor-border);
+	border-radius: 7px;
+	cursor: pointer;
+	transition:
+		color 160ms ease,
+		border-color 160ms ease,
+		background-color 160ms ease;
+}
+
+.image-processor-controls fieldset label:hover {
+	color: var(--processor-text);
+	background: var(--processor-control-hover);
+	border-color: var(--processor-border-hover);
+}
+
+.image-processor-controls fieldset label:has(input:checked) {
+	color: var(--processor-text);
+	background: var(--processor-control-active);
+	border-color: var(--processor-border-hover);
+}
+
+.image-processor-controls input[type="radio"],
+.image-processor-controls input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	flex: 0 0 auto;
+	margin: 0;
+	accent-color: #777777;
+	border: 0;
+	cursor: pointer;
+	outline: none !important;
+}
+
+.image-processor-controls input[type="radio"]:focus,
+.image-processor-controls input[type="radio"]:focus-visible,
+.image-processor-controls input[type="checkbox"]:focus,
+.image-processor-controls input[type="checkbox"]:focus-visible {
+	border: 0;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+/* Slider */
+
+.image-processor-controls input[type="range"] {
+	width: 100%;
+	height: 20px;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	border: 0 !important;
+	border-radius: 0;
+	outline: none !important;
+	box-shadow: none !important;
+	accent-color: var(--processor-primary);
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.image-processor-controls input[type="range"]:hover,
+.image-processor-controls input[type="range"]:focus,
+.image-processor-controls input[type="range"]:focus-visible,
+.image-processor-controls input[type="range"]:active {
+	background: transparent;
+	border: 0 !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+.image-processor-controls input[type="range"]::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 5px;
+	background: var(--processor-control-active);
+	border: 0 !important;
+	border-radius: 999px;
+	box-shadow: none;
+}
+
+.image-processor-controls input[type="range"]::-webkit-slider-thumb {
+	width: 17px;
+	height: 17px;
+	margin-top: -6px;
+	background: var(--processor-primary);
+	border: 3px solid var(--processor-background);
+	border-radius: 50%;
+	box-shadow: 0 1px 5px rgb(0 0 0 / 25%);
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.image-processor-controls input[type="range"]::-moz-range-track {
+	width: 100%;
+	height: 5px;
+	background: var(--processor-control-active);
+	border: 0 !important;
+	border-radius: 999px;
+	box-shadow: none;
+}
+
+.image-processor-controls input[type="range"]::-moz-range-progress {
+	height: 5px;
+	background: var(--processor-primary);
+	border: 0 !important;
+	border-radius: 999px;
+}
+
+.image-processor-controls input[type="range"]::-moz-range-thumb {
+	width: 13px;
+	height: 13px;
+	background: var(--processor-primary);
+	border: 3px solid var(--processor-background);
+	border-radius: 50%;
+	box-shadow: 0 1px 5px rgb(0 0 0 / 25%);
+}
+
+/* Erfolgsmeldung */
+
+.image-processor-success {
+	position: fixed;
+	z-index: 9999;
+	top: 4.5rem;
+	right: 1.25rem;
+	width: min(420px, calc(100vw - 2rem));
+	margin: 0;
+	padding: 1rem 1.25rem;
+	color: #ffffff;
+	font-size: 1rem;
+	font-weight: 750;
+	line-height: 1.4;
+	background: var(--processor-primary);
+	border: 0;
+	border-radius: 10px;
+	box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
+}
+
+.image-processor-success::before {
+	content: "✓";
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	margin-right: 0.6rem;
+	color: var(--processor-primary);
+	font-weight: 900;
+	background: #ffffff;
+	border-radius: 50%;
+}
+
+/* Speicherbutton */
+
+.image-processor-controls > button[type="submit"] {
+	grid-column: 1 / -1;
+	min-height: 44px;
+	margin-top: 0.1rem;
+	padding: 0.65rem 1rem;
+	color: #ffffff;
+	font: inherit;
+	font-size: 1rem;
+	font-weight: 750;
+	letter-spacing: 0.01em;
+	background: var(--processor-primary);
+	border: 0;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px var(--processor-button-shadow);
+	cursor: pointer;
+	outline: none !important;
+	transition:
+		transform 160ms ease,
+		background-color 160ms ease,
+		box-shadow 160ms ease;
+}
+
+.image-processor-controls > button[type="submit"]:focus,
+.image-processor-controls > button[type="submit"]:focus-visible {
+	outline: none !important;
+}
+
+.image-processor-controls > button[type="submit"]:hover:not(:disabled) {
+	color: #ffffff;
+	background: var(--processor-primary-hover);
+	box-shadow: 0 6px 16px var(--processor-button-shadow-hover);
+	transform: translateY(-1px);
+}
+
+.image-processor-controls > button[type="submit"]:active:not(:disabled) {
+	box-shadow: none;
+	transform: none;
+}
+
+.image-processor-controls > button[type="submit"]:disabled,
+.image-processor-controls :disabled {
+	cursor: not-allowed;
+	opacity: 0.55;
+}
+
+/* Formular rechts, wenn Vue die Side-Klasse setzt */
+
+@media (min-width: 900px) {
+	.image-processor--side {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+		grid-template-rows: auto;
+		align-items: start;
+	}
+
+	.image-processor--side .image-processor-canvas-wrapper {
+		grid-column: 1;
+		grid-row: 1;
+		width: 100%;
+		height: 100%;
+		min-height: 0;
+		border-right: 1px solid var(--processor-border);
+	}
+
+	.image-processor--side canvas.image-processor-canvas {
+		width: auto !important;
+		max-width: 100% !important;
+		height: auto !important;
+		max-height: 75dvh !important;
+	}
+
+	.image-processor--side .image-processor-controls {
+		grid-column: 2;
+		grid-row: 1;
+		grid-template-columns: minmax(0, 1fr);
+		align-content: start;
+		width: 100%;
+		min-width: 0;
+		padding: 1rem;
+		overflow: visible;
+		border-top: 0;
+	}
+
+	.image-processor--side .image-processor-controls fieldset,
+	.image-processor--side .image-processor-controls > button[type="submit"] {
+		grid-column: auto;
+	}
+
+	.image-processor--side .image-processor-controls fieldset {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.image-processor--side .image-processor-controls fieldset label {
+		width: 100%;
+		min-width: 0;
+	}
+}
+
+/* Tablet */
+
+@media (max-width: 899px) {
+	.image-processor,
+	.image-processor--side {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.image-processor-canvas-wrapper {
+		max-height: none;
+	}
+
+	canvas.image-processor-canvas {
+		width: 100% !important;
+		height: auto !important;
+		max-height: 70dvh !important;
+	}
+
+	.image-processor-controls {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* Smartphone */
+
+@media (max-width: 650px) {
+	#chatapp {
+		padding: 0.5rem;
+	}
+
+	.image-processor {
+		border-radius: 10px;
+	}
+
+	.image-processor-success {
+		top: 4rem;
+		right: 0.75rem;
+		left: 0.75rem;
+		width: auto;
+	}
+
+	.image-processor-controls {
+		grid-template-columns: minmax(0, 1fr);
+		padding: 0.85rem;
+	}
+
+	.image-processor-controls fieldset,
+	.image-processor-controls > button[type="submit"] {
+		grid-column: auto;
+	}
+
+	.image-processor-controls fieldset label {
+		flex: 1 1 calc(50% - 0.45rem);
+	}
+}
+
+@media (max-width: 420px) {
+	.image-processor-controls fieldset {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.image-processor-controls fieldset label {
+		width: auto;
+		min-width: 0;
+	}
+}

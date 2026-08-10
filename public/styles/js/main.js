@@ -8,6 +8,7 @@ import SearchToggleButton from "./components/search-toggle.js";
 import ChatHistory from "./components/chat-history.js";
 import Dropdown from "./components/dropdown-menu.js";
 import DebugModal from "./components/debug-modal.js";
+import ImageProcessor from './components/image-processor.js'
 
 const { createApp } = Vue
 
@@ -47,6 +48,7 @@ components: {
 	"chat-history": ChatHistory,
 	"dropdown": Dropdown,
 	"debug-modal": DebugModal,
+	'image-processor': ImageProcessor,
 },
 
 computed: {
