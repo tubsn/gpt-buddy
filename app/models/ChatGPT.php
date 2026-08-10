@@ -1,7 +1,6 @@
 <?php
 
 namespace app\models;
-use Orhanerday\OpenAi\OpenAi;
 use app\models\Prompts;
 use app\models\Conversations;
 use app\models\OpenAIVision;
