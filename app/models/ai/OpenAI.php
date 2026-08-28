@@ -12,7 +12,8 @@ class OpenAI
 	public ?string $reasoning = null;
 	public array $messages = [];
 	public ?array $jsonSchema = null;
-	public $tools = null; // Register your own Tool Class
+	public $tools = null;
+	public bool $uses_stateful_responses = true;
 
 	public ?string $debugEventFile = null;
 	//public ?string $debugEventFile = LOGS . 'response-events.json';
@@ -92,7 +93,8 @@ class OpenAI
 		$response = $this->lastResponse;
 		if (empty($response)) {return [];}
 		$out['role'] = $response['role'];
-		$out['content'] = $response['content'][0]['text'];
+		$out['content'] = $this->extract_message_text($response);
+		if (empty($out['content'])) {return [];}
 		return $out;
 	}
 
@@ -109,9 +111,13 @@ class OpenAI
 
 			$responseData = $this->connection->request($requestOptions, null);
 
+			$this->lastResponseRaw = $responseData;
+
 			$this->lastResponseId =
 				$responseData['id'] ??
 				($responseData['response']['id'] ?? $this->lastResponseId);
+
+			$this->lastResponse = $this->extract_last_message_item($responseData);
 
 			$textChunk = $this->extract_output_text($responseData);
 			if ($textChunk !== '') {
@@ -124,8 +130,6 @@ class OpenAI
 			if (empty($this->toolCalls)) {break;}
 			$this->execute_tools();
 		}
-
-		$this->lastResponseRaw = $responseData;
 
 		return $finalText;
 	}
@@ -151,7 +155,6 @@ class OpenAI
 
 				$requestOptions = $this->build_options(true);
 
-				// Calling the Connection for Streaming Events
 				$this->connection->request($requestOptions, function (array $eventData) use ($responseCollector, &$shouldContinue) {
 					if ($this->debugEventFile) {$this->log_events($eventData);}
 					$responseCollector->handle($eventData);
@@ -165,6 +168,7 @@ class OpenAI
 
 				$this->lastResponseId = $responseCollector->last_response_id();
 				$this->lastResponse = $responseCollector->complete_response();
+				$this->lastResponseRaw = $responseCollector->complete_response_raw();
 				$this->toolCalls = $responseCollector->tool_calls();
 
 				if (!empty($this->toolCalls)) {
@@ -172,7 +176,6 @@ class OpenAI
 					continue;
 				}
 
-				// this is the absolute streaming ending
 				$this->emit(['type' => 'final']); 
 				break;
 			}
@@ -186,7 +189,7 @@ class OpenAI
 	}
 
 	private function build_options(bool $useStream): array {
-		$isFollowUp = $this->lastResponseId !== null && !empty($this->pendingToolOutputs);
+		$isFollowUp = !empty($this->pendingToolOutputs);
 
 		$options['model'] = $this->model;
 		$options['stream'] = $useStream;
@@ -194,7 +197,6 @@ class OpenAI
 		$options['tools'] = $this->tools_schema();
 
 		if (empty($options['tools'])) {
-			//Prevents Saving of Conversations - setting to true prevents tools.
 			$options['store'] = false; 
 		}
 
@@ -206,8 +208,7 @@ class OpenAI
 		}
 
 		if ($isFollowUp) {
-			$options['previous_response_id'] = $this->lastResponseId;
-			$options['input'] = array_map(
+			$toolOutputs = array_map(
 				fn(array $toolOutput) => [
 					'type' => 'function_call_output',
 					'call_id' => (string) $toolOutput['tool_call_id'],
@@ -215,6 +216,19 @@ class OpenAI
 				],
 				array_values($this->pendingToolOutputs)
 			);
+
+			if ($this->uses_stateful_responses && $this->lastResponseId !== null) {
+				$options['previous_response_id'] = $this->lastResponseId;
+				$options['input'] = $toolOutputs;
+				return $options;
+			}
+
+			$options['input'] = array_merge(
+				$this->messages,
+				$this->last_response_output_items(),
+				$toolOutputs
+			);
+
 			return $options;
 		}
 
@@ -322,6 +336,22 @@ class OpenAI
 		}
 	}
 
+	private function last_response_output_items(): array {
+		if (!empty($this->lastResponseRaw['output']) && is_array($this->lastResponseRaw['output'])) {
+			return $this->lastResponseRaw['output'];
+		}
+
+		if (!empty($this->lastResponseRaw['response']['output']) && is_array($this->lastResponseRaw['response']['output'])) {
+			return $this->lastResponseRaw['response']['output'];
+		}
+
+		if (!empty($this->lastResponse)) {
+			return [$this->lastResponse];
+		}
+
+		return [];
+	}
+
 	private function extract_output_text(array $response): string {
 
 		if (isset($response['output_text']) && is_string($response['output_text'])) {
@@ -348,6 +378,52 @@ class OpenAI
 			}
 		}
 		return $buffer;
+	}
+
+	private function extract_last_message_item(array $response): array {
+		$output = $response['output'] ?? ($response['response']['output'] ?? []);
+
+		if (!is_array($output)) {
+			return [];
+		}
+
+		foreach (array_reverse($output) as $outputItem) {
+			if (($outputItem['type'] ?? '') !== 'message') {
+				continue;
+			}
+
+			if (($outputItem['role'] ?? '') === 'assistant') {
+				return $outputItem;
+			}
+		}
+
+		return [];
+	}
+
+	private function extract_message_text(array $message): string {
+		$content = $message['content'] ?? [];
+
+		if (is_string($content)) {
+			return $content;
+		}
+
+		if (!is_array($content)) {
+			return '';
+		}
+
+		$textParts = [];
+
+		foreach ($content as $contentItem) {
+			if (($contentItem['type'] ?? '') === 'output_text' && is_string($contentItem['text'] ?? null)) {
+				$textParts[] = $contentItem['text'];
+			}
+
+			if (is_string($contentItem['text'] ?? null)) {
+				$textParts[] = $contentItem['text'];
+			}
+		}
+
+		return implode('', $textParts);
 	}
 
 	private function parse_function_tool_calls(array $response): array {

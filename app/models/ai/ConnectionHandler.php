@@ -4,7 +4,7 @@ namespace app\models\ai;
 
 class ConnectionHandler
 {
-	private string $apiKey;
+	private ?string $apiKey;
 	private string $apiPath;
 	private array $defaultCurlOptions;
 
@@ -13,12 +13,13 @@ class ConnectionHandler
 	private string $rawResponseBody = '';
 	private bool $abortStream = false;
 	private bool $streamCancelledByCallback = false;
+	public bool $useOllamaNormalization = false;
 
 	public $debugRequest = false;
 	public $debugResponse = false;
 
 	public function __construct(
-		string $apiKey,
+		?string $apiKey,
 		string $apiPath = 'https://api.openai.com/v1/responses',
 		array $defaultCurlOptions = []
 	) {
@@ -51,8 +52,31 @@ class ConnectionHandler
 		file_put_contents($file, $content, FILE_APPEND);
 	}
 
+	public function normalize_payload_for_ollama(array $payload): array {
+		// Ollama Responses does not support server-side conversation continuation.
+		unset($payload['previous_response_id']);
+		unset($payload['conversation']);
+
+		// OpenAI-specific fields that Ollama does not require.
+		unset($payload['store']);
+		unset($payload['parallel_tool_calls']);
+		unset($payload['max_tool_calls']);
+
+		// Ollama documents max_output_tokens instead of max_tokens.
+		if (isset($payload['max_tokens']) && !isset($payload['max_output_tokens'])) {
+			$payload['max_output_tokens'] = $payload['max_tokens'];
+			unset($payload['max_tokens']);
+		}
+
+		return $payload;
+	}
+
 	public function request(array $payload, ?callable $onChunk = null): array {
 		
+		if ($this->useOllamaNormalization) {
+			$payload = $this->normalize_payload_for_ollama($payload);
+		}
+
 		$this->sseBuffer = '';
 		$this->rawResponseBody = '';
 		$this->abortStream = false;

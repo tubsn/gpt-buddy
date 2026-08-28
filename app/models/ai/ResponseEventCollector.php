@@ -10,6 +10,7 @@ final class ResponseEventCollector
 	private array $toolCalls = [];
 	private array $functionItemIdToCallId = [];
 	private array $completeResponses = [];
+	private array $completeResponseRaw = [];
 
 	public function __construct(callable $emitter) {
 		$this->emit = $emitter;
@@ -24,36 +25,37 @@ final class ResponseEventCollector
 	}
 
 	public function complete_response(): array	{
-		//Log::write(json_encode($this->completeResponses));
 		return $this->completeResponses[0] ?? [];
+	}
+
+	public function complete_response_raw(): array {
+		return $this->completeResponseRaw;
 	}
 
 	public function handle(array $event): void {
 		$eventType = (string) ($event['type'] ?? '');
 
-		// Use this for debugging
-		//($this->emit)(['type' => 'debug', 'content' => $event]);
-		//return;
-
 		switch ($eventType) {
-			case 'response.created': // required for progress events		
-			case 'response.completed': // completed could mean a completed part eg. tool call
+			case 'response.created':
+			case 'response.completed':
 				if (isset($event['response']['id'])) {
 					$this->lastResponseId = (string) $event['response']['id'];
 				}
 
 				if ($event['response']['status'] == 'in_progress') {
-					//($this->emit)(['type' => 'progress', 'content' => $event['response']]);
 				}
 
 				if ($event['response']['status'] == 'completed') {
 
+					$this->completeResponseRaw = $event['response'] ?? [];
+
 					if (!empty($event['response']['output'])) {
-						// Remove long MCP Tool Lists						
 						$filteredOutputEvents = array_values(array_filter($event['response']['output'], fn ($entry) => (
-							$entry['type'] ?? null) !== 'mcp_list_tools')
-						); 
+							$entry['type'] ?? null) !== 'mcp_list_tools'
+						)); 
 						$event['response']['output'] = $filteredOutputEvents;
+
+						$this->completeResponseRaw = $event['response'];
 
 						$messageOutputEvents = array_values(array_filter(
 							$event['response']['output'] ?? [],
@@ -158,7 +160,6 @@ final class ResponseEventCollector
 				$item = $event['item'] ?? [];
 				$type = $item['type'] ?? '';
 
-				// This calls the requested Server Function
 				if ($type === 'function_call') {
 					$itemId = (string) ($item['id'] ?? '');
 					$callId = (string) ($item['call_id'] ?? '');
@@ -177,7 +178,6 @@ final class ResponseEventCollector
 					}
 				}
 
-				// Output a progress event for tool calls
 				if ($type === 'mcp_call' || $type === 'function_call') {
 					($this->emit)(['type' => 'progress', 'content' => $event['item'] ?? $event]);
 				}
@@ -188,7 +188,6 @@ final class ResponseEventCollector
 
 				break;
 			}
-
 
 			case 'response.mcp_call_arguments.done':
 				($this->emit)(['type' => 'progress', 'content' => $event['item'] ?? $event]);

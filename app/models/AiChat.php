@@ -208,6 +208,12 @@ class AiChat
 			$this->connection->set_api_path($modelData['url']);
 		}
 
+		if ($modelData['provider'] ?? false == 'ollama') {
+			$this->connection->set_api_key(null);
+			$this->connection->useOllamaNormalization = true;
+			$this->ai->uses_stateful_responses = false;
+		}
+
 		$this->ai->model = $modelData['apiname'];
 		$this->ai->reasoning = $modelData['reasoning'] ?? null;
 
