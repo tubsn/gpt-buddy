@@ -166,7 +166,7 @@ class AiChat
 			$data['length'] = $userMessages;
 
 			if ($trackingID) {
- 				// we only need to update on new userinteractions				
+				// we only need to update on new userinteractions				
 				if ($data['length'] > 1) {
 					$this->stats->update(['length' => $data['length']], $trackingID);
 				}
@@ -203,12 +203,12 @@ class AiChat
 		
 		if (!$modelData) {$modelData = ['apiname' => 'gpt-5.1', 'reasoning' => 'none'];}
 
-		if ($modelData['provider'] ?? false == 'azure') {
+		if (($modelData['provider'] ?? false) === 'azure') {
 			$this->connection->set_api_key(AZUREKEY);
 			$this->connection->set_api_path($modelData['url']);
 		}
 
-		if ($modelData['provider'] ?? false == 'ollama') {
+		if (($modelData['provider'] ?? false) === 'ollama') {
 			$this->connection->set_api_key(null);
 			$this->connection->useOllamaNormalization = true;
 			$this->ai->uses_stateful_responses = false;
@@ -260,12 +260,12 @@ class AiChat
 
 		// This part is important to save Conversation and Tracking Data between Sessions
 		$conversations = Session::get('conversations');
-		$conversations[$responseID] = $conversation;
+		$conversations[$responseID ?? ''] = $conversation;
 		unset($conversations[$oldID]);
 		Session::set('conversations', $conversations);
 
 		$trackingIDs = Session::get('trackingIDs');
-		$trackingIDs[$responseID] = Session::get('trackingID');
+		$trackingIDs[$responseID ?? ''] = Session::get('trackingID');
 		unset($trackingIDs[$oldID]);
 		Session::set('trackingIDs', $trackingIDs);
 
