@@ -2,62 +2,63 @@
 
 namespace app\models;
 
-class OpenAIImage
-{
-	public function __construct() {}
+class OpenAIImage {
 
+	public function __construct() {}
 
 	public function get_options() {
 		return [
-			'models' => [
-				'gpt-image-2.5-flare' => 'Flare',
-				'gpt-image-2.5-sunburst' => 'Sunburst',
+			'model' => [
+				'label' => 'Modell',
+				'options' => [
+					'gpt-image-2.5-flare' => 'GPT-Flare',
+					'gpt-image-2.5-sunburst' => 'GPT-Sunburst',
+				],
 			],
-			'resolutions' => [
-				'1536x1024' => 'Querformat – 1536 × 1024',
-				'2560x1440' => 'Querformat – 2560 × 1440',
-				'1024x1536' => 'Hochformat – 1024 × 1536',
-				'1440x2560' => 'Hochformat – 1440 × 2560',
-				'1024x1024' => 'Quadratisch – 1024 × 1024',
+			'quality' => [
+				'label' => 'Qualität',
+				'options' => [
+					'low' => 'Niedrig',
+					'medium' => 'Normal',
+					'high' => 'Hoch',
+					'max' => 'Max',
+				],
 			],
-			'qualities' => [
-				'low' => 'Niedrig',
-				'medium' => 'Normal',
-				'high' => 'Hoch',
-				'max' => 'Max',
+			
+			'resolution' => [
+				'label' => 'Format/Auflösung',
+				'options' => [
+					'1536x1024' => 'Quer (1536×1024)',
+					'2560x1440' => 'Quer (2560×1440)',
+					'1024x1536' => 'Hoch (1024×1536)',
+					'1440x2560' => 'Hoch (1440×2560)',
+					'1024x1024' => 'Quadrat (1024×1024)',
+					'1920x1920' => 'Quadrat (1920×1920)',
+				],
 			],
-			'backgrounds' => [
-				'auto' => 'Auto',
-				'opaque' => 'Gefüllt',
-				'transparent' => 'Transparent – PNG',
+			'background' => [
+				'label' => 'Transparenz',
+				'options' => [
+					'opaque' => 'Ausgefüllt',
+					'transparent' => 'Transparent',
+				],
 			],
 		];
 	}
 
 	public function resolve_options($options = null) {
-		$availableOptions = $this->get_options();
 		$options = is_array($options) ? $options : [];
+		$resolvedOptions = [];
 
-		$resolvedOptions = [
-			'model' => array_key_first($availableOptions['models']),
-			'resolution' => array_key_first($availableOptions['resolutions']),
-			'quality' => array_key_first($availableOptions['qualities']),
-			'background' => array_key_first($availableOptions['backgrounds']),
-		];
+		foreach ($this->get_options() as $fieldName => $field) {
+			$selectedValue = $options[$fieldName] ?? null;
 
-		$optionMappings = [
-			'model' => 'models',
-			'resolution' => 'resolutions',
-			'quality' => 'qualities',
-			'background' => 'backgrounds',
-		];
-
-		foreach ($optionMappings as $optionName => $optionGroup) {
-			$selectedValue = $options[$optionName] ?? '';
-
-			if (array_key_exists($selectedValue, $availableOptions[$optionGroup])) {
-				$resolvedOptions[$optionName] = $selectedValue;
-			}
+			$resolvedOptions[$fieldName] = (
+				is_string($selectedValue) &&
+				array_key_exists($selectedValue, $field['options'])
+			)
+				? $selectedValue
+				: array_key_first($field['options']);
 		}
 
 		return $resolvedOptions;
@@ -67,44 +68,54 @@ class OpenAIImage
 		$options = is_array($options) ? $options : [];
 		$resolvedOptions = $this->resolve_options($options);
 
-		$model = $resolvedOptions['model'];
-		$resolution = $resolvedOptions['resolution'];
-		$quality = $resolvedOptions['quality'];
-		$background = $resolvedOptions['background'];
-		$image = !empty($options['image']) ? $options['image'] : '';
+		$images = $options['images'] ?? [];
 
-		$outputFormat = $background === 'transparent' ? 'png' : 'jpeg';
+		// Kompatibilität mit bisherigen Aufrufen.
+		if (!$images && !empty($options['image'])) {
+			$images = [$options['image']];
+		}
+
+		if (!is_array($images) || count($images) > 10) {
+			throw new \Exception('Maximal 10 Referenzbilder erlaubt.', 400);
+		}
+
+		$imagePaths = [];
+
+		foreach ($images as $image) {
+			if (!is_string($image) || trim($image) === '') {
+				throw new \Exception('Ungültiger Bildpfad.', 400);
+			}
+
+			$imagePaths[] = $this->get_allowed_image_path($image);
+		}
+
+		$imagePaths = array_values(array_unique($imagePaths));
+
+		$outputFormat = $resolvedOptions['background'] === 'transparent'
+			? 'png'
+			: 'jpeg';
 
 		$generatorOptions = [
-			'model' => $model,
+			'model' => $resolvedOptions['model'],
 			'prompt' => $prompt,
 			'n' => 1,
-			'quality' => $quality,
-			'moderation' => 'low',
-			'background' => $background,
-			'size' => $resolution,
+			'quality' => $resolvedOptions['quality'],
+			'background' => $resolvedOptions['background'],
+			'size' => $resolvedOptions['resolution'],
 			'output_format' => $outputFormat,
 		];
 
-		if (!empty($image)) {
-			$allowedImagePath = $this->get_allowed_image_path($image);
-			$completeResponse = $this->request_image_edit(
-				$generatorOptions,
-				$allowedImagePath
-			);
+		if ($imagePaths) {
+			$completeResponse = $this->request_image_edit($generatorOptions, $imagePaths);
 		} else {
-			$completeResponse = $this->request_image_generation(
-				$generatorOptions
-			);
+			$generatorOptions['moderation'] = 'low';
+			$completeResponse = $this->request_image_generation($generatorOptions);
 		}
 
 		$decodedResponse = json_decode($completeResponse, true);
 
 		if (!is_array($decodedResponse)) {
-			throw new \Exception(
-				'Invalid response from OpenAI: ' . json_last_error_msg(),
-				500
-			);
+			throw new \Exception('Ungültige JSON-Antwort von OpenAI.', 502);
 		}
 
 		if (!empty($decodedResponse['error']['message'])) {
@@ -112,7 +123,7 @@ class OpenAIImage
 		}
 
 		if (empty($decodedResponse['data'][0]['b64_json'])) {
-			throw new \Exception('OpenAI did not return image data', 500);
+			throw new \Exception('OpenAI hat keine Bilddaten geliefert.', 502);
 		}
 
 		return $this->save_file(
@@ -123,44 +134,32 @@ class OpenAIImage
 	}
 
 	private function request_image_generation($generatorOptions) {
-		$requestUrl = 'https://api.openai.com/v1/images/generations';
-
 		$requestBody = json_encode($generatorOptions);
 
 		if ($requestBody === false) {
-			throw new \Exception('Could not encode OpenAI request', 500);
+			throw new \Exception('OpenAI-Anfrage konnte nicht kodiert werden.', 500);
 		}
 
 		return $this->send_request(
-			$requestUrl,
-			[
-				'Content-Type: application/json',
-			],
+			'https://api.openai.com/v1/images/generations',
+			['Content-Type: application/json'],
 			$requestBody
 		);
 	}
 
-	private function request_image_edit($generatorOptions, $imagePath) {
-		$requestUrl = 'https://api.openai.com/v1/images/edits';
-		$mimeType = $this->detect_mime_type($imagePath);
+	private function request_image_edit($generatorOptions, $imagePaths) {
+		$formFields = $generatorOptions;
 
-		$formFields = [
-			'model' => $generatorOptions['model'],
-			'prompt' => $generatorOptions['prompt'],
-			'n' => $generatorOptions['n'],
-			'quality' => $generatorOptions['quality'],
-			'background' => $generatorOptions['background'],
-			'size' => $generatorOptions['size'],
-			'output_format' => $generatorOptions['output_format'],
-			'image' => new \CURLFile(
+		foreach ($imagePaths as $imageIndex => $imagePath) {
+			$formFields['image[' . $imageIndex . ']'] = new \CURLFile(
 				$imagePath,
-				$mimeType,
+				$this->detect_mime_type($imagePath),
 				basename($imagePath)
-			),
-		];
+			);
+		}
 
 		return $this->send_request(
-			$requestUrl,
+			'https://api.openai.com/v1/images/edits',
 			[],
 			$formFields
 		);
@@ -170,39 +169,36 @@ class OpenAIImage
 		$curlHandle = curl_init($requestUrl);
 
 		if ($curlHandle === false) {
-			throw new \Exception('Could not initialize OpenAI request', 500);
+			throw new \Exception('OpenAI-Anfrage konnte nicht gestartet werden.', 500);
 		}
 
-		$requestHeaders = array_merge(
-			[
+		curl_setopt_array($curlHandle, [
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => $requestBody,
+			CURLOPT_HTTPHEADER => array_merge([
 				'Authorization: Bearer ' . CHATGPTKEY,
 				'Accept: application/json',
-			],
-			$headers
-		);
-
-		curl_setopt($curlHandle, CURLOPT_POST, true);
-		curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $requestBody);
-		curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $requestHeaders);
-		curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curlHandle, CURLOPT_CONNECTTIMEOUT, 20);
-		curl_setopt($curlHandle, CURLOPT_TIMEOUT, 180);
+			], $headers),
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_CONNECTTIMEOUT => 20,
+			CURLOPT_TIMEOUT => 180,
+		]);
 
 		$responseBody = curl_exec($curlHandle);
 		$curlError = curl_error($curlHandle);
-		$httpCode = (int)curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+		$httpCode = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
 
 		if ($responseBody === false) {
-			throw new \Exception('OpenAI request failed: ' . $curlError, 500);
+			throw new \Exception('OpenAI-Anfrage fehlgeschlagen: ' . $curlError, 502);
 		}
 
 		if ($httpCode < 200 || $httpCode >= 300) {
 			$decodedResponse = json_decode($responseBody, true);
-			$errorMessage = $decodedResponse['error']['message'] ?? $responseBody;
+			$errorMessage = $decodedResponse['error']['message'] ?? 'Unbekannter API-Fehler';
 
 			throw new \Exception(
-				'OpenAI API error (' . $httpCode . '): ' . $errorMessage,
-				400
+				'OpenAI API (' . $httpCode . '): ' . $errorMessage,
+				502
 			);
 		}
 
@@ -210,16 +206,16 @@ class OpenAIImage
 	}
 
 	private function get_allowed_image_path($imagePath) {
-		$parsedUrlPath = parse_url((string)$imagePath, PHP_URL_PATH);
+		$parsedUrlPath = parse_url($imagePath, PHP_URL_PATH);
 
-		if (empty($parsedUrlPath)) {
-			throw new \Exception('Invalid image path', 400);
+		if (!is_string($parsedUrlPath) || $parsedUrlPath === '') {
+			throw new \Exception('Ungültiger Bildpfad.', 400);
 		}
 
 		$publicDirectory = realpath(PUBLICFOLDER);
 
 		if ($publicDirectory === false) {
-			throw new \Exception('Public directory not found', 500);
+			throw new \Exception('Public-Verzeichnis nicht gefunden.', 500);
 		}
 
 		$requestedPath = realpath(
@@ -227,12 +223,12 @@ class OpenAIImage
 		);
 
 		if ($requestedPath === false) {
-			throw new \Exception('Image file not found', 400);
+			throw new \Exception('Bilddatei nicht gefunden.', 400);
 		}
 
 		$allowedDirectories = [
-			realpath(PUBLICFOLDER . 'uploads'),
-			realpath(PUBLICFOLDER . 'generated'),
+			realpath($publicDirectory . '/uploads'),
+			realpath($publicDirectory . '/generated'),
 		];
 
 		$isAllowedPath = false;
@@ -242,98 +238,73 @@ class OpenAIImage
 				continue;
 			}
 
-			$allowedDirectoryPrefix = rtrim(
-				$allowedDirectory,
-				DIRECTORY_SEPARATOR
-			) . DIRECTORY_SEPARATOR;
+			$directoryPrefix = rtrim($allowedDirectory, DIRECTORY_SEPARATOR)
+				. DIRECTORY_SEPARATOR;
 
-			if (strpos($requestedPath, $allowedDirectoryPrefix) === 0) {
+			if (strpos($requestedPath, $directoryPrefix) === 0) {
 				$isAllowedPath = true;
 				break;
 			}
 		}
 
-		if (!$isAllowedPath) {
-			throw new \Exception('Image path is not allowed', 400);
+		if (!$isAllowedPath || !is_file($requestedPath) || !is_readable($requestedPath)) {
+			throw new \Exception('Bildpfad nicht erlaubt oder Datei nicht lesbar.', 400);
 		}
 
-		if (!is_file($requestedPath) || !is_readable($requestedPath)) {
-			throw new \Exception('Image file not found or not readable', 400);
+		if (filesize($requestedPath) > 25 * 1024 * 1024) {
+			throw new \Exception('Ein Referenzbild darf maximal 25 MB groß sein.', 400);
 		}
 
-		$mimeType = $this->detect_mime_type($requestedPath);
-		$allowedMimeTypes = [
-			'image/jpeg',
-			'image/png',
-			'image/webp',
-		];
+		$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
-		if (!in_array($mimeType, $allowedMimeTypes, true)) {
-			throw new \Exception('Unsupported image type', 400);
+		if (!in_array($this->detect_mime_type($requestedPath), $allowedMimeTypes, true)) {
+			throw new \Exception('Nicht unterstütztes Bildformat.', 400);
 		}
 
 		return $requestedPath;
 	}
 
 	private function detect_mime_type($filePath) {
-		if (!function_exists('finfo_open')) {
+		if (!class_exists('\finfo')) {
 			return 'application/octet-stream';
 		}
 
-		$fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+		$fileInfo = new \finfo(FILEINFO_MIME_TYPE);
 
-		if ($fileInfo === false) {
-			return 'application/octet-stream';
-		}
-
-		$mimeType = finfo_file($fileInfo, $filePath);
-
-		if (empty($mimeType)) {
-			return 'application/octet-stream';
-		}
-
-		return $mimeType;
+		return $fileInfo->file($filePath) ?: 'application/octet-stream';
 	}
 
 	private function save_file($base64Json, $prompt, $outputFormat) {
 		$imageData = base64_decode($base64Json, true);
 
 		if ($imageData === false) {
-			throw new \Exception('Invalid image data received', 500);
+			throw new \Exception('Ungültige Bilddaten empfangen.', 502);
 		}
 
 		$imageInformation = getimagesizefromstring($imageData);
+		$expectedMimeType = $outputFormat === 'png' ? 'image/png' : 'image/jpeg';
 
-		if ($imageInformation === false) {
-			throw new \Exception('Invalid image received', 500);
-		}
-
-		$expectedMimeType = $outputFormat === 'png'
-			? 'image/png'
-			: 'image/jpeg';
-
-		if (($imageInformation['mime'] ?? '') !== $expectedMimeType) {
-			throw new \Exception(
-				'Unexpected image format received: ' .
-				($imageInformation['mime'] ?? 'unknown'),
-				500
-			);
+		if (
+			$imageInformation === false ||
+			($imageInformation['mime'] ?? '') !== $expectedMimeType
+		) {
+			throw new \Exception('Ungültiges Bildformat empfangen.', 502);
 		}
 
 		$fileExtension = $outputFormat === 'png' ? 'png' : 'jpg';
 		$filename = 'generated_' . bin2hex(random_bytes(16)) . '.' . $fileExtension;
-		$directoryPath = PUBLICFOLDER . 'generated/';
+		$directoryPath = rtrim(PUBLICFOLDER, '/\\') . '/generated/';
 
 		if (!is_dir($directoryPath)) {
 			if (!mkdir($directoryPath, 0775, true) && !is_dir($directoryPath)) {
-				throw new \Exception('Could not create image directory', 500);
+				throw new \Exception('Bildverzeichnis konnte nicht erstellt werden.', 500);
 			}
 		}
 
 		$filePath = $directoryPath . $filename;
 
 		if (file_put_contents($filePath, $imageData, LOCK_EX) === false) {
-			throw new \Exception('Could not save generated image', 500);
+			throw new \Exception('Bild konnte nicht gespeichert werden.', 500);
 		}
 
 		if ($outputFormat === 'jpeg') {
@@ -344,14 +315,16 @@ class OpenAIImage
 	}
 
 	public function add_prompt_to_file($filePath, $prompt) {
-		$cleanPrompt = strip_tags($prompt);
-		$cleanPrompt = htmlentities($cleanPrompt, ENT_QUOTES, 'UTF-8');
+		if (!function_exists('iptcembed')) {
+			return;
+		}
 
-		$comment = '--PROMPT--' . $cleanPrompt;
-		$imageWithPrompt = iptcembed($comment, $filePath);
+		// Bestehendes Metadatenformat beibehalten.
+		$cleanPrompt = htmlentities(strip_tags($prompt), ENT_QUOTES, 'UTF-8');
+		$imageWithPrompt = iptcembed('--PROMPT--' . $cleanPrompt, $filePath);
 
 		if ($imageWithPrompt !== false) {
-			file_put_contents($filePath, $imageWithPrompt);
+			file_put_contents($filePath, $imageWithPrompt, LOCK_EX);
 		}
 	}
 }

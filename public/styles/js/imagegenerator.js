@@ -17,7 +17,7 @@ function writeStorage(storageName, settingName, settingValue) {
 	try {
 		window[storageName].setItem(settingName, settingValue)
 	} catch (error) {
-		// Die Anwendung funktioniert auch ohne verfügbaren Browser-Speicher.
+		// Browser-Speicher ist optional.
 	}
 }
 
@@ -27,7 +27,6 @@ if (imageGeneratorElement) {
 			selectElement.options,
 			optionElement => optionElement.value
 		)
-
 		const storedValue = readStorage('localStorage', selectElement.name)
 
 		initialImageSettings[selectElement.name] = availableValues.includes(storedValue)
@@ -36,15 +35,21 @@ if (imageGeneratorElement) {
 	})
 
 	createApp({
+		components: {
+			dropdown: Dropdown,
+		},
+
 		data() {
 			return {
 				...initialImageSettings,
 				input: '',
 				output: '',
 				payload: '',
-				image: '',
+				images: [],
+				maxImages: 10,
 				loading: false,
 				uploading: false,
+				uploadProgress: '',
 				responseSeconds: 0,
 				stopWatchStartTime: null,
 				errormessages: '',
@@ -55,11 +60,28 @@ if (imageGeneratorElement) {
 			}
 		},
 
-		components: {
-			dropdown: Dropdown,
-		},
-
 		computed: {
+			// Kompatibilität mit vorhandenen Galerieaktionen.
+			image: {
+				get() {
+					return this.images[0] || ''
+				},
+				set(imagePath) {
+					if (this.loading || this.uploading) return
+
+					if (!imagePath) {
+						this.images = []
+						return
+					}
+
+					try {
+						this.addImage(imagePath)
+					} catch (error) {
+						this.showError(error.message)
+					}
+				},
+			},
+
 			responsetime() {
 				return this.responseSeconds > 0 ? this.responseSeconds : ''
 			},
@@ -81,7 +103,6 @@ if (imageGeneratorElement) {
 
 		mounted() {
 			this.eventAbortController = new AbortController()
-
 			this.setupSettingWatchers()
 			this.getHistory()
 			this.dragDropSetup()
@@ -96,36 +117,26 @@ if (imageGeneratorElement) {
 			this.eventAbortController?.abort()
 			this.abortController?.abort()
 			this.uploadAbortController?.abort()
-
 			this.settingWatchStops.forEach(stopWatching => stopWatching())
 		},
 
 		methods: {
 			setupSettingWatchers() {
 				Object.keys(initialImageSettings).forEach(settingName => {
-					const stopWatching = this.$watch(
+					this.settingWatchStops.push(this.$watch(
 						() => this[settingName],
-						settingValue => {
-							writeStorage('localStorage', settingName, settingValue)
-						}
-					)
-
-					this.settingWatchStops.push(stopWatching)
+						settingValue => writeStorage('localStorage', settingName, settingValue)
+					))
 				})
 			},
 
 			autofocus() {
-				this.$nextTick(() => {
-					this.$refs.autofocusElement?.focus()
-				})
+				this.$nextTick(() => this.$refs.autofocusElement?.focus())
 			},
 
 			getHistory() {
 				const savedInput = readStorage('sessionStorage', 'input')
-
-				if (savedInput) {
-					this.input = savedInput.slice(0, 4000)
-				}
+				if (savedInput) this.input = savedInput.slice(0, 4000)
 			},
 
 			resetMetaInfo() {
@@ -143,11 +154,9 @@ if (imageGeneratorElement) {
 			},
 
 			elapsedTime() {
-				if (!this.stopWatchStartTime) {
-					return 0
-				}
-
-				return Math.round((Date.now() - this.stopWatchStartTime) / 100) / 10
+				return this.stopWatchStartTime
+					? Math.round((Date.now() - this.stopWatchStartTime) / 100) / 10
+					: 0
 			},
 
 			showError(message) {
@@ -155,18 +164,68 @@ if (imageGeneratorElement) {
 			},
 
 			handleGeneratorKeydown(event) {
-				if (event.key !== 'Escape' || !this.loading) {
-					return
-				}
-
+				if (event.key !== 'Escape' || !this.loading) return
 				event.preventDefault()
 				this.abortController?.abort()
 			},
 
-			async generateImage() {
-				if (this.loading || this.uploading || !this.input.trim()) {
-					return
+			normalizeImagePath(imagePath) {
+				if (typeof imagePath !== 'string' || !imagePath.trim()) {
+					throw new Error('Kein gültiger Bildpfad vorhanden.')
 				}
+
+				const imageUrl = new URL(imagePath, window.location.href)
+
+				if (
+					imageUrl.origin !== window.location.origin ||
+					!/^\/(uploads|generated)\//.test(imageUrl.pathname)
+				) {
+					throw new Error('Bitte ein Bild aus den eigenen Uploads oder der Galerie verwenden.')
+				}
+
+				return imageUrl.pathname
+			},
+
+			addImage(imagePath) {
+				const normalizedPath = this.normalizeImagePath(imagePath)
+
+				if (this.images.includes(normalizedPath)) return
+
+				if (this.images.length >= this.maxImages) {
+					throw new Error(`Maximal ${this.maxImages} Referenzbilder erlaubt.`)
+				}
+
+				this.images.push(normalizedPath)
+			},
+
+			removeImage(imageIndex) {
+				if (!this.loading && !this.uploading) {
+					this.images.splice(imageIndex, 1)
+				}
+			},
+
+			async readResponse(response) {
+				const responseText = await response.text()
+				let responseData
+
+				try {
+					responseData = JSON.parse(responseText)
+				} catch (error) {
+					throw new Error(response.ok
+						? 'Der Server hat keine gültige JSON-Antwort geliefert.'
+						: `Serverfehler: HTTP ${response.status}`
+					)
+				}
+
+				if (responseData?.error) throw new Error(responseData.error)
+				if (!response.ok) throw new Error(`Serverfehler: HTTP ${response.status}`)
+
+				const imagePath = responseData?.payload ?? responseData
+				return this.normalizeImagePath(imagePath)
+			},
+
+			async generateImage() {
+				if (this.loading || this.uploading || !this.input.trim()) return
 
 				this.loading = true
 				this.resetMetaInfo()
@@ -177,7 +236,10 @@ if (imageGeneratorElement) {
 
 				const formData = new FormData()
 				formData.append('question', this.input)
-				formData.append('image', this.image)
+
+				this.images.forEach(imagePath => {
+					formData.append('images[]', imagePath)
+				})
 
 				Object.keys(initialImageSettings).forEach(settingName => {
 					formData.append(settingName, this[settingName])
@@ -190,38 +252,18 @@ if (imageGeneratorElement) {
 						signal: requestController.signal,
 					})
 
-					const responseText = await response.text()
-					let responseData
-
-					try {
-						responseData = JSON.parse(responseText)
-					} catch (error) {
-						throw new Error(
-							response.ok
-								? 'Der Server hat keine gültige JSON-Antwort geliefert.'
-								: `Serverfehler: HTTP ${response.status}`
-						)
-					}
-
-					if (responseData?.error) {
-						throw new Error(responseData.error)
-					}
-
-					if (!response.ok) {
-						throw new Error(`Serverfehler: HTTP ${response.status}`)
-					}
-
-					const generatedImage = responseData?.payload ?? responseData
-
-					if (typeof generatedImage !== 'string' || !generatedImage.trim()) {
-						throw new Error('Der Server hat keinen gültigen Bildpfad geliefert.')
-					}
-
+					const generatedImage = await this.readResponse(response)
 					this.output = generatedImage
-					this.image = generatedImage
+
+					// Wie bisher: Ergebnis wird Referenz für die nächste Bearbeitung.
+					this.images = [generatedImage]
 				} catch (error) {
-					if (error.name !== 'AbortError') {
-						this.showError(error.message || 'Die Bildgenerierung ist fehlgeschlagen.')
+					if (error.name === 'AbortError') {
+						this.showError(
+							'Anfrage im Browser abgebrochen. Die Generierung auf dem Server kann weiterlaufen.'
+						)
+					} else {
+						this.showError(error.message || 'Bildgenerierung fehlgeschlagen.')
 					}
 				} finally {
 					this.stopClock()
@@ -234,16 +276,12 @@ if (imageGeneratorElement) {
 				const dropArea = imageGeneratorElement.querySelector('#drop-area')
 				const fileElement = imageGeneratorElement.querySelector('#fileElem')
 
-				if (!dropArea || !fileElement) {
-					return
-				}
+				if (!dropArea || !fileElement) return
 
 				const listenerOptions = {
-					capture: true,
 					signal: this.eventAbortController.signal,
 				}
 
-				// Beim Ziehen eines Galeriebildes dessen Bildpfad mitgeben.
 				document.addEventListener('dragstart', event => {
 					const draggedImage = event.target
 
@@ -251,9 +289,7 @@ if (imageGeneratorElement) {
 						!(draggedImage instanceof HTMLImageElement) ||
 						!draggedImage.closest('.gallery-container, .image-history, .generated-image') ||
 						!event.dataTransfer
-					) {
-						return
-					}
+					) return
 
 					event.dataTransfer.setData(
 						'application/x-image-generator',
@@ -261,26 +297,12 @@ if (imageGeneratorElement) {
 					)
 				}, listenerOptions)
 
-				dropArea.addEventListener('click', event => {
-					if (
-						event.target === fileElement ||
-						this.loading ||
-						this.uploading
-					) {
-						return
-					}
 
-					fileElement.click()
-				}, listenerOptions)
 
 				fileElement.addEventListener('change', event => {
-					const selectedFile = event.target.files?.[0]
-
-					if (selectedFile) {
-						this.uploadFile(selectedFile)
-					}
-
+					const selectedFiles = Array.from(event.target.files || [])
 					fileElement.value = ''
+					this.uploadFiles(selectedFiles)
 				}, listenerOptions)
 
 				dropArea.addEventListener('dragenter', event => {
@@ -301,10 +323,6 @@ if (imageGeneratorElement) {
 							? 'none'
 							: 'copy'
 					}
-
-					if (!this.loading && !this.uploading) {
-						dropArea.classList.add('dragging')
-					}
 				}, listenerOptions)
 
 				dropArea.addEventListener('dragleave', event => {
@@ -318,72 +336,59 @@ if (imageGeneratorElement) {
 					event.stopPropagation()
 					dropArea.classList.remove('dragging')
 
-					if (this.loading || this.uploading || !event.dataTransfer) {
-						return
-					}
+					if (this.loading || this.uploading || !event.dataTransfer) return
 
 					const transferData = event.dataTransfer
 					const galleryImage = transferData.getData('application/x-image-generator')
-					const droppedFile = transferData.files?.[0]
+					const droppedFiles = Array.from(transferData.files || [])
 
-					if (!galleryImage && droppedFile) {
-						this.uploadFile(droppedFile)
+					if (!galleryImage && droppedFiles.length) {
+						this.uploadFiles(droppedFiles)
 						return
 					}
 
-					const uriList = transferData.getData('text/uri-list')
-					const droppedUri = uriList
-						.split(/\r?\n/)
-						.map(line => line.trim())
-						.find(line => line && !line.startsWith('#'))
+					const rawPaths = galleryImage ||
+						transferData.getData('text/uri-list') ||
+						transferData.getData('text/plain')
 
-					const imagePath = galleryImage ||
-						droppedUri ||
-						transferData.getData('text/plain').trim()
+					const imagePaths = rawPaths.split(/\r?\n/)
+						.map(imagePath => imagePath.trim())
+						.filter(imagePath => imagePath && !imagePath.startsWith('#'))
 
 					try {
-						if (!imagePath) {
-							throw new Error('Kein Bildpfad vorhanden.')
-						}
+						if (!imagePaths.length) throw new Error('Kein Bildpfad vorhanden.')
 
-						const imageUrl = new URL(imagePath, window.location.href)
-
-						if (
-							imageUrl.origin !== window.location.origin ||
-							!/^\/(uploads|generated)\//.test(imageUrl.pathname)
-						) {
-							throw new Error('Nicht erlaubter Bildpfad.')
-						}
-
-						this.image = imageUrl.pathname
 						this.errormessages = ''
+						imagePaths.forEach(imagePath => this.addImage(imagePath))
 					} catch (error) {
-						this.showError(
-							'Bitte eine Bilddatei oder ein Bild aus der eigenen Galerie hierher ziehen.'
-						)
+						this.showError(error.message)
 					}
 				}, listenerOptions)
 			},
 
-			async uploadFile(file) {
-				if (!file || this.loading || this.uploading) {
+			async uploadFiles(fileList) {
+				if (this.loading || this.uploading) return
+
+				const files = Array.from(fileList || [])
+				if (!files.length) return
+
+				if (this.images.length + files.length > this.maxImages) {
+					this.showError(`Bitte insgesamt maximal ${this.maxImages} Bilder auswählen.`)
 					return
 				}
 
-				const allowedMimeTypes = [
-					'image/jpeg',
-					'image/png',
-					'image/webp',
-				]
+				const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp']
 
-				if (!allowedMimeTypes.includes(file.type)) {
-					this.showError('Bitte ein JPG-, PNG- oder WebP-Bild auswählen.')
-					return
-				}
+				for (const file of files) {
+					if (!allowedMimeTypes.includes(file.type)) {
+						this.showError(`${file.name}: Nur JPG, PNG oder WebP erlaubt.`)
+						return
+					}
 
-				if (file.size > 25 * 1024 * 1024) {
-					this.showError('Das Bild darf maximal 25 MB groß sein.')
-					return
+					if (file.size > 25 * 1024 * 1024) {
+						this.showError(`${file.name}: Maximal 25 MB pro Bild erlaubt.`)
+						return
+					}
 				}
 
 				this.uploading = true
@@ -392,60 +397,66 @@ if (imageGeneratorElement) {
 				const requestController = new AbortController()
 				this.uploadAbortController = requestController
 
-				const formData = new FormData()
-				formData.append('imagedata', file)
-
 				try {
-					const response = await fetch('/image/upload', {
-						method: 'POST',
-						body: formData,
-						signal: requestController.signal,
-					})
+					// Einzelrequests: bestehender Upload-Controller bleibt unverändert.
+					for (const [fileIndex, file] of files.entries()) {
+						this.uploadProgress = `${fileIndex + 1} / ${files.length}`
 
-					const responseText = await response.text()
-					let responseData
+						const formData = new FormData()
+						formData.append('imagedata', file)
 
-					try {
-						responseData = JSON.parse(responseText)
-					} catch (error) {
-						throw new Error(
-							response.ok
-								? 'Der Upload-Server hat keine gültige JSON-Antwort geliefert.'
-								: `Upload fehlgeschlagen: HTTP ${response.status}`
-						)
+						const response = await fetch('/image/upload', {
+							method: 'POST',
+							body: formData,
+							signal: requestController.signal,
+						})
+
+						const uploadedImage = await this.readResponse(response)
+						this.addImage(uploadedImage)
 					}
-
-					if (responseData?.error) {
-						throw new Error(responseData.error)
-					}
-
-					if (!response.ok) {
-						throw new Error(`Upload fehlgeschlagen: HTTP ${response.status}`)
-					}
-
-					const uploadedImage = responseData?.payload ?? responseData
-
-					if (typeof uploadedImage !== 'string' || !uploadedImage.trim()) {
-						throw new Error('Der Server hat keinen gültigen Bildpfad geliefert.')
-					}
-
-					this.image = uploadedImage
 				} catch (error) {
 					if (error.name !== 'AbortError') {
-						this.showError(error.message || 'Der Upload ist fehlgeschlagen.')
+						this.showError(
+							`${error.message || 'Upload fehlgeschlagen.'} Bereits hochgeladene Bilder bleiben erhalten.`
+						)
 					}
 				} finally {
 					this.uploading = false
+					this.uploadProgress = ''
 					this.uploadAbortController = null
+				}
+			},
+
+			async uploadFile(file) {
+				await this.uploadFiles(file ? [file] : [])
+			},
+
+			handlePaste(event) {
+				const clipboardData = event.clipboardData
+				if (!clipboardData) return
+
+				const files = Array.from(clipboardData.items || [])
+					.filter(clipboardItem => (
+						clipboardItem.kind === 'file' &&
+						clipboardItem.type.startsWith('image/')
+					))
+					.map(clipboardItem => clipboardItem.getAsFile())
+					.filter(Boolean)
+
+				if (!files.length) return
+
+				event.preventDefault()
+
+				if (this.loading || this.uploading) return
+
+				if (confirm(`${files.length} Bild(er) aus der Zwischenablage hochladen?`)) {
+					this.uploadFiles(files)
 				}
 			},
 
 			getContentFromPasteEvent(event) {
 				const clipboardData = event.clipboardData || event.originalEvent?.clipboardData
-
-				if (!clipboardData) {
-					return ''
-				}
+				if (!clipboardData) return ''
 
 				for (const clipboardItem of Array.from(clipboardData.items || [])) {
 					if (clipboardItem.kind === 'file') {
@@ -457,20 +468,15 @@ if (imageGeneratorElement) {
 			},
 
 			async copyPasteUpload(file) {
-				if (!file || this.loading || this.uploading) {
-					return
-				}
+				if (!file || this.loading || this.uploading) return
 
-				if (!confirm('Möchten Sie Ihren Screenshot hochladen?')) {
-					return
+				if (confirm('Möchten Sie Ihren Screenshot hochladen?')) {
+					await this.uploadFile(file)
 				}
-
-				await this.uploadFile(file)
 			},
 		},
 	}).mount(imageGeneratorElement)
 }
-
 
 // Darkmode
 function toggleDarkmode() {
@@ -493,10 +499,7 @@ function toggleDarkmode() {
 
 function setupDarkmodeToggle() {
 	const colorModeIcon = document.querySelector('.color-mode')
-
-	if (colorModeIcon) {
-		colorModeIcon.addEventListener('click', toggleDarkmode)
-	}
+	colorModeIcon?.addEventListener('click', toggleDarkmode)
 }
 
 if (document.readyState === 'loading') {

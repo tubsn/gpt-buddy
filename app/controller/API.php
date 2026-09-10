@@ -108,32 +108,43 @@ class API extends Controller {
 
 
 	public function generate_image() {
-		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
-
-		$prompt = trim($_POST['question'] ?? '');
-		if ($prompt === '') {
-			$this->view->json(['error' => 'Bitte eine Bildbeschreibung eingeben.']);
-			return;
-		}
-
-		if (mb_strlen($prompt) > 4000) {
-			$this->view->json(['error' => 'Die Bildbeschreibung ist zu lang.']);
-			return;
-		}
-
-		$options = [];
-		$options['model'] = $_POST['model'] ?? null;
-		$options['resolution'] = $_POST['resolution'] ?? null;
-		$options['quality'] = $_POST['quality'] ?? null;
-		$options['background'] = $_POST['background'] ?? null;
-		$options['image'] = $_POST['image'] ?? null;
+		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage(); return;}
 
 		try {
+			$prompt = $_POST['question'] ?? '';
+
+			if (!is_string($prompt)) {throw new \Exception('Ungültige Bildbeschreibung.');}
+
+			$prompt = trim($prompt);
+
+			if ($prompt === '') {throw new \Exception('Bitte eine Bildbeschreibung eingeben.');}
+			if (mb_strlen($prompt) > 4000) {throw new \Exception('Die Bildbeschreibung ist zu lang.');}
+
+			$images = $_POST['images'] ?? [];
+
+			if (!is_array($images) || count($images) > 10) {
+				throw new \Exception('Maximal 10 Referenzbilder erlaubt.');
+			}
+
+			foreach ($images as $imagePath) {
+				if (!is_string($imagePath) || trim($imagePath) === '') {
+					throw new \Exception('Ungültiger Referenzbildpfad.');
+				}
+			}
+
+			$options = [
+				'model' => $_POST['model'] ?? null,
+				'resolution' => $_POST['resolution'] ?? null,
+				'quality' => $_POST['quality'] ?? null,
+				'background' => $_POST['background'] ?? null,
+				'images' => array_values($images),
+			];
+
 			Session::close();
 
 			$output = $this->OpenAIImage->fetch($prompt, $options);
 			$this->view->json($output);
-		} catch (\Exception $exception) {
+		} catch (\Throwable $exception) {
 			$this->view->json([
 				'error' => 'GPT-Error: ' . $exception->getMessage(),
 			]);
