@@ -376,6 +376,30 @@ table.fancy tbody tr:last-child td {border-bottom:none;}
 table.fancy th:first-child, table.fancy td:first-child {padding-left:1em;}
 table.fancy th:last-child, table.fancy td:last-child {padding-right:1em;}
 
+/* Moderner Chatverlauf */
+table.fancy.history {border:0; border-collapse:separate; border-spacing:0 .4em; 
+	box-shadow:none; background:transparent; font-size:.8em; line-height:1.35;}
+table.fancy.history td {padding:.6em 1em; border:0; background:color-mix(in srgb,var(--grey) 65%,transparent); vertical-align:middle;}
+table.fancy.history td:first-child {width:100px; border-radius:.4em 0 0 .4em; color:inherit;}
+table.fancy.history td:last-child {width:36px; border-radius:0 .4em .4em 0;}
+
+table.fancy.history tr, table.fancy.history tbody tr, table.fancy.history tr:hover, 
+table.fancy.history tbody tr:hover {background:transparent; box-shadow:none;}
+
+table.fancy.history pre {margin:.15em 0; padding:.55em .7em; border:1px dashed color-mix(in srgb,currentColor 25%,transparent); 
+border-radius:.35em; background:color-mix(in srgb,currentColor 4%,transparent); color:inherit; cursor:pointer; 
+white-space:break-spaces; transition:background-color .12s ease,border-color .12s ease;}
+table.fancy.history pre:hover {background:color-mix(in srgb,var(--primary) 16%,transparent); 
+border-color:var(--primary-lighter);}
+table.fancy.history pre:focus {cursor:text; outline:2px solid var(--primary); 
+background:transparent; border-color:transparent;}
+
+@media only screen and (max-width:768px) {
+	table.fancy.history {font-size:.75em;} 
+	table.fancy.history td {padding:.5em .6em;} 
+	table.fancy.history td:first-child {width:70px;} 
+	table.fancy.history pre {padding:.45em .55em;}
+}
 
 /* Mobile */
 .show-mobile{display:none;}
