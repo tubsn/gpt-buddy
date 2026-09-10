@@ -73,28 +73,14 @@ class Chat extends Controller {
 	}
 
 	public function changelog() {
-		$this->view->funfact = $this->fun_fact();		
 		$this->view->title = 'Changelog';
 		$this->view->render('changelog');
 	}
 
 	public function engines() {
-		$engines = $this->ChatGPT->list_engines();
-		dd($engines);
-	}
-
-	public function fun_fact() {
-		$cache = new RequestCache('funfact', 60*60);
-		$funfact = $cache->get();
-		if (empty($funfact)) {
-			$date = date('d.F');
-			$question = 'Mach einen lustigen Witz zum heutigen Tag ('.$date.'). Maximal 30 Wörter. Orientiere dich am Humor von Bully Herbig (nicht erwähnen). Themenbereich Naturwissenschaft';
-			$this->ChatGPT->model = 'gpt-4.1-mini';
-			$funfact = $this->ChatGPT->direct($question);
-			$cache->save($funfact);
-		}
-
-		return $funfact;
+		$connection = new \app\models\ai\ConnectionHandler(CHATGPTKEY, 'https://api.openai.com/v1/models');
+		$models = json_decode($connection->direct_curl(),1);
+		dd($models['data']);
 	}
 
 	public function ask() {

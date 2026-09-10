@@ -14,6 +14,9 @@
 <h1><?=APP_NAME?> Changelog</h1>
 <hr>
 
+<h3>10. September 2026 – Bildgenerator mit Mehrfach-Bildupload</h3>
+<p>Der Bildgenerator wurde erneuert. Es ist jetzt möglich, dem Modell mehrere Bilder bereitzustellen und daraus eine neue Komposition zu generieren. Außerdem lässt sich die Auflösung konfigurieren und das Modell per Dropdown auswählen.</p>
+
 <h3>11. August 2026 – Wasserzeichen im Bildgenerator</h3>
 <p>Um die Kennzeichnung von KI-Bildinhalten zu vereinfachen, steht jetzt ein Bildprozessor zur Verfügung. Damit lassen sich Wasserzeichen im Bild platzieren und individuell positionieren. Der Bildprozessor arbeitet per Webassembly im Browser des Nutzers, sodass die Bilder nicht nochmal zusätzlich hochgeladen werden müssen und auch größere Dateien ohne Qualitätsverlust verarbeitet werden können.</p>
 

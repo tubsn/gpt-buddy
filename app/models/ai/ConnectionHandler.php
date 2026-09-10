@@ -219,4 +219,24 @@ class ConnectionHandler
 
 		return $decoded;
 	}
+
+	public function direct_curl() {
+		$curlHandle = curl_init($this->apiPath);
+		curl_setopt_array($curlHandle, [
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_HTTPHEADER => [
+				'Authorization: Bearer ' . $this->apiKey,
+				'Content-Type: application/json',
+			],
+		]);
+		$response = curl_exec($curlHandle);
+		if ($response === false) {
+			$errorMessage = curl_error($curlHandle);
+			curl_close($curlHandle);
+			return $errorMessage;
+		}
+
+		return $response;
+	}
+
 }
