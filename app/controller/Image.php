@@ -17,15 +17,15 @@ class Image extends Controller {
 	}
 
 	public function index() {
+		$this->view->imageFields = $this->OpenAIImage->get_options();
 
 		$items = $this->Images->count_files();
 		$itemsPerPage = 30;
 		$pager = new Pager($items, $itemsPerPage);
 
-		$files = $this->Images->read_directory($itemsPerPage, $pager->offset);
+		$this->view->lastimages = $this->Images->read_directory($itemsPerPage, $pager->offset);
 
 		$this->view->pager = $pager->htmldata;
-		$this->view->lastimages = $files;
 		$this->view->title = 'Bildgenerator';
 		$this->view->render('image-generator/index');
 	}
