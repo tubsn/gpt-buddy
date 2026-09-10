@@ -4,11 +4,6 @@
 	p+h3 {margin-top: 2em;}
 </style>
 
-<div class="box" style="max-width:1200px; margin:0 auto; margin-top:2em">
-<b>Ai "Humor" Ecke:</b> <?=$funfact?>
-</div>
-
-
 <section class="box" style="max-width:1200px; margin:0 auto; margin-top:2em">
 
 <h1><?=APP_NAME?> Changelog</h1>
