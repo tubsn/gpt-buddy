@@ -18,6 +18,19 @@ class Image extends Controller {
 
 	public function index() {
 
+		$availableImageOptions = $this->OpenAIImage->get_options();
+		$selectedImageOptions = $this->OpenAIImage->resolve_options([]);
+
+		$imageFields = [
+			'model' => ['label' => 'Modell', 'options' => $availableImageOptions['models']],
+			'resolution' => ['label' => 'Format/Auflösung', 'options' => $availableImageOptions['resolutions']],
+			'quality' => ['label' => 'Qualität', 'options' => $availableImageOptions['qualities']],
+			'background' => ['label' => 'Hintergrund', 'options' => $availableImageOptions['backgrounds']],
+		];
+
+		$this->view->imageFields = $imageFields;
+		$this->view->selectedImageOptions = $selectedImageOptions;
+
 		$items = $this->Images->count_files();
 		$itemsPerPage = 30;
 		$pager = new Pager($items, $itemsPerPage);

@@ -6,30 +6,74 @@ class OpenAIImage
 {
 	public function __construct() {}
 
-	public function fetch($prompt, $options = null) {
-		$model = 'gpt-image-2';
-		$resolution = '1536x1024';
-		$quality = 'medium';
-		$background = 'auto';
-		$image = '';
 
-		if (is_array($options)) {
-			if (!empty($options['resolution'])) {
-				$resolution = $options['resolution'];
-			}
+	public function get_options() {
+		return [
+			'models' => [
+				'gpt-image-2.5-flare' => 'Flare',
+				'gpt-image-2.5-sunburst' => 'Sunburst',
+			],
+			'resolutions' => [
+				'1536x1024' => 'Querformat – 1536 × 1024',
+				'2560x1440' => 'Querformat – 2560 × 1440',
+				'1024x1536' => 'Hochformat – 1024 × 1536',
+				'1440x2560' => 'Hochformat – 1440 × 2560',
+				'1024x1024' => 'Quadratisch – 1024 × 1024',
+			],
+			'qualities' => [
+				'low' => 'Niedrig',
+				'medium' => 'Normal',
+				'high' => 'Hoch',
+				'max' => 'Max',
+			],
+			'backgrounds' => [
+				'auto' => 'Auto',
+				'opaque' => 'Gefüllt',
+				'transparent' => 'Transparent – PNG',
+			],
+		];
+	}
 
-			if (!empty($options['quality'])) {
-				$quality = $options['quality'];
-			}
+	public function resolve_options($options = null) {
+		$availableOptions = $this->get_options();
+		$options = is_array($options) ? $options : [];
 
-			if (!empty($options['background'])) {
-				$background = $options['background'];
-			}
+		$resolvedOptions = [
+			'model' => array_key_first($availableOptions['models']),
+			'resolution' => array_key_first($availableOptions['resolutions']),
+			'quality' => array_key_first($availableOptions['qualities']),
+			'background' => array_key_first($availableOptions['backgrounds']),
+		];
 
-			if (!empty($options['image'])) {
-				$image = $options['image'];
+		$optionMappings = [
+			'model' => 'models',
+			'resolution' => 'resolutions',
+			'quality' => 'qualities',
+			'background' => 'backgrounds',
+		];
+
+		foreach ($optionMappings as $optionName => $optionGroup) {
+			$selectedValue = $options[$optionName] ?? '';
+
+			if (array_key_exists($selectedValue, $availableOptions[$optionGroup])) {
+				$resolvedOptions[$optionName] = $selectedValue;
 			}
 		}
+
+		return $resolvedOptions;
+	}
+
+	public function fetch($prompt, $options = null) {
+		$options = is_array($options) ? $options : [];
+		$resolvedOptions = $this->resolve_options($options);
+
+		$model = $resolvedOptions['model'];
+		$resolution = $resolvedOptions['resolution'];
+		$quality = $resolvedOptions['quality'];
+		$background = $resolvedOptions['background'];
+		$image = !empty($options['image']) ? $options['image'] : '';
+
+		$outputFormat = $background === 'transparent' ? 'png' : 'jpeg';
 
 		$generatorOptions = [
 			'model' => $model,
@@ -39,14 +83,19 @@ class OpenAIImage
 			'moderation' => 'low',
 			'background' => $background,
 			'size' => $resolution,
-			'output_format' => 'jpeg',
+			'output_format' => $outputFormat,
 		];
 
 		if (!empty($image)) {
 			$allowedImagePath = $this->get_allowed_image_path($image);
-			$completeResponse = $this->request_image_edit($generatorOptions, $allowedImagePath);
+			$completeResponse = $this->request_image_edit(
+				$generatorOptions,
+				$allowedImagePath
+			);
 		} else {
-			$completeResponse = $this->request_image_generation($generatorOptions);
+			$completeResponse = $this->request_image_generation(
+				$generatorOptions
+			);
 		}
 
 		$decodedResponse = json_decode($completeResponse, true);
@@ -66,7 +115,11 @@ class OpenAIImage
 			throw new \Exception('OpenAI did not return image data', 500);
 		}
 
-		return $this->save_file($decodedResponse['data'][0]['b64_json'], $prompt);
+		return $this->save_file(
+			$decodedResponse['data'][0]['b64_json'],
+			$prompt,
+			$outputFormat
+		);
 	}
 
 	private function request_image_generation($generatorOptions) {
@@ -138,8 +191,6 @@ class OpenAIImage
 		$responseBody = curl_exec($curlHandle);
 		$curlError = curl_error($curlHandle);
 		$httpCode = (int)curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
-
-		curl_close($curlHandle);
 
 		if ($responseBody === false) {
 			throw new \Exception('OpenAI request failed: ' . $curlError, 500);
@@ -244,36 +295,50 @@ class OpenAIImage
 		return $mimeType;
 	}
 
-	private function save_file($base64Json, $prompt) {
+	private function save_file($base64Json, $prompt, $outputFormat) {
 		$imageData = base64_decode($base64Json, true);
 
 		if ($imageData === false) {
 			throw new \Exception('Invalid image data received', 500);
 		}
 
-		$gdImage = imagecreatefromstring($imageData);
+		$imageInformation = getimagesizefromstring($imageData);
 
-		if ($gdImage === false) {
-			throw new \Exception('Could not create image from response data', 500);
+		if ($imageInformation === false) {
+			throw new \Exception('Invalid image received', 500);
 		}
 
-		$filename = uniqid('generated_', true) . '.jpg';
+		$expectedMimeType = $outputFormat === 'png'
+			? 'image/png'
+			: 'image/jpeg';
+
+		if (($imageInformation['mime'] ?? '') !== $expectedMimeType) {
+			throw new \Exception(
+				'Unexpected image format received: ' .
+				($imageInformation['mime'] ?? 'unknown'),
+				500
+			);
+		}
+
+		$fileExtension = $outputFormat === 'png' ? 'png' : 'jpg';
+		$filename = 'generated_' . bin2hex(random_bytes(16)) . '.' . $fileExtension;
 		$directoryPath = PUBLICFOLDER . 'generated/';
 
-		if (!file_exists($directoryPath)) {
-			mkdir($directoryPath, 0775, true);
+		if (!is_dir($directoryPath)) {
+			if (!mkdir($directoryPath, 0775, true) && !is_dir($directoryPath)) {
+				throw new \Exception('Could not create image directory', 500);
+			}
 		}
 
 		$filePath = $directoryPath . $filename;
 
-		if (!imagejpeg($gdImage, $filePath, 80)) {
-			imagedestroy($gdImage);
+		if (file_put_contents($filePath, $imageData, LOCK_EX) === false) {
 			throw new \Exception('Could not save generated image', 500);
 		}
 
-		imagedestroy($gdImage);
-
-		$this->add_prompt_to_file($filePath, $prompt);
+		if ($outputFormat === 'jpeg') {
+			$this->add_prompt_to_file($filePath, $prompt);
+		}
 
 		return '/generated/' . $filename;
 	}

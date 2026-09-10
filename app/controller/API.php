@@ -108,21 +108,36 @@ class API extends Controller {
 
 
 	public function generate_image() {
-		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}		
-		$prompt = $_POST['question'];
+		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
+
+		$prompt = trim($_POST['question'] ?? '');
+		if ($prompt === '') {
+			$this->view->json(['error' => 'Bitte eine Bildbeschreibung eingeben.']);
+			return;
+		}
+
+		if (mb_strlen($prompt) > 4000) {
+			$this->view->json(['error' => 'Die Bildbeschreibung ist zu lang.']);
+			return;
+		}
+
+		$options = [];
+		$options['model'] = $_POST['model'] ?? null;
 		$options['resolution'] = $_POST['resolution'] ?? null;
 		$options['quality'] = $_POST['quality'] ?? null;
 		$options['background'] = $_POST['background'] ?? null;
 		$options['image'] = $_POST['image'] ?? null;
-		
+
 		try {
-			Session::close(); // Prevent Session Blocking
+			Session::close();
+
 			$output = $this->OpenAIImage->fetch($prompt, $options);
 			$this->view->json($output);
-		} catch (\Exception $e) {
-			$this->view->json(['error' => 'GPT-Error: ' . $e->getMessage()]);
+		} catch (\Exception $exception) {
+			$this->view->json([
+				'error' => 'GPT-Error: ' . $exception->getMessage(),
+			]);
 		}
-
 	}
 
 	public function prompt($id) {
