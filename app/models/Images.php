@@ -25,18 +25,24 @@ class Images extends Model
 	}
 
 
-	public function read_directory(?int $limit, int $offset = 0) {
+	public function read_directory($limit, $offset = 0) {
+		if (!file_exists($this->internalPath)) {return [];}
 
-		if (file_exists($this->internalPath)) {
-			$files = scandir($this->internalPath, SCANDIR_SORT_DESCENDING);
-			$files = array_diff($files, array('.', '..'));
-			$files = array_slice($files, $offset, $limit);
-		} else {$files = [];}
+		$filenames = array_diff(scandir($this->internalPath), ['.', '..']);
 
+		usort($filenames, function($firstFilename, $secondFilename) {
+			$firstTimestamp = filemtime($this->internalPath . $firstFilename);
+			$secondTimestamp = filemtime($this->internalPath . $secondFilename);
 
-		$files = array_map(function($filename) {
-			
+			return $secondTimestamp <=> $firstTimestamp;
+		});
+
+		$filenames = array_slice($filenames, $offset, $limit);
+
+		return array_map(function($filename) {
 			$info = getimagesize($this->internalPath . $filename, $meta);
+
+			$file = [];
 			$file['path'] = $this->externalPath . $filename;
 			$file['width'] = $info[0];
 			$file['height'] = $info[1];
@@ -44,11 +50,7 @@ class Images extends Model
 			$file['prompt'] = $this->extract_prompt_data($meta);
 
 			return $file;
-
-		}, $files);
-
-		return $files;
-
+		}, $filenames);
 	}
 
 	public function extract_prompt_data($meta) {
