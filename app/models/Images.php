@@ -24,33 +24,37 @@ class Images extends Model
 		return count($files);
 	}
 
-
 	public function read_directory($limit, $offset = 0) {
-		if (!file_exists($this->internalPath)) {return [];}
+		if (!is_dir($this->internalPath)) {return [];}
 
-		$filenames = array_diff(scandir($this->internalPath), ['.', '..']);
+		$filenames = [];
+		$directoryIterator = new \FilesystemIterator($this->internalPath, \FilesystemIterator::SKIP_DOTS);
+		foreach ($directoryIterator as $fileInfo) {
+			if (!$fileInfo->isFile()) {continue;}
+			$filenames[] = $fileInfo->getFilename();
+		}
 
-		usort($filenames, function($firstFilename, $secondFilename) {
-			$firstTimestamp = filemtime($this->internalPath . $firstFilename);
-			$secondTimestamp = filemtime($this->internalPath . $secondFilename);
-
-			return $secondTimestamp <=> $firstTimestamp;
-		});
-
+		rsort($filenames, SORT_STRING);
 		$filenames = array_slice($filenames, $offset, $limit);
 
-		return array_map(function($filename) {
-			$info = getimagesize($this->internalPath . $filename, $meta);
+		$images = [];
 
-			$file = [];
-			$file['path'] = $this->externalPath . $filename;
-			$file['width'] = $info[0];
-			$file['height'] = $info[1];
-			$file['name'] = $filename;
-			$file['prompt'] = $this->extract_prompt_data($meta);
+		foreach ($filenames as $filename) {
+			$metadata = [];
+			$imageInfo = getimagesize($this->internalPath . $filename, $metadata);
 
-			return $file;
-		}, $filenames);
+			if ($imageInfo === false) {continue;}
+
+			$images[] = [
+				'path' => $this->externalPath . $filename,
+				'width' => $imageInfo[0],
+				'height' => $imageInfo[1],
+				'name' => $filename,
+				'prompt' => $this->extract_prompt_data($metadata),
+			];
+		}
+
+		return $images;
 	}
 
 	public function extract_prompt_data($meta) {

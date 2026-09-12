@@ -292,7 +292,10 @@ class OpenAIImage {
 		}
 
 		$fileExtension = $outputFormat === 'png' ? 'png' : 'jpg';
-		$filename = 'generated_' . bin2hex(random_bytes(16)) . '.' . $fileExtension;
+		$timestamp = date('ymdHis') . sprintf('%06d', (microtime(true) * 1000000) % 1000000);
+		$randomPart = bin2hex(random_bytes(2));
+		$filename = 'ai_' . $timestamp . '_' . $randomPart . '.' . $fileExtension;
+
 		$directoryPath = rtrim(PUBLICFOLDER, '/\\') . '/generated/';
 
 		if (!is_dir($directoryPath)) {
