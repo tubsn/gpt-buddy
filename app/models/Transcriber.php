@@ -72,7 +72,7 @@ class Transcriber
 		}
 
 		$command = sprintf(
-			'%s -y -i %s -c:a libopus -b:a 12k -application voip %s',
+			'%s -y -i %s -map 0:a:0 -vn -c:a libopus -b:a 12k -application voip %s',
 			escapeshellcmd($this->ffmpegPath),
 			escapeshellarg($inputFile),
 			escapeshellarg($outputFile)
