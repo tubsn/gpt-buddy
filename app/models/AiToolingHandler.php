@@ -128,40 +128,59 @@ class AiToolingHandler {
 	private function DriveRag() {
 
 		$this->ai->register_tool(
-			'DriveRAG',
-			[
+			'DriveRAG', [
 				'name' => 'DriveRAG',
-				'description' => 'Search Engine, that grants Access to an archive of articles published by bnn.de. You can gather valid information here on local news covering topics in Karlsruhe and Baden Württemberg. This function will supply you with a number of articles that are relevant to your search topic, the results include a "score" from 0 to 1 which determins hoch relevant that article is to your search. 1 Means highly relevant 0 not so relevant. Search the database with a query which consists of boiled down semantic tags which fit the users request.',
+				'description' => 'Durchsucht das interne bnn.de-Artikelarchiv für Inhaltsrecherche und lokale Nachrichten, insbesondere aus Karlsruhe und Baden-Württemberg. Liefert Artikel mit Metadaten, URLs und standardmäßig vollständigem Text.
+
+				Suchregeln:
+				- query: 1–8 prägnante Keywords als durch Leerzeichen getrennter String, idealerweise 2–4. Bevorzuge Substantive, Eigennamen und kurze Nomen-Phrasen; keine Stopwörter, vollständigen Fragen oder Füllbegriffe. Wichtige Ortsnamen beibehalten.
+				- Bei mehr als 4 relevanten Keywords oder mehreren gleichwichtigen Themen: bis zu 3 fokussierte Suchen nach Hauptthema, Synonymen oder Kontext. Ergebnisse nach Artikel-ID deduplizieren.
+				- Standardmäßig insgesamt höchstens 10 Artikel, sofern der Nutzer keine andere Anzahl verlangt. Bei mehreren Aufrufen das Gesamtlimit aufteilen, pro Aufruf aufrunden und die zusammengeführte Auswahl auf das Gesamtlimit begrenzen.
+
+				Zeitraum:
+				- from und to immer als YYYY-MM-DD setzen; sie filtern das Veröffentlichungsdatum, nicht Aktualisierung oder Ereignisdatum. from darf nicht nach to liegen.
+				- Ausdrückliche Veröffentlichungszeiträume übernehmen, relative Angaben anhand des aktuellen Datums umrechnen.
+				- Ohne Zeitvorgabe: bei aktuellen Themen heute minus 90 Tage bis heute; sonst einen historisch passenden Beginn bis heute wählen. Ohne explizite Parameter greift technisch nur ein 7-Tage-Zeitraum.
+				- Aktualisierungsdatumsfilter werden nicht unterstützt.
+
+				Bei zu wenigen Treffern:
+				- Ohne ausdrückliche Zeitvorgabe schrittweise auf 6 Monate, 1, 2 oder 5 Jahre erweitern; bereits längere Zeiträume nicht verkürzen.
+				- Danach unwichtigstes Keyword entfernen, Synonym/Oberbegriff versuchen, zuletzt mit einem Kern-Keyword suchen. Gewünschtes Trefferlimit und ausdrückliche Filter beibehalten.
+
+				summary, tags und section nur auf ausdrücklichen Wunsch setzen; Tags und Ressort müssen vom Nutzer genannt werden, nicht aus query ableiten. Eine gewünschte Antwortzusammenfassung allein rechtfertigt summary nicht. Ergebnisse auf tatsächliche Relevanz prüfen; Suchtreffer allein bestätigen keine Aussagen.',
 				'parameters' => [
 					'type' => 'object',
 					'properties' => [
 						'query' => [
 							'type' => 'string',
-							'description' => 'The topic you are looking for. Broke down into 1-6 short seo like tags.',
+							'description' => '1–8 prägnante Keywords als durch Leerzeichen getrennter String, idealerweise 2–4. Substantive, Eigennamen oder kurze Nomen-Phrasen, keine Stopwörter oder vollständigen Fragen. Beispiel: „Karlsruhe Schlosslichtspiele Programm“.',
 						],
 						'from' => [
 							'type' => 'string',
-							'description' => 'Daterange starting from in YYYY-MM-DD h:i or only YYYY-MM-DD',
+							'description' => 'Beginn des Veröffentlichungszeitraums einschließlich dieses Tages, als YYYY-MM-DD. Immer setzen. Nutzervorgaben haben Vorrang; sonst bei aktuellen Themen heute minus 90 Tage, bei historischen Themen ein passendes Startdatum.',
 						],
 						'to' => [
 							'type' => 'string',
-							'description' => 'Daterange to in YYYY-MM-DD h:i or only YYYY-MM-DD',
+							'description' => 'Ende des Veröffentlichungszeitraums einschließlich dieses Tages, als YYYY-MM-DD. Immer setzen. Ohne Nutzervorgabe heute; darf nicht vor from liegen.',
 						],
 						'limit' => [
 							'type' => 'integer',
-							'description' => 'Maximum amount of Article Items',
+							'minimum' => 1,
+							'default' => 10,
+							'description' => 'Maximale Artikelanzahl, standardmäßig 10. Mehr nur auf ausdrücklichen Nutzerwunsch. Bei mehreren Suchen das Gesamtlimit durch die Anzahl der Aufrufe teilen und aufrunden.',
 						],
 						'summary' => [
 							'type' => 'boolean',
-							'description' => 'Flag to request only a short Version of the article without the Full content default should be false. Do not use this field until I explicitly you for it',
+							'default' => false,
+							'description' => 'Bei true nur Titel und Teaser statt vollständigem Artikeltext abrufen. Nur setzen, wenn ausdrücklich dieser verkürzte Abruf verlangt wird; nicht allein für eine zusammengefasste Antwort.',
 						],
 						'tags' => [
 							'type' => 'string',
-							'description' => 'A comma seperated list of Tags to filter articles with these tags. Do not use this field until I explicitly instruct you to do so and name the tag or tags!',
+							'description' => 'Kommagetrennte Archiv-Tags zur Filterung. Nur setzen, wenn der Nutzer ausdrücklich nach diesen konkret genannten Tags filtern möchte. Nicht aus query ableiten.',
 						],
 						'section' => [
 							'type' => 'string',
-							'description' => 'Allowys to filter Articles by a specific section. Do not use this field until I explicitly instruct you to do so and tell you the section!',
+							'description' => 'Ressortfilter. Nur setzen, wenn der Nutzer die Filterung ausdrücklich verlangt und das Ressort nennt. Nicht aus Thema oder Ortsnamen ableiten.',
 						],
 					],
 					'required' => ['query'],
