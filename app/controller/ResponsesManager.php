@@ -2,6 +2,7 @@
 
 namespace app\controller;
 use flundr\mvc\Controller;
+use flundr\auth\Auth;
 
 class ResponsesManager extends Controller {
 
