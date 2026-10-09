@@ -22,11 +22,10 @@ export default Vue.defineComponent({
 
 			selectedPosition: 'bottom-right',
 			opacity: 0.6,
-			watermarkSize: 100,
-			watermarkSizeMaximum: 1000,
+			watermarkSize: 5,
 
-			paddingHorizontal: 0.03,
-			paddingVertical: 0.05,
+			paddingHorizontal: 3,
+			paddingVertical: 5,
 			filenameSuffix: '-ai',
 
 			outputFormat: 'original',
@@ -176,13 +175,13 @@ export default Vue.defineComponent({
 		</label>
 
 		<label>
-			Wasserzeichenbreite: {{ watermarkSize }} px
+			Wasserzeichenbreite: {{ watermarkSize }} %
 
 			<input
 				v-model.number="watermarkSize"
 				type="range"
-				min="16"
-				:max="watermarkSizeMaximum"
+				min="1"
+				max="100"
 				step="1"
 				:disabled="!hasImage || loading"
 				@input="changeWatermarkSize"
@@ -190,29 +189,30 @@ export default Vue.defineComponent({
 		</label>
 
 		<label>
-			Ausgabeformat
-
-			<select
-				v-model="outputFormat"
-				:disabled="!hasImage || loading"
-			>
-				<option value="original">Originalformat</option>
-				<option value="jpeg">JPEG</option>
-				<option value="png">PNG</option>
-				<option value="webp">WebP</option>
-			</select>
-		</label>
-
-		<label v-if="outputFormat !== 'png'">
-			Qualität: {{ outputQuality }} %
+			Abstand zum seitlichen Rand: {{ paddingHorizontal }} %
 
 			<input
-				v-model.number="outputQuality"
+				v-model.number="paddingHorizontal"
 				type="range"
-				min="50"
-				max="100"
-				step="1"
+				min="0"
+				max="25"
+				step="0.5"
 				:disabled="!hasImage || loading"
+				@input="changePadding"
+			>
+		</label>
+
+		<label>
+			Abstand zum oberen/unteren Rand: {{ paddingVertical }} %
+
+			<input
+				v-model.number="paddingVertical"
+				type="range"
+				min="0"
+				max="25"
+				step="0.5"
+				:disabled="!hasImage || loading"
+				@input="changePadding"
 			>
 		</label>
 
@@ -253,30 +253,38 @@ export default Vue.defineComponent({
 				1
 			)
 
-			this.paddingHorizontal = this.parsePercentage(
+			this.paddingHorizontal = this.clampNumber(this.parsePercentage(
 				this.$attrs['data-padding-horizontal'] || '3%'
-			)
+			) * 100, 0, 25)
 
-			this.paddingVertical = this.parsePercentage(
+			this.paddingVertical = this.clampNumber(this.parsePercentage(
 				this.$attrs['data-padding-vertical'] || '5%'
-			)
+			) * 100, 0, 25)
 
 			this.filenameSuffix = this.$attrs['data-suffix'] || '-ai'
+			const configuredFormat = this.$attrs['data-output-format'] || 'original'
+			this.outputFormat = ['original', 'jpeg', 'png', 'webp'].includes(configuredFormat)
+				? configuredFormat
+				: 'original'
+			this.outputQuality = this.clampNumber(
+				parseInt(this.$attrs['data-output-quality'] || '90', 10) || 90,
+				1,
+				100
+			)
 
 			const configurationElement = this.$refs.configuration
 			const watermarkElements = configurationElement.querySelectorAll('watermark')
 
 			this.watermarks = Array.from(watermarkElements).map((watermarkElement) => {
 				const watermarkUrl = watermarkElement.dataset.url || ''
-				const configuredSize = parseInt(
-					watermarkElement.dataset.defaultSize || '0',
-					10
-				)
+				const configuredSize = String(
+					watermarkElement.dataset.defaultSize || '0'
+				).trim()
 
 				return {
 					url: watermarkUrl,
 					label: watermarkElement.dataset.label || this.getAssetName(watermarkUrl),
-					defaultSize: Number.isFinite(configuredSize) ? configuredSize : 0,
+					defaultSize: configuredSize,
 				}
 			}).filter((watermark) => watermark.url)
 		},
@@ -299,8 +307,8 @@ export default Vue.defineComponent({
 				)
 
 				this.processor.set_padding(
-					this.paddingHorizontal,
-					this.paddingVertical
+					this.paddingHorizontal / 100,
+					this.paddingVertical / 100
 				)
 
 				this.processor.set_opacity(this.opacity)
@@ -420,30 +428,29 @@ export default Vue.defineComponent({
 			}
 
 			const watermarkAsset = await this.fetchAsset(watermark.url)
+			const defaultSize = this.resolveWatermarkSize(
+				watermark.defaultSize
+			)
 
 			this.processor.load_watermark(
 				watermarkAsset.bytes,
 				watermarkAsset.mimeType,
-				watermark.defaultSize
+				defaultSize
 			)
 
 			const detectedWidth = this.processor.watermark_width()
 
-			this.watermarkSize = watermark.defaultSize > 0
-				? watermark.defaultSize
-				: detectedWidth
-
-			this.watermarkSizeMaximum = Math.max(
-				16,
-				this.processor.image_width()
+			const referenceSize = this.getWatermarkReferenceSize()
+			const watermarkWidth = defaultSize > 0 ? defaultSize : detectedWidth
+			this.watermarkSize = this.clampNumber(
+				Math.round(watermarkWidth / referenceSize * 100),
+				1,
+				100
 			)
 
-			this.watermarkSize = Math.min(
-				this.watermarkSize,
-				this.watermarkSizeMaximum
+			this.processor.set_watermark_width(
+				Math.max(1, Math.round(referenceSize * this.watermarkSize / 100))
 			)
-
-			this.processor.set_watermark_width(this.watermarkSize)
 			this.processor.render()
 		},
 
@@ -497,28 +504,7 @@ export default Vue.defineComponent({
 		},
 
 		updateImageDimensions() {
-			const imageWidth = this.processor.image_width()
-			const imageHeight = this.processor.image_height()
-			const isPortraitImage = imageHeight > imageWidth
-
-			if (isPortraitImage) {
-				this.processor.set_padding(
-					this.paddingVertical,
-					this.paddingHorizontal
-				)
-			} else {
-				this.processor.set_padding(
-					this.paddingHorizontal,
-					this.paddingVertical
-				)
-			}
-
-			this.watermarkSizeMaximum = Math.max(
-				16,
-				imageWidth
-			)
-
-			this.processor.render()
+			this.changePadding()
 
 			this.$nextTick(() => {
 				this.updateLayout()
@@ -536,7 +522,17 @@ export default Vue.defineComponent({
 		},
 
 		changeWatermarkSize() {
-			this.processor.set_watermark_width(this.watermarkSize)
+			this.processor.set_watermark_width(
+				Math.max(1, Math.round(this.getWatermarkReferenceSize() * this.watermarkSize / 100))
+			)
+			this.processor.render()
+		},
+
+		changePadding() {
+			this.processor.set_padding(
+				this.paddingHorizontal / 100,
+				this.paddingVertical / 100
+			)
 			this.processor.render()
 		},
 
@@ -797,6 +793,30 @@ export default Vue.defineComponent({
 			return String(value).includes('%')
 				? parsedValue / 100
 				: parsedValue
+		},
+
+		resolveWatermarkSize(configuredSize) {
+			const sizeValue = String(configuredSize).trim()
+			const parsedSize = parseFloat(sizeValue)
+
+			if (!Number.isFinite(parsedSize) || parsedSize <= 0) {
+				return 0
+			}
+
+			if (sizeValue.endsWith('%')) {
+				return Math.round(
+					this.getWatermarkReferenceSize() * parsedSize / 100
+				)
+			}
+
+			return Math.round(parsedSize)
+		},
+
+		getWatermarkReferenceSize() {
+			return Math.max(
+				this.processor.image_width(),
+				this.processor.image_height()
+			)
 		},
 
 		clampNumber(value, minimum, maximum) {

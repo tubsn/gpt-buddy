@@ -6,15 +6,16 @@
 
 <image-processor
 data-image="<?=$image?>"
-data-padding-horizontal="3%" data-padding-vertical="3%" data-opacity="0.7" data-suffix="-ai">
+data-padding-horizontal="3%" data-padding-vertical="3%" data-opacity="0.7" data-suffix="-ai"
+data-output-format="original" data-output-quality="90">
 
-<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI_white.svg" data-label="Ai | weiß" data-default-size="50"></watermark>
-<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI_black.svg" data-label="Ai | schwarz" data-default-size="50"></watermark>
+<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI_white.svg" data-label="Ai | weiß" data-default-size="5%"></watermark>
+<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI_black.svg" data-label="Ai | schwarz" data-default-size="5%"></watermark>
 
-<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI GENERATED_white.svg" data-label="Ai generated | weiß" data-default-size="150"></watermark>
-<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI GENERATED_black.svg" data-label="Ai generated | schwarz" data-default-size="150"></watermark>
-<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI MODIFIED_white.svg" data-label="Ai modified | weiß" data-default-size="150"></watermark>
-<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI MODIFIED_black.svg" data-label="Ai modified | schwarz" data-default-size="150"></watermark>
+<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI GENERATED_white.svg" data-label="Ai generated | weiß" data-default-size="15%"></watermark>
+<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI GENERATED_black.svg" data-label="Ai generated | schwarz" data-default-size="15%"></watermark>
+<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI MODIFIED_white.svg" data-label="Ai modified | weiß" data-default-size="15%"></watermark>
+<watermark data-url="/styles/wasm/image-processor/icons/LABEL_AI MODIFIED_black.svg" data-label="Ai modified | schwarz" data-default-size="15%"></watermark>
 </image-processor>
 
 </main>
