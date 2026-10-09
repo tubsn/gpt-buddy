@@ -28,6 +28,21 @@ class Conversations
 		return json_decode($data,1);
 	}
 
+	public function get_uploaded_json($file) {
+		if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {return null;}
+		if (!is_uploaded_file($file['tmp_name'])) {return null;}
+
+		$conversation = json_decode(file_get_contents($file['tmp_name']), true);
+		if (!is_array($conversation) || !$conversation) {return null;}
+		if (array_keys($conversation) !== range(0, count($conversation) - 1)) {return null;}
+		foreach ($conversation as $message) {
+			if (!is_array($message) || !isset($message['role'], $message['content'])) {return null;}
+			if (!is_string($message['role'])) {return null;}
+		}
+
+		return $conversation;
+	}
+
 	public function get_json_with_markdown($id) {
 		$filename = $this->path . $id;
 		if (!file_exists($filename)) {return null;}

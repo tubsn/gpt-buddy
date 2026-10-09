@@ -153,6 +153,23 @@ class Chat extends Controller {
 	}
 
 	public function get_conversation_json($id) {
+		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$file = $_FILES['file'] ?? [];
+			if (!preg_match('/^resp_[a-zA-Z0-9]+$/', $id) || ($file['name'] ?? '') !== $id) {
+				throw new \Exception('Conversation Unavailable', 400);
+			}
+
+			$conversation = $this->Conversations->get_uploaded_json($file);
+			if (empty($conversation)) {throw new \Exception('Conversation Unavailable', 400);}
+
+			$conversations = Session::get('conversations') ?? [];
+			$conversations[$id] = $conversation;
+			Session::set('conversations', $conversations);
+			Session::set('conversation', $conversation);
+			$this->view->json($conversation);
+			return;
+		}
+
 		$conversation = $this->Conversations->get_json($id);
 		if (empty($conversation)) {throw new \Exception("Conversation Unavailable", 404);}
 		$this->view->json($conversation);

@@ -195,7 +195,41 @@ methods: {
 
 		if (!uploadedFiles || !uploadedFiles.length) {return}
 
-		this.uploadFile(uploadedFiles[0])
+		const file = uploadedFiles[0]
+		if (file.name.startsWith('resp_')) {
+			this.applyConversation(file)
+			return
+		}
+
+		this.uploadFile(file)
+	},
+
+	async applyConversation(file) {
+		if (this.$root.loading) {return}
+
+		const responseID = file.name
+		const formData = new FormData()
+		formData.append('file', file)
+		const response = await fetch('/conversation/' + encodeURIComponent(responseID) + '/json', {
+			method: 'POST',
+			body: formData
+		})
+		if (!response.ok) {
+			this.$root.errormessages = 'Chatlogfile konnte nicht übernommen werden'
+			return
+		}
+
+		if (this.$root.$refs.history.responseID !== responseID) {
+			await this.$root.$refs.history.kill()
+		}
+		this.$root.input = ''
+		this.$root.output = ''
+		sessionStorage.removeItem('input')
+		sessionStorage.removeItem('output')
+		this.$root.responseID = responseID
+		this.$root.$refs.history.responseID = responseID
+		sessionStorage.responseID = responseID
+		await this.$root.$refs.history.fetchHistory()
 	},
 
 	preventBrowserFileOpen(event) {

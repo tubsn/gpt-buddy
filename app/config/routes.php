@@ -27,6 +27,7 @@ $routes->post('/conversation/pop/{index}', 'Streaming@remove_conversation_entry'
 
 $routes->get('/conversation/{id}', 'Chat@show_conversation');
 $routes->get('/conversation/{id}/json', 'Chat@get_conversation_json');
+$routes->post('/conversation/{id}/json', 'Chat@get_conversation_json');
 
 // Response Management
 $routes->get('/purge-logs', 'ResponsesManager@purge_logs');
