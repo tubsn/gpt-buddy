@@ -212,6 +212,12 @@ class OpenAIImage {
 			throw new \Exception('Ungültiger Bildpfad.', 400);
 		}
 
+		$decodedPath = rawurldecode($parsedUrlPath);
+
+		if (strpos($decodedPath, "\0") !== false) {
+			throw new \Exception('Ungültiger Bildpfad.', 400);
+		}
+
 		$publicDirectory = realpath(PUBLICFOLDER);
 
 		if ($publicDirectory === false) {
@@ -219,7 +225,7 @@ class OpenAIImage {
 		}
 
 		$requestedPath = realpath(
-			$publicDirectory . DIRECTORY_SEPARATOR . ltrim($parsedUrlPath, '/')
+			$publicDirectory . DIRECTORY_SEPARATOR . ltrim($decodedPath, '/')
 		);
 
 		if ($requestedPath === false) {
