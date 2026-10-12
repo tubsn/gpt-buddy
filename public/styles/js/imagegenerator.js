@@ -29,10 +29,21 @@ if (imageGeneratorElement) {
 		)
 		const storedValue = readStorage('localStorage', selectElement.name)
 
-		initialImageSettings[selectElement.name] = availableValues.includes(storedValue)
+		const savedCustomSize = selectElement.name === 'resolution' && storedValue === 'custom' &&
+			Number(readStorage('localStorage', 'imageWidth')) > 0 &&
+			Number(readStorage('localStorage', 'imageHeight')) > 0
+
+		initialImageSettings[selectElement.name] = availableValues.includes(storedValue) || savedCustomSize
 			? storedValue
 			: selectElement.value
 	})
+
+	const initialWidth = initialImageSettings.resolution === 'custom'
+		? Number(readStorage('localStorage', 'imageWidth'))
+		: Number(initialImageSettings.resolution.split('x')[0])
+	const initialHeight = initialImageSettings.resolution === 'custom'
+		? Number(readStorage('localStorage', 'imageHeight'))
+		: Number(initialImageSettings.resolution.split('x')[1])
 
 	createApp({
 		components: {
@@ -42,8 +53,8 @@ if (imageGeneratorElement) {
 		data() {
 			return {
 				...initialImageSettings,
-				imageWidth: Number(initialImageSettings.resolution.split('x')[0]),
-				imageHeight: Number(initialImageSettings.resolution.split('x')[1]),
+				imageWidth: initialWidth,
+				imageHeight: initialHeight,
 				input: '',
 				output: '',
 				payload: '',
@@ -152,6 +163,12 @@ if (imageGeneratorElement) {
 						settingValue => writeStorage('localStorage', settingName, settingValue)
 					))
 				})
+				for (const dimension of ['imageWidth', 'imageHeight']) {
+					this.settingWatchStops.push(this.$watch(
+						() => this[dimension],
+						value => writeStorage('localStorage', dimension, value)
+					))
+				}
 			},
 
 			autofocus() {
