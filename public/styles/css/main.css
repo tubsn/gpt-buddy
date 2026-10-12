@@ -334,10 +334,12 @@ form.image-generator-form {padding:1.25em; margin-bottom:1em; border:0; border-r
 /* Einstellungen */
 .image-generator-form .image-options {display:grid; grid-column:3; grid-row:1; grid-template-columns:minmax(0, 1.2fr) minmax(0, 1fr); align-self:start; align-content:center; gap:8px 14px; height:auto; min-height:150px; box-sizing:border-box; margin:0; padding:12px 16px; border:1px solid light-dark(#d8d8d8, #454545); border-radius:.65em; background:light-dark(#fafafa, #1c1c1c);}
 .image-generator-form .image-options label {display:flex; flex-direction:column; gap:4px; min-width:0; margin:0; color:inherit; font-size:.8em; line-height:1.2;}
-.image-generator-form .image-options select {display:block; width:100%; max-width:100%; min-width:0; height:36px; flex-shrink:0; box-sizing:border-box; margin:0; padding:.3em .5em; border:1px solid light-dark(#d0d0d0, #454545); border-radius:.4em; background:light-dark(#fff, #202020); color:light-dark(#303030, #e0e0e0); font:inherit;}
+.image-generator-form .image-options select, .image-generator-form .image-options input {display:block; width:100%; max-width:100%; min-width:0; height:36px; flex-shrink:0; box-sizing:border-box; margin:0; padding:.3em .5em; border:1px solid light-dark(#d0d0d0, #454545); border-radius:.4em; background:light-dark(#fff, #202020); color:light-dark(#303030, #e0e0e0); font:inherit;}
 .image-generator-form .image-options option {background:light-dark(#fff, #202020); color:light-dark(#303030, #e0e0e0);}
-.image-generator-form .image-options select:focus {outline:2px solid var(--primary-lighter); outline-offset:1px;}
-.image-generator-form .image-options select:disabled {background:color-mix(in srgb, var(--primary) 8%, light-dark(#fff, #202020)); color:light-dark(#707070, #b0b0b0); cursor:not-allowed;}
+.image-generator-form .image-options select:focus, .image-generator-form .image-options input:focus {outline:2px solid var(--primary-lighter); outline-offset:1px;}
+.image-generator-form .image-options select:disabled, .image-generator-form .image-options input:disabled {background:color-mix(in srgb, var(--primary) 8%, light-dark(#fff, #202020)); color:light-dark(#707070, #b0b0b0); cursor:not-allowed;}
+.image-generator-form .image-options .image-resolution-hint {grid-column:1 / -1; margin:0; color:light-dark(#a52a2a, #ff8585); font-size:.8em;}
+.image-generator-form .image-options input[aria-invalid="true"] {border-color:light-dark(#a52a2a, #ff8585);}
 
 /* Referenzbilder */
 .image-generator-form .image-reference-list {display:flex; flex-wrap:wrap; gap:.8em; margin-top:.85em;}

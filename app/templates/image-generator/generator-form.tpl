@@ -9,7 +9,7 @@
 			<button
 				type="submit"
 				class="image-generate-button"
-				:disabled="loading || uploading || !input.trim()"
+				:disabled="loading || uploading || !input.trim() || invalidAspectRatio || invalidPixelCount"
 				:aria-busy="loading || uploading"
 			>
 				<span class="image-button-icon" aria-hidden="true">
@@ -138,6 +138,9 @@
 						data-image-setting
 						:disabled="loading"
 					>
+						<?php if ($fieldName === 'resolution'): ?>
+							<option v-if="resolution === 'custom'" value="custom">Individuell</option>
+						<?php endif; ?>
 						<?php foreach ($field['options'] as $optionValue => $optionLabel): ?>
 							<option value="<?= htmlspecialchars($optionValue, ENT_QUOTES, 'UTF-8') ?>">
 								<?= htmlspecialchars($optionLabel, ENT_QUOTES, 'UTF-8') ?>
@@ -146,6 +149,16 @@
 					</select>
 				</label>
 			<?php endforeach; ?>
+			<label>
+				<span>Breite</span>
+				<input type="number" v-model.number="imageWidth" @input="resolution = 'custom'" min="16" max="3840" step="16" required :disabled="loading" :aria-invalid="invalidAspectRatio || invalidPixelCount">
+			</label>
+			<label>
+				<span>Höhe</span>
+				<input type="number" v-model.number="imageHeight" @input="resolution = 'custom'" min="16" max="3840" step="16" required :disabled="loading" :aria-invalid="invalidAspectRatio || invalidPixelCount">
+			</label>
+			<p v-if="invalidPixelCount" class="image-resolution-hint" role="alert">Aktuell: {{ currentPixelCount }} Pixel. Die Auflösung muss insgesamt zwischen 655.360 und 8.294.400 Pixel haben.</p>
+			<p v-if="invalidAspectRatio" class="image-resolution-hint" role="alert">Das Seitenverhältnis darf höchstens 3:1 betragen.</p>
 		</div>
 
 	</fieldset>

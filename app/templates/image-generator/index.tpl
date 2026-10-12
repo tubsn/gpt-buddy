@@ -10,7 +10,7 @@ Bitte sparsam mit dem Bildgenerator umgehen.<br>Die Generierung kostet zwischen 
 <p v-if="error" v-cloak class="error-message" v-html="errormessages"></p>
 <?php include tpl('image-generator/generator-form');?>
 
-<figure v-if="output" class="generated-image" :class="{'vertical' : resolution == '1024x1792' || resolution == '1024x1024'}">
+<figure v-if="output" class="generated-image" :class="{'vertical' : imageHeight >= imageWidth}">
 	<img :src="output">
 </figure>
 

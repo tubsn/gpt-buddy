@@ -42,6 +42,8 @@ if (imageGeneratorElement) {
 		data() {
 			return {
 				...initialImageSettings,
+				imageWidth: Number(initialImageSettings.resolution.split('x')[0]),
+				imageHeight: Number(initialImageSettings.resolution.split('x')[1]),
 				input: '',
 				output: '',
 				payload: '',
@@ -93,9 +95,31 @@ if (imageGeneratorElement) {
 			inputChars() {
 				return this.input.length
 			},
+
+			invalidAspectRatio() {
+				const width = Number(this.imageWidth)
+				const height = Number(this.imageHeight)
+				return width > 0 && height > 0 &&
+					Math.max(width, height) > Math.min(width, height) * 3
+			},
+
+			invalidPixelCount() {
+				const pixels = Number(this.imageWidth) * Number(this.imageHeight)
+				return pixels > 0 && (pixels < 655360 || pixels > 8294400)
+			},
+
+			currentPixelCount() {
+				return (Number(this.imageWidth) * Number(this.imageHeight)).toLocaleString('de-DE')
+			},
 		},
 
 		watch: {
+			resolution(value) {
+				if (value === 'custom') return
+				const [width, height] = value.split('x').map(Number)
+				this.imageWidth = width
+				this.imageHeight = height
+			},
 			input(content) {
 				writeStorage('sessionStorage', 'input', content)
 			},
@@ -226,6 +250,22 @@ if (imageGeneratorElement) {
 
 			async generateImage() {
 				if (this.loading || this.uploading || !this.input.trim()) return
+				const width = this.imageWidth
+				const height = this.imageHeight
+				if (![width, height].every(value =>
+					Number.isInteger(value) && value >= 16 && value <= 3840 && value % 16 === 0
+				)) {
+					this.showError('Breite und Höhe müssen durch 16 teilbar und höchstens 3840 Pixel groß sein.')
+					return
+				}
+				if (this.invalidPixelCount) {
+					this.showError('Die Auflösung muss insgesamt zwischen 655.360 und 8.294.400 Pixel haben.')
+					return
+				}
+				if (this.invalidAspectRatio) {
+					this.showError('Das Seitenverhältnis darf höchstens 3:1 betragen.')
+					return
+				}
 
 				this.loading = true
 				this.resetMetaInfo()
@@ -244,6 +284,7 @@ if (imageGeneratorElement) {
 				Object.keys(initialImageSettings).forEach(settingName => {
 					formData.append(settingName, this[settingName])
 				})
+				formData.set('resolution', `${this.imageWidth}x${this.imageHeight}`)
 
 				try {
 					const response = await fetch('/image/generate', {

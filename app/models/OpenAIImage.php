@@ -61,6 +61,28 @@ class OpenAIImage {
 				: array_key_first($field['options']);
 		}
 
+		if (isset($options['resolution']) && is_string($options['resolution'])) {
+			if (!preg_match('/^([1-9][0-9]*)x([1-9][0-9]*)$/', $options['resolution'], $matches)) {
+				throw new \Exception('Ungültige Auflösung. Breite und Höhe müssen durch 16 teilbar sein.', 400);
+			}
+
+			$width = (int) $matches[1];
+			$height = (int) $matches[2];
+			if ($width < 16 || $height < 16 || $width > 3840 || $height > 3840 || $width % 16 !== 0 || $height % 16 !== 0) {
+				throw new \Exception('Breite und Höhe müssen durch 16 teilbar und höchstens 3840 Pixel groß sein.', 400);
+			}
+
+			if ($width * $height < 655360 || $width * $height > 8294400) {
+				throw new \Exception('Die Auflösung muss insgesamt zwischen 655.360 und 8.294.400 Pixel haben.', 400);
+			}
+
+			if (max($width, $height) > min($width, $height) * 3) {
+				throw new \Exception('Das Seitenverhältnis darf höchstens 3:1 betragen.', 400);
+			}
+
+			$resolvedOptions['resolution'] = $width . 'x' . $height;
+		}
+
 		return $resolvedOptions;
 	}
 
