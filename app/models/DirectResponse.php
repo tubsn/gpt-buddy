@@ -4,9 +4,6 @@ namespace app\models;
 use flundr\utility\Log;
 use flundr\utility\Session;
 use \app\models\Prompts;
-use \app\models\ai\OpenAI;
-use \app\models\ai\ConnectionHandler;
-use \app\models\AiToolingHandler;
 
 class DirectResponse {
 
@@ -39,12 +36,7 @@ class DirectResponse {
 
 	public function text_prompt($prompt, $query = null) {
 
-		$connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com/v1/responses');
-		$ai = new OpenAI($connection);
-		$ai->add_toolhandler(new AiToolingHandler());
-
-		$ai->model = 'gpt-5.4';
-		$ai->reasoning = 'none';
+		$ai = (new AiChat())->ai;
 
 		if (empty($query)) {
 			$ai->add_message($prompt);
@@ -55,6 +47,7 @@ class DirectResponse {
 			$ai->add_message($query);
 		}
 
+		if (session_status() === PHP_SESSION_ACTIVE) {session_write_close();}
 		$output =  $ai->resolve();
 		$this->responseData = $this->cleanup_raw_response($ai->lastResponseRaw);
 
@@ -63,12 +56,7 @@ class DirectResponse {
 
 	public function with_prompt_ID($promptID, $query = null) {
 
-		$connection = new ConnectionHandler(CHATGPTKEY, 'https://api.openai.com/v1/responses');
-		$ai = new OpenAI($connection);
-		$ai->add_toolhandler(new AiToolingHandler());		
-
-		$ai->model = 'gpt-5.4';
-		$ai->reasoning = 'none';
+		$ai = (new AiChat())->ai;
 		//$ai->tools->use('date');
 
 		$prompts = new Prompts();
@@ -94,6 +82,7 @@ class DirectResponse {
 
 		if (!empty($prompt['afterthought'])) {$ai->add_message($prompt['afterthought'], 'system');}
 
+		if (session_status() === PHP_SESSION_ACTIVE) {session_write_close();}
 		$output =  $ai->resolve();
 		$this->responseData = $this->cleanup_raw_response($ai->lastResponseRaw);
 		
