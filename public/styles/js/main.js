@@ -278,12 +278,12 @@ methods: {
 		})
 		this.eventSource.addEventListener('done', () => {this.stopStream()})
 		this.eventSource.addEventListener('stop', () => {this.stopStream()})
-		this.eventSource.addEventListener("error", () => {
-			if (!this.errormessages && !this.output) {
-				this.errormessages = '404 - Connection Error while Streaming (Browser Console for more)'
-				this.output = this.errormessages
+		this.eventSource.addEventListener("error", (event) => {
+			if (event.data) {
+				this.failRequest(event.data)
+				return
 			}
-			this.stopStream()
+			this.failRequest(this.errormessages || '404 - Connection Error while Streaming (Browser Console for more)')
 		});
 
 		document.removeEventListener("keydown", this.stopStreamOnEscape);

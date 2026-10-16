@@ -64,18 +64,18 @@ class AiChat
 
 		$prompt = $this->prompts->get_and_track(Session::get('promptID')); 
 		$this->prompt = $prompt;
+		$payload = Session::get('payload');
 
-		if (empty($userInput) && !($prompt['direct'] ?? false)) {
-			$this->sse_error('Achtung keine Eingabe erkannt');
+		if (empty($userInput) && empty($payload) && !($prompt['direct'] ?? false)) {
+			$this->sse_error('Hinweis: Bitte gib einen Text ein.');
 		}
 
 		// If Content is combined with image
-		$payload = Session::get('payload');
 		if (!empty($payload)) {
-			$userInput = [
-				['type' => 'input_text', 'text' => $userInput],
-				['type' => 'input_image', 'image_url' => $this->prepare_image_for_vision($payload)],
-			];
+			$content = [];
+			if (!empty($userInput)) {$content[] = ['type' => 'input_text', 'text' => $userInput];}
+			$content[] = ['type' => 'input_image', 'image_url' => $this->prepare_image_for_vision($payload)];
+			$userInput = $content;
 		};
 
 		// If this is an existing Conversation we can return early
