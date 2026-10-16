@@ -59,6 +59,7 @@ if (imageGeneratorElement) {
 				output: '',
 				payload: '',
 				images: [],
+					discardReferences: readStorage('localStorage', 'discardReferences') === 'true',
 				maxImages: 10,
 				loading: false,
 				uploading: false,
@@ -125,6 +126,9 @@ if (imageGeneratorElement) {
 		},
 
 		watch: {
+			discardReferences(value) {
+				writeStorage('localStorage', 'discardReferences', value)
+			},
 			resolution(value) {
 				if (value === 'custom') return
 				const [width, height] = value.split('x').map(Number)
@@ -313,8 +317,11 @@ if (imageGeneratorElement) {
 					const generatedImage = await this.readResponse(response)
 					this.output = generatedImage
 
-					// Wie bisher: Ergebnis wird Referenz für die nächste Bearbeitung.
-					this.images = [generatedImage]
+					if (this.discardReferences) {
+						this.images = [generatedImage]
+					} else {
+						this.images = [...this.images.slice(1 - this.maxImages), generatedImage]
+					}
 				} catch (error) {
 					if (error.name === 'AbortError') {
 						this.showError(

@@ -326,6 +326,8 @@ form.image-generator-form {padding:1.25em; margin-bottom:1em; border:0; border-r
 .image-generator-form .image-add-button small {padding:.1em .4em; border-radius:.3em; background:var(--grey); color:light-dark(#707070, #b0b0b0); font-size:.85em;}
 .image-generator-form .image-add-button:hover:not(:disabled), .image-generator-form .image-prompt-drop-area.dragging .image-add-button:not(:disabled) {border-color:var(--primary); background:color-mix(in srgb, var(--primary) 15%, light-dark(#fff, #202020)); color:inherit;}
 .image-generator-form .image-add-button:disabled {border-color:color-mix(in srgb, var(--primary) 30%, light-dark(#d0d0d0, #454545)); background:color-mix(in srgb, var(--primary) 8%, light-dark(#fff, #202020)); color:light-dark(#707070, #b0b0b0); opacity:.7;}
+.image-generator-form .image-discard-references {display:inline-flex; align-items:center; gap:.4em; margin:0; font-size:.8em; line-height:1.25; cursor:pointer;}
+.image-generator-form .image-discard-references input {margin:0; accent-color:var(--primary);}
 .image-generator-form .image-clear-references {width:auto; min-height:36px; padding:.45em .6em; border:1px solid transparent; border-radius:.5em; background:transparent; color:light-dark(#707070, #b0b0b0); font-size:.8em; line-height:1.25;}
 .image-generator-form .image-clear-references:hover:not(:disabled) {border-color:var(--primary); background:color-mix(in srgb, var(--primary) 15%, light-dark(#fff, #202020)); color:inherit;}
 .image-generator-form .image-clear-references:disabled {background:transparent; color:light-dark(#707070, #b0b0b0); opacity:.5;}

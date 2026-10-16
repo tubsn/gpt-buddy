@@ -101,6 +101,11 @@
 						Alle entfernen
 					</button>
 
+					<label v-if="images.length" class="image-discard-references">
+						<input type="checkbox" v-model="discardReferences" :disabled="loading || uploading">
+						<span>Originale verwerfen</span>
+					</label>
+
 					<span id="imagePromptCounter" class="image-character-count">
 						{{ inputChars }}/4000 Zeichen
 					</span>
