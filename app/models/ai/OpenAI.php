@@ -414,10 +414,6 @@ class OpenAI
 		$textParts = [];
 
 		foreach ($content as $contentItem) {
-			if (($contentItem['type'] ?? '') === 'output_text' && is_string($contentItem['text'] ?? null)) {
-				$textParts[] = $contentItem['text'];
-			}
-
 			if (is_string($contentItem['text'] ?? null)) {
 				$textParts[] = $contentItem['text'];
 			}
