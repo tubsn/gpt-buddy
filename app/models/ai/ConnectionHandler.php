@@ -161,7 +161,7 @@ class ConnectionHandler
 		} else {
 			$options[CURLOPT_RETURNTRANSFER] = true;
 			$options[CURLOPT_CONNECTTIMEOUT] = 20;
-			$options[CURLOPT_TIMEOUT] = 60;
+			$options[CURLOPT_TIMEOUT] = 300;
 		}
 
 		foreach ($this->defaultCurlOptions as $optionKey => $optionValue) {
