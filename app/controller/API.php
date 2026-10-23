@@ -167,6 +167,13 @@ class API extends Controller {
 			$jwt->authenticate_via_header();
 		}
 		$prompts = $this->Prompts->all();
+		foreach ($prompts as &$prompt) {
+			$modelData = AIMODELS[$prompt['model'] ?? ''] ?? null;
+			$prompt['model'] = $modelData['apiname'] ?? null;
+			$prompt['reasoning'] = $modelData['reasoning'] ?? null;
+		}
+		unset($prompt);
+
 		if (empty($prompts)) {throw new \Exception("No Prompts Found", 404);}
 		echo $this->view->json($prompts);
 	}

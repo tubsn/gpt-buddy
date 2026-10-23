@@ -20,6 +20,10 @@ class Prompts extends Model
 		if ($id == 'unbiased') {return;}
 		$prompt = $this->get($id);
 		if (empty($prompt)) {throw new \Exception("Prompt not Found", 404);}
+
+		$modelData = AIMODELS[$prompt['model'] ?? ''] ?? null;
+		$prompt['model'] = $modelData['apiname'] ?? null;
+		$prompt['reasoning'] = $modelData['reasoning'] ?? null;
 		
 		$prompt = $this->apply_callback($prompt);
 		$prompt = $this->apply_knowledge($prompt);
@@ -29,7 +33,7 @@ class Prompts extends Model
 	}
 
 	public function get_for_api($id = null) {
-		$prompt =  $this->get_and_track($id, false);
+		$prompt = $this->get_and_track($id, false);
 		unset($prompt['history']);
 		return $prompt; 
 	}
