@@ -178,7 +178,9 @@ methods: {
 	redo() {this.$root.redoLastStep()},
 
 	timestamps() {
-		this.$root.$refs.payload.timestamps = !this.$root.$refs.payload.timestamps
+		const upload = this.$root.$refs.payload
+		if (upload.loading) {return}
+		upload.timestamps = !upload.timestamps
 	},
 
 	// This is Ai Coded handle with care :S

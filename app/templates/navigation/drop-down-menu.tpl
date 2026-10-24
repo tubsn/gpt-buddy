@@ -10,3 +10,7 @@
 	<div action="redo">Erneut generieren</div>
 	<div action="delete" class="danger">Verlauf löschen</div>
 </dropdown>
+
+<dropdown menu-element="file-button">
+	<div action="timestamps">Sprechererkennung an/aus</div>
+</dropdown>

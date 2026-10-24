@@ -10,6 +10,10 @@ class Transcriber {
 	private $maxFileSize = 25 * 1024 * 1024;
 	private $ffmpegPath;
 	private $workDir;
+	private $timestamps = false;
+	private $chunkStart = 0;
+	private $chunkNumber = 1;
+	private $multipleChunks = false;
 
 	public function __construct() {
 		$this->ffmpegPath = defined('FFMPEGPATH') ? FFMPEGPATH : 'ffmpeg';
@@ -25,23 +29,27 @@ class Transcriber {
 		$this->start_stream();
 
 		try {
+			$this->timestamps = filter_var($timestamps, FILTER_VALIDATE_BOOLEAN);
+			if ($this->timestamps && $this->provider !== 'openai') {
+				throw new \Exception('Sprechererkennung ist derzeit nur mit OpenAI verfügbar.');
+			}
 			if ($file['size'] > 150 * 1024 * 1024) {
 				throw new \Exception('Datei zu groß (maximal 150 MB).');
 			}
 
 			$chunks = $this->prepare_audio($file);
+			$this->multipleChunks = count($chunks) > 1;
 			$transcript = '';
-			$withTimestamps = filter_var($timestamps, FILTER_VALIDATE_BOOLEAN);
 
 			foreach ($chunks as $index => $chunk) {
 				if (connection_aborted()) {break;}
+				$this->chunkStart = $chunk['start'];
+				$this->chunkNumber = $index + 1;
 				$this->send_event('progress', ['current' => $index + 1, 'total' => count($chunks)]);
-				$part = $this->format_paragraphs($this->transcribe_chunk($chunk['path'], $chunk['name']));
-				if ($withTimestamps && count($chunks) > 1) {
-					$label = gmdate('H:i:s', (int) $chunk['start']);
-					$part = '[' . $label . '] ' . $part;
-				}
-				$transcript .= ($transcript === '' ? '' : "\n\n") . $part;
+				$part = $this->transcribe_chunk($chunk['path'], $chunk['name']);
+				if (!$this->timestamps) {$part = $this->format_paragraphs($part);}
+				$separator = $this->timestamps ? "\n" : "\n\n";
+				$transcript .= ($transcript === '' ? '' : $separator) . $part;
 				$this->send_event('part_done', ['text' => trim($transcript)]);
 			}
 
@@ -114,19 +122,27 @@ class Transcriber {
 
 		$buffer = '';
 		$text = '';
+		$segments = [];
 		$errorBody = '';
 		$curl = curl_init($this->apiURL);
+		$postFields = [
+			'file' => new \CURLFile($path, mime_content_type($path), $name),
+			'model' => $this->timestamps ? 'gpt-4o-transcribe-diarize' : $this->modelName,
+			'stream' => 'true',
+		];
+		if ($this->timestamps) {
+			$postFields['response_format'] = 'diarized_json';
+			$postFields['chunking_strategy'] = 'auto';
+			$postFields['language'] = 'de';
+		} else {
+			$postFields['languages[]'] = 'de';
+		}
 		curl_setopt_array($curl, [
 			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => [
-				'file' => new \CURLFile($path, mime_content_type($path), $name),
-				'model' => $this->modelName,
-				'stream' => 'true',
-				'languages[]' => 'de',
-			],
+			CURLOPT_POSTFIELDS => $postFields,
 			CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . CHATGPTKEY, 'Accept: text/event-stream'],
 			CURLOPT_TIMEOUT => 0,
-			CURLOPT_WRITEFUNCTION => function($curl, $data) use (&$buffer, &$text, &$errorBody) {
+			CURLOPT_WRITEFUNCTION => function($curl, $data) use (&$buffer, &$text, &$segments, &$errorBody) {
 				if (connection_aborted()) {return 0;}
 				if (curl_getinfo($curl, CURLINFO_RESPONSE_CODE) >= 400) {
 					$errorBody .= $data;
@@ -141,11 +157,15 @@ class Transcriber {
 						if (!str_starts_with($line, 'data:')) {continue;}
 						$payload = json_decode(trim(substr($line, 5)), true);
 						if (!$payload || empty($payload['type'])) {continue;}
-						if ($payload['type'] === 'transcript.text.delta') {
+						if ($payload['type'] === 'transcript.text.segment' && $this->timestamps) {
+							$segments[] = $payload;
+							$this->send_event('delta', ['text' => $this->format_speaker_segments([$payload]) . "\n"]);
+						}
+						if ($payload['type'] === 'transcript.text.delta' && !$this->timestamps) {
 							$text .= $payload['delta'];
 							$this->send_event('delta', ['text' => $payload['delta']]);
 						}
-						if ($payload['type'] === 'transcript.text.done') {$text = $payload['text'];}
+						if ($payload['type'] === 'transcript.text.done') {$text = $payload['text'] ?? $text;}
 					}
 				}
 				return strlen($data);
@@ -157,6 +177,10 @@ class Transcriber {
 		curl_close($curl);
 		if ($result === false || $status !== 200) {
 			throw new \Exception('Transcription API Fehler: ' . ($error ?: $errorBody ?: $status));
+		}
+		if ($this->timestamps) {
+			if (!$segments) {throw new \Exception('Keine Sprecherabschnitte empfangen.');}
+			return $this->format_speaker_segments($segments);
 		}
 		return trim($text);
 	}
@@ -184,6 +208,23 @@ class Transcriber {
 		$data = json_decode($response, true);
 		if (!isset($data['text'])) {throw new \Exception('Ungültige Azure Transcription API Antwort.');}
 		return trim($data['text']);
+	}
+
+	private function format_speaker_segments($segments) {
+		$lines = [];
+
+		foreach ($segments as $segment) {
+			$text = trim($segment['text'] ?? '');
+			if ($text === '') {continue;}
+
+			$speaker = $segment['speaker'] ?? '?';
+			if ($this->multipleChunks) {$speaker = $this->chunkNumber . '-' . $speaker;}
+			$seconds = (int) ($this->chunkStart + ($segment['start'] ?? 0));
+			$time = $seconds >= 3600 ? gmdate('H:i:s', $seconds) : gmdate('i:s', $seconds);
+			$lines[] = '[' . $time . '] Sprecher ' . $speaker . ': ' . $text;
+		}
+
+		return implode("\n", $lines);
 	}
 
 	private function format_paragraphs($text) {

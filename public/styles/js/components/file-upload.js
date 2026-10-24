@@ -26,10 +26,6 @@ template: `
 <input style="display:none" id="pdfupload" type="file" name="file" @change="uploadFile">
 `,
 
-watch: {
-	timestamps(value) {localStorage.timestamps = value;},
-},
-
 mounted: function() {
 	this.initPasteUpload()
 	this.initDragAndDropUpload()
@@ -134,7 +130,7 @@ methods: {
 						this.$root.input = confirmedText + currentPart
 					}
 					if (event.type === 'part_done') {
-						confirmedText = event.text + '\n\n'
+						confirmedText = event.text + (this.timestamps ? '\n' : '\n\n')
 						currentPart = ''
 						this.$root.input = event.text
 					}
