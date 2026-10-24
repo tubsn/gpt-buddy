@@ -3,7 +3,6 @@
 namespace app\controller;
 use flundr\mvc\Controller;
 use flundr\auth\Auth;
-use flundr\utility\Session;
 
 class Import extends Controller {
 
@@ -39,7 +38,7 @@ class Import extends Controller {
 
 	public function file_upload() {
 		$options['timestamps'] = $_POST['timestamps'] ?? false;
-		$output = $this->FileReader->import($_FILES['file'], $options);
+		$output = $this->FileReader->import($_FILES['file'] ?? null, $options);
 		echo $output;
 	}
 
@@ -88,58 +87,6 @@ class Import extends Controller {
 
 	}
 
-	public function converter() {
-
-		array_push($this->view->framework, '/styles/flundr/components/fl-upload.js');
-
-		$files = [];
-
-		$ff = 'ffmpeg';
-		if (defined('FFMPEGPATH')) {$ff = FFMPEGPATH;}
-
-		$urlpath = 'audio/converter/';
-		$outDir = PUBLICFOLDER . $urlpath;
-
-		if ($_FILES) {
-
-			$tmp_file = $_FILES['uploads']['tmp_name'][0];
-			$filename = pathinfo($_FILES['uploads']['name'][0], PATHINFO_FILENAME);
-			$in = $tmp_file;
-			
-			if (!file_exists($outDir)) {mkdir($outDir, 0777, true);}
-			array_map('unlink', array_filter((array) glob($outDir.'*')));
-
-			// Filename shall not contain any special chars!
-			$filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename);
-
-			echo shell_exec("$ff -i $in -vn -map_metadata -1 -ac 1 -c:a libopus -b:a 12k -application voip ".$outDir.$filename.".ogg");
-
-			Session::unset('tts');
-			die;
-		}
-
-		if (file_exists($outDir)) {
-			$files = scandir($outDir, SCANDIR_SORT_ASCENDING);
-			$files = array_diff($files, array('.', '..'));
-		}
-
-		$this->view->title = APP_NAME . ' | Audio Converter (Beta)';
-		$this->view->files = $files;	
-		$this->view->urlpath = $urlpath;
-		$this->view->render('audio-converter');
-
-	}
-
-	public function delete_converted_files() {
-		$this->clear_converted_files();
-		$this->view->redirect('/import/converter');
-	}
-
-	private function clear_converted_files() {
-		$urlpath = 'audio/converter/';
-		array_map('unlink', array_filter((array) glob($urlpath.'*')));
-	}
-
 	public function delete_splitted_files() {
 		$this->clear_splitted_files();
 		$this->view->redirect('/import/splitter');
@@ -149,23 +96,4 @@ class Import extends Controller {
 		$urlpath = 'audio/splitter/';
 		array_map('unlink', array_filter((array) glob($urlpath.'*')));
 	}
-
-	public function transcribe($fileindex) {
-
-		Session::unset('tts');
-
-		$audioDir = PUBLICFOLDER . 'audio/converter/';
-		$files = scandir($audioDir, SCANDIR_SORT_ASCENDING);
-		$audiofile = $audioDir . $files[$fileindex];
-
-		$file_name = basename($audiofile);
-		$c_file = curl_file_create($audiofile, filetype($audiofile), $file_name);
-
-		$tts = new \app\models\OpenAIWhisper();
-		$output = $tts->transcribe($c_file);
-
-		Session::set('tts', $output);
-		$this->view->redirect('/import/converter');
-	}
-
 }

@@ -3,6 +3,8 @@ data() {return {
 	payload: '',
 	timestamps: false,
 	loading: false,
+	uploadController: null,
+	transcribing: false,
 	dragActive: false,
 	dragDepth: 0,
 	dropTargetElement: null
@@ -31,16 +33,17 @@ watch: {
 mounted: function() {
 	this.initPasteUpload()
 	this.initDragAndDropUpload()
-	if (localStorage.timestamps == 'true') {this.timestamps = true}
 },
 
 unmounted() {
+	this.stopUpload()
 	this.destroyDragAndDropUpload()
 },
 
 methods: {
 
-	uploadFile(event) {
+	async uploadFile(event) {
+		if (this.loading || this.$root.loading) {return}
 		let fileObject = event
 
 		if (event.target && event.target.files && event.target.files[0]) {
@@ -48,17 +51,27 @@ methods: {
 		}
 
 		this.loading = true
+		this.transcribing = fileObject.type.startsWith('audio/') || /\.(mp3|mp4|mpeg|mpga|m4a|aac|wav|webm|ogg)$/i.test(fileObject.name || '')
+		this.uploadController = new AbortController()
+		if (this.transcribing) {
+			this.$root.loading = true
+			this.$root.modelmode = 'Transkribiere Audio'
+			document.addEventListener('keydown', this.stopUploadOnEscape)
+		}
 
 		let formData = new FormData()
 		formData.append('file', fileObject)
 		formData.append('timestamps', this.timestamps)
 
-		fetch('/import/file', {
-			method: 'POST',
-			body: formData
-		})
-		.then(response => response.text())
-		.then(responseText => {
+		try {
+			const response = await fetch('/import/file', {method: 'POST', body: formData, signal: this.uploadController.signal})
+			if (!response.ok) {throw new Error('Datei-Upload fehlgeschlagen')}
+			const contentType = response.headers.get('Content-Type') || ''
+			if (contentType.includes('text/event-stream')) {
+				await this.readTranscriptionStream(response)
+				return
+			}
+			const responseText = await response.text()
 			try {
 				let parsedResponse = JSON.parse(responseText)
 
@@ -70,13 +83,70 @@ methods: {
 			}
 
 			this.$root.input = responseText
-		})
-		.catch(error => {
+		} catch (error) {
+			if (error.name === 'AbortError') {return}
 			console.error(error)
-		})
-		.finally(() => {
+			this.$root.errormessages = error.message || 'Transkription fehlgeschlagen'
+		} finally {
 			this.loading = false
-		})
+			if (this.transcribing) {
+				this.$root.loading = false
+				this.$root.modelmode = ''
+				document.removeEventListener('keydown', this.stopUploadOnEscape)
+			}
+			this.transcribing = false
+			this.uploadController = null
+		}
+	},
+
+	stopUploadOnEscape(event) {
+		if (event.key === 'Escape') {this.stopUpload()}
+	},
+
+	stopUpload() {
+		if (!this.transcribing || !this.uploadController) {return false}
+		this.uploadController.abort()
+		return true
+	},
+
+	async readTranscriptionStream(response) {
+		const reader = response.body.getReader()
+		const decoder = new TextDecoder()
+		let buffer = ''
+		let finished = false
+		let confirmedText = ''
+		let currentPart = ''
+		this.$root.input = ''
+
+		while (true) {
+			const {value, done} = await reader.read()
+			if (done) {break}
+			buffer += decoder.decode(value, {stream: true}).replace(/\r\n/g, '\n')
+			let boundary
+			while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+				const block = buffer.slice(0, boundary)
+				buffer = buffer.slice(boundary + 2)
+				for (const line of block.split('\n')) {
+					if (!line.startsWith('data:')) {continue}
+					const event = JSON.parse(line.slice(5).trim())
+					if (event.type === 'delta') {
+						currentPart += event.text
+						this.$root.input = confirmedText + currentPart
+					}
+					if (event.type === 'part_done') {
+						confirmedText = event.text + '\n\n'
+						currentPart = ''
+						this.$root.input = event.text
+					}
+					if (event.type === 'done') {
+						this.$root.input = event.text
+						finished = true
+					}
+					if (event.type === 'error') {throw new Error(event.message)}
+				}
+			}
+		}
+		if (!finished) {throw new Error('Transkription wurde vorzeitig beendet')}
 	},
 
 	initPasteUpload() {

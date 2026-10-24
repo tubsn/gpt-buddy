@@ -3,7 +3,6 @@
 namespace app\models;
 use \Smalot\PdfParser\Parser;
 use \Smalot\PdfParser\Config;
-use \app\models\Transcriber;
 use \flundr\file\Storage;
 use \flundr\utility\Log;
 use \Intervention\Image\ImageManager;
@@ -19,6 +18,7 @@ class FileReader
 	}
 
 	public function import($file, $options = []) {
+		if (!$file) {return 'Achtung: Datei konnte nicht hochgeladen werden';}
 
 		if ($options) {$this->options = $options;}
 
@@ -28,8 +28,9 @@ class FileReader
 			}
 			$file = $this->get_meta($file);
 		}
+		if (!empty($file['error'])) {return 'Achtung: Datei konnte nicht hochgeladen werden';}
 
-		if ($file['size'] > 1024 * 1024 * 100) {return 'Achtung: Datei zu groß';}
+		if ($file['size'] > 1024 * 1024 * 150) {return 'Achtung: Datei zu groß (maximal 150 MB)';}
 
 		$filepath = $file['tmp_name'];
 		$type = $this->detect_type($file);
@@ -65,6 +66,7 @@ class FileReader
 			case 'audio/mpeg': return 'audio'; break;
 			case 'audio/mp4': return 'audio'; break;
 			case 'audio/x-m4a': return 'audio'; break;
+			case 'audio/aac': case 'audio/x-aac': case 'audio/webm': case 'audio/ogg': return 'audio'; break;
 			case 'audio/wav': return 'audio'; break;
 			case 'application/postscript': return 'eps'; break;
 			case 'application/x-zip-compressed': return 'zip'; break;
@@ -129,9 +131,7 @@ class FileReader
 
 	private function audio($file) {
 		$service = new Transcriber();
-		$timestamps = filter_var($this->options['timestamps'], FILTER_VALIDATE_BOOLEAN);
-		$service->timestamps = $timestamps;
-		return $service->transcribe($file['tmp_name']);;
+		$service->stream($file, $this->options['timestamps'] ?? false);
 	}
 
     private function readDocx($filename) {

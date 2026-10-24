@@ -359,6 +359,7 @@ methods: {
 	},
 
 	stopStream() {
+		if (this.$refs.payload?.stopUpload()) {return}
 
 		let userScrolledDown = false
 		if (this.$refs.outputTextarea) {

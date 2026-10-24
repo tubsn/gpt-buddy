@@ -100,7 +100,7 @@ if (!empty($directPrompts)) {$hasDirect = ' has-direct-prompts';}
 
 		<div class="usage-stats fright small">
 			<span class="ml loading-wrapper" v-if="loading">
-				<div class="loadIndicator"><div></div><div></div><div></div></div> generiere - abbrechen <b>[ESC]</b>
+				<div class="loadIndicator"><div></div><div></div><div></div></div> {{ $refs.payload?.transcribing ? 'transkribiere' : 'generiere' }} - abbrechen <b>[ESC]</b>
 				<img class="mini-robot" src="/styles/img/ai-buddy.svg">
 			</span>
 			<span v-if="responsetime" class="ml">Antwortzeit: <b>{{ responsetime }}&thinsp;s</b> | Tokens  in: <b>{{ usage.input_tokens }}</b> / out: <b>{{ usage.output_tokens }}</b> | Zeichen: <b>{{ chars }}</b></span>
