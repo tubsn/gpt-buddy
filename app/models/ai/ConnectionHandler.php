@@ -81,6 +81,7 @@ class ConnectionHandler
 		$this->rawResponseBody = '';
 		$this->abortStream = false;
 		$this->streamCancelledByCallback = false;
+		$streamApiError = null;
 
 		$url = $this->apiPath;
 		$jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -120,10 +121,10 @@ class ConnectionHandler
 			$options[CURLOPT_RETURNTRANSFER] = false;
 			$options[CURLOPT_CONNECTTIMEOUT] = 20;
 			$options[CURLOPT_TIMEOUT] = 0;
-			$options[CURLOPT_WRITEFUNCTION] = function ($curlHandleInner, $incomingData) use ($onChunk) {
+			$options[CURLOPT_WRITEFUNCTION] = function ($curlHandleInner, $incomingData) use ($onChunk, &$streamApiError) {
 
 				$this->rawResponseBody .= $incomingData;
-				if ($this->abortStream) {return 0;}
+				if ($this->abortStream) {return $streamApiError !== null ? strlen($incomingData) : 0;}
 
 				$this->sseBuffer .= $incomingData;
 
@@ -142,9 +143,9 @@ class ConnectionHandler
 					if (!is_array($chunk)) {continue;}
 
 					if (isset($chunk['error'])) {
+						$streamApiError = $chunk['error']['message'] ?? json_encode($chunk['error']);
 						$this->abortStream = true;
-						$onChunk(['type' => 'response.error', 'error' => $chunk['error'],]);
-						return 0;
+						return strlen($incomingData);
 					}
 
 					$callbackResult = $onChunk($chunk);
@@ -178,6 +179,9 @@ class ConnectionHandler
 		if ($onChunk) {
 			if ($this->streamCancelledByCallback) {
 				return [];
+			}
+			if ($streamApiError !== null) {
+				throw new \RuntimeException('Stream API error: ' . $streamApiError);
 			}
 
 			if ($curlErrorCode !== 0) {

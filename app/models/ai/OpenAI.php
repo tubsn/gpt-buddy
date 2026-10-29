@@ -147,6 +147,7 @@ class OpenAI
 			
 			while (true) {
 				$shouldContinue = true;
+				$streamError = null;
 				$responseCollector = new ResponseEventCollector(function (array $payload) use (&$shouldContinue): void {
 					if ($this->emit($payload) === false) {
 						$shouldContinue = false;
@@ -155,8 +156,14 @@ class OpenAI
 
 				$requestOptions = $this->build_options(true);
 
-				$this->connection->request($requestOptions, function (array $eventData) use ($responseCollector, &$shouldContinue) {
+				$this->connection->request($requestOptions, function (array $eventData) use ($responseCollector, &$shouldContinue, &$streamError) {
 					if ($this->debugEventFile) {$this->log_events($eventData);}
+					if (in_array($eventData['type'] ?? '', ['response.failed', 'response.incomplete', 'response.error'], true)) {
+						$streamError = $eventData['response']['error']['message']
+							?? $eventData['response']['incomplete_details']['reason']
+							?? $eventData['error']['message']
+							?? 'OpenAI response failed';
+					}
 					$responseCollector->handle($eventData);
 
 					if ($shouldContinue === false) {return false;}
@@ -165,6 +172,10 @@ class OpenAI
 				});
 
 				if ($shouldContinue === false) {break;}
+				if ($streamError !== null) {throw new \RuntimeException($streamError);}
+				if ($responseCollector->last_response_id() === null) {
+					throw new \RuntimeException('OpenAI stream ended without a response ID');
+				}
 
 				$this->lastResponseId = $responseCollector->last_response_id();
 				$this->lastResponse = $responseCollector->complete_response();

@@ -246,6 +246,7 @@ class AiChat
 
 		$oldID = Session::get('responseID');
 		$responseID = $this->ai->last_response_id();
+		if ($responseID === null) {return;}
 		$conversation = $this->ai->last_conversation();
 
 		$tooldata = Session::get('tooldata');
