@@ -24,6 +24,8 @@ class OpenAI
 	public array $lastResponseRaw = [];
 	private array $toolCalls = [];
 	private array $pendingToolOutputs = [];
+	private $functionToolCallCount = 0;
+	private $maxFunctionToolCalls = 12;
 	private array $toolRegistry = [];
 	private array $functionItemIdToCallId = [];
 	private ?ResponseEventCollector $eventCollector = null;
@@ -104,6 +106,7 @@ class OpenAI
 
 	public function resolve(): string {
 		$finalText = '';
+		$this->functionToolCallCount = 0;
 
 		while (true) {
 
@@ -128,6 +131,10 @@ class OpenAI
 			$this->pendingToolOutputs = [];
 
 			if (empty($this->toolCalls)) {break;}
+			if ($this->functionToolCallCount >= $this->maxFunctionToolCalls) {
+				throw new \RuntimeException('AI provider returned function calls although tools were disabled');
+			}
+			$this->functionToolCallCount += count($this->toolCalls);
 			$this->execute_tools();
 		}
 
@@ -142,6 +149,7 @@ class OpenAI
 
 	public function stream(callable $onDelta): void {
 		$this->onDelta = Closure::fromCallable($onDelta);
+		$this->functionToolCallCount = 0;
 
 		try {
 			
@@ -183,6 +191,10 @@ class OpenAI
 				$this->toolCalls = $responseCollector->tool_calls();
 
 				if (!empty($this->toolCalls)) {
+					if ($this->functionToolCallCount >= $this->maxFunctionToolCalls) {
+						throw new \RuntimeException('AI provider returned function calls although tools were disabled');
+					}
+					$this->functionToolCallCount += count($this->toolCalls);
 					$this->execute_tools();
 					continue;
 				}
@@ -205,6 +217,10 @@ class OpenAI
 		$options['model'] = $this->model;
 		$options['stream'] = $useStream;
 		$options['tool_choice'] = 'auto';
+		// Submit the last tool results and let the model finish with a normal answer.
+		if ($this->functionToolCallCount >= $this->maxFunctionToolCalls) {
+			$options['tool_choice'] = 'none';
+		}
 		$options['tools'] = $this->tools_schema();
 
 		if (empty($options['tools'])) {
