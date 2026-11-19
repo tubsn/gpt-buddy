@@ -1,6 +1,8 @@
 <?php
 
 namespace app\models;
+use flundr\auth\Auth;
+use \app\models\Tracking;
 
 class Transcriber {
 
@@ -27,6 +29,7 @@ class Transcriber {
 
 	public function stream($file, $timestamps = false) {
 		$this->start_stream();
+		$this->track_usage();
 
 		try {
 			$this->timestamps = filter_var($timestamps, FILTER_VALIDATE_BOOLEAN);
@@ -279,4 +282,16 @@ class Transcriber {
 		foreach (glob($workDir . DIRECTORY_SEPARATOR . '*') as $path) {unlink($path);}
 		rmdir($workDir);
 	}
+
+	private function track_usage() {
+		$Stats = new Tracking();
+		$data['type'] = 'transcribe';
+		$data['model'] = $this->modelName ?? null;
+
+		$userID = Auth::get('id');
+		if ($userID) {$data['user_id'] = $userID;}
+
+		$id = $Stats->create($data);
+	}
+
 }

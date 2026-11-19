@@ -1,6 +1,8 @@
 <?php
 
 namespace app\models;
+use flundr\auth\Auth;
+use \app\models\Tracking;
 
 class OpenAIImage {
 
@@ -147,6 +149,8 @@ class OpenAIImage {
 		if (empty($decodedResponse['data'][0]['b64_json'])) {
 			throw new \Exception('OpenAI hat keine Bilddaten geliefert.', 502);
 		}
+
+		$this->track_usage($resolvedOptions['model'], $resolvedOptions['quality']);
 
 		return $this->save_file(
 			$decodedResponse['data'][0]['b64_json'],
@@ -358,4 +362,17 @@ class OpenAIImage {
 			file_put_contents($filePath, $imageWithPrompt, LOCK_EX);
 		}
 	}
+
+	private function track_usage($modelname = null, $quality = null) {
+		$Stats = new Tracking();
+		$data['type'] = 'image';
+		$data['model'] = $modelname;
+		$data['reasoning'] = $quality;
+
+		$userID = Auth::get('id');
+		if ($userID) {$data['user_id'] = $userID;}
+
+		$id = $Stats->create($data);
+	}
+
 }
