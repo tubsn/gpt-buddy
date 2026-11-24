@@ -9,7 +9,7 @@ class DefaultLayout extends htmlView {
 	// as a $page Array. It can be accessed via $page['title']
 
 	public $title = APP_NAME;
-	public $description = 'ChatGPT - Redaktions Tools';
+	public $description = APP_NAME . ' - Redaktions Tools';
 	public $css = ['/styles/flundr/css/defaults.css', '/styles/css/main.css',
 		'//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css',
 	];
