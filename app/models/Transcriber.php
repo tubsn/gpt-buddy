@@ -10,6 +10,7 @@ class Transcriber {
 	private $modelName = 'gpt-transcribe';
 	private $provider = 'openai';
 	private $maxFileSize = 25 * 1024 * 1024;
+	private $maxTimestampChunkSeconds = 1200;
 	private $ffmpegPath;
 	private $workDir;
 	private $timestamps = false;
@@ -66,7 +67,9 @@ class Transcriber {
 
 	private function prepare_audio($file) {
 		if ($file['size'] <= $this->maxFileSize && $this->supported_file($file)) {
-			return [['path' => $file['tmp_name'], 'name' => 'audio.' . strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)), 'start' => 0]];
+			if (!$this->timestamps || $this->audio_duration($file['tmp_name']) <= $this->maxTimestampChunkSeconds) {
+				return [['path' => $file['tmp_name'], 'name' => 'audio.' . strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)), 'start' => 0]];
+			}
 		}
 
 		$ffmpeg = escapeshellarg($this->ffmpegPath);
@@ -85,18 +88,18 @@ class Transcriber {
 		exec($command, $output, $exitCode);
 		if ($exitCode !== 0 || !is_file($compressed)) {throw new \Exception('Audio-Komprimierung fehlgeschlagen.');}
 
-		if (filesize($compressed) <= $this->maxFileSize) {
+		if (filesize($compressed) <= $this->maxFileSize && !$this->timestamps) {
+			return [['path' => $compressed, 'name' => 'audio.webm', 'start' => 0]];
+		}
+		$duration = $this->audio_duration($compressed);
+		if (filesize($compressed) <= $this->maxFileSize && $duration <= $this->maxTimestampChunkSeconds) {
 			return [['path' => $compressed, 'name' => 'audio.webm', 'start' => 0]];
 		}
 
-		$info = shell_exec(sprintf('%s -i %s 2>&1', $ffmpeg, escapeshellarg($compressed)));
-		$duration = 0;
-		if (preg_match('/Duration: (\d+):(\d+):(\d+\.\d+)/', $info, $matches)) {
-			$duration = $matches[1] * 3600 + $matches[2] * 60 + (float) $matches[3];
-		}
-		if ($duration <= 0) {throw new \Exception('Audiodauer konnte nicht ermittelt werden.');}
-
 		$chunkCount = (int) ceil(filesize($compressed) / (20 * 1024 * 1024));
+		if ($this->timestamps) {
+			$chunkCount = max($chunkCount, (int) ceil($duration / $this->maxTimestampChunkSeconds));
+		}
 		$chunkSeconds = (int) ceil($duration / $chunkCount);
 		$chunks = [];
 		for ($index = 0; $index < $chunkCount; $index++) {
@@ -111,6 +114,15 @@ class Transcriber {
 			$chunks[] = ['path' => $path, 'name' => basename($path), 'start' => $start];
 		}
 		return $chunks;
+	}
+
+	private function audio_duration($path) {
+		$ffmpeg = escapeshellarg($this->ffmpegPath);
+		$info = shell_exec(sprintf('%s -i %s 2>&1', $ffmpeg, escapeshellarg($path)));
+		if (preg_match('/Duration: (\d+):(\d+):(\d+\.\d+)/', $info, $matches)) {
+			return $matches[1] * 3600 + $matches[2] * 60 + (float) $matches[3];
+		}
+		throw new \Exception('Audiodauer konnte nicht ermittelt werden.');
 	}
 
 	private function supported_file($file) {
